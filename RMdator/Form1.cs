@@ -21,18 +21,22 @@ namespace RMdator
             InitializeComponent();
             textBox1.Text = Environment.CurrentDirectory;
 
+            FillList();
+
+            checkedListBox1.Items.Clear();
+            for(int i=0;i<list.Count;i++)
+            checkedListBox1.Items.Add(list[i], boollist[i]);
+
+            checkedListBox1.Update();
+        }
+        private void FillList()
+        {
             list.Add("(x,y,r) =");boollist.Add(true);
             list.Add("3D (x,y,r) ="); boollist.Add(true);
             list.Add("x ="); boollist.Add(true);
             list.Add("center = "); boollist.Add(true);
             list.Add("3D ur, uz(title , (x,y,r)"); boollist.Add(true);
             list.Add("uxw circle"); boollist.Add(false);
-
-            checkedListBox1.Items.Clear();
-            for(int i=0;i<list.Count;i++)
-            checkedListBox1.Items.Add(list[i], true);
-
-            checkedListBox1.Update();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,7 +46,7 @@ namespace RMdator
                 textBox1.Text = folderBrowserDialog1.SelectedPath;
             }
         }
-
+        
         private void добавитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new TF().ShowDialog();

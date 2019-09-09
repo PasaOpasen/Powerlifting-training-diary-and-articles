@@ -9,16 +9,16 @@ namespace Контроль_прогресса
 {
     static class Program
     {
-        public static Form1 F1;
-       public  static Form2 F2;
-        public static Form3 F3;
-        public static Form4 F4;
-        public static Form5 F5;
-        public static Form6 F6;
-        public static Form7 F7;
+        public static MainForm F1;
+        public static Results F2;
+        public static ParamsGraf F3;
+        public static Book F4;
+        public static BeginForm F5;
+        public static FastVal F6;
+        public static BeginBook F7;
         public static List<PowerLift> mas;
         public static PowerLift[] masn;
-        public static string filename= "Набор данных по умолчанию.txt";
+        public static string filename = "Набор данных по умолчанию.txt";
         public static bool changefile = false;
         /// <summary>
         /// Главная точка входа для приложения.
@@ -29,14 +29,14 @@ namespace Контроль_прогресса
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             mas = new List<PowerLift>();
-            F5 = new Form5();
-            F1 = new Form1();
-            F2 = new Form2();
-            F3 = new Form3();
-            F4 = new Form4();
-            F6 = new Form6();
-            F7 = new Form7();
-            
+            F5 = new BeginForm();
+            F1 = new MainForm();
+            F2 = new Results();
+            F3 = new ParamsGraf();
+            F4 = new Book();
+            F6 = new FastVal();
+            F7 = new BeginBook();
+
             Application.Run(F1);
         }
     }

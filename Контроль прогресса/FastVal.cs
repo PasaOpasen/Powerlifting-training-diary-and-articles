@@ -11,9 +11,9 @@ using static Библиотека_классов.PowerLift;
 
 namespace Контроль_прогресса
 {
-    public partial class Form6 : Form
+    public partial class FastVal : Form
     {
-        public Form6()
+        public FastVal()
         {
             InitializeComponent();
             Color col = Color.FromArgb(200, Color.Transparent);

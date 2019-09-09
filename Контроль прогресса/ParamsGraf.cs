@@ -12,10 +12,10 @@ using System.IO;
 
 namespace Контроль_прогресса
 {
-    public partial class Form3 : Form
+    public partial class ParamsGraf : Form
     {
         //PowerLift[] masn;
-        public Form3()
+        public ParamsGraf()
         {
             InitializeComponent();
             radioButton1.Checked = true;

@@ -13,12 +13,12 @@ using static Библиотека_классов.PowerLift;
 
 namespace Контроль_прогресса
 {
-    public partial class Form2 : Form
+    public partial class Results : Form
     {
         private int sqt = 0, prs = 0, lft = 0, dr = 0, dru = 1;
         double tonn = 0;
         string s = "";
-        public Form2()
+        public Results()
         {
             InitializeComponent();
             radioButton1.Checked = true;

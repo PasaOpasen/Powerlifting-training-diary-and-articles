@@ -12,9 +12,9 @@ using System.IO;
 
 namespace Контроль_прогресса
 {
-    public partial class Form7 : Form
+    public partial class BeginBook : Form
     {
-        public Form7()
+        public BeginBook()
         {
             InitializeComponent();
             Color col = Color.FromArgb(130, Color.Transparent);

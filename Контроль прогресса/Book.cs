@@ -11,9 +11,9 @@ using Библиотека_классов;
 
 namespace Контроль_прогресса
 {
-    public partial class Form4 : Form
+    public partial class Book : Form
     {
-        public Form4()
+        public Book()
         {
             InitializeComponent();
             radioButton1.Checked = true;

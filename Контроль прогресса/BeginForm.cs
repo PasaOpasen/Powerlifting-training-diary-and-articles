@@ -12,9 +12,9 @@ using System.IO;
 
 namespace Контроль_прогресса
 {
-    public partial class Form5 : Form
+    public partial class BeginForm : Form
     {
-        public Form5()
+        public BeginForm()
         {
             InitializeComponent();
             textBox1.Hide();

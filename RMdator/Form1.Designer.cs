@@ -48,10 +48,10 @@
             // 
             this.button1.BackColor = System.Drawing.Color.Tomato;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Consolas", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(516, 22);
+            this.button1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button1.Location = new System.Drawing.Point(588, 22);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(192, 66);
+            this.button1.Size = new System.Drawing.Size(192, 42);
             this.button1.TabIndex = 0;
             this.button1.Text = "Изменить директорию";
             this.button1.UseVisualStyleBackColor = false;
@@ -60,7 +60,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 46);
+            this.label1.Location = new System.Drawing.Point(12, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(108, 19);
             this.label1.TabIndex = 1;
@@ -69,17 +69,17 @@
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.Location = new System.Drawing.Point(136, 22);
+            this.textBox1.Location = new System.Drawing.Point(126, 22);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(361, 66);
+            this.textBox1.Size = new System.Drawing.Size(446, 42);
             this.textBox1.TabIndex = 2;
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // checkedListBox1
             // 
             this.checkedListBox1.CheckOnClick = true;
-            this.checkedListBox1.ColumnWidth = 200;
+            this.checkedListBox1.ColumnWidth = 250;
             this.checkedListBox1.ContextMenuStrip = this.contextMenuStrip1;
             this.checkedListBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkedListBox1.FormattingEnabled = true;
@@ -89,8 +89,7 @@
             this.checkedListBox1.Location = new System.Drawing.Point(3, 22);
             this.checkedListBox1.MultiColumn = true;
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.checkedListBox1.Size = new System.Drawing.Size(425, 115);
+            this.checkedListBox1.Size = new System.Drawing.Size(507, 144);
             this.checkedListBox1.TabIndex = 5;
             // 
             // contextMenuStrip1
@@ -112,7 +111,7 @@
             this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Consolas", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button2.Location = new System.Drawing.Point(12, 160);
+            this.button2.Location = new System.Drawing.Point(542, 159);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(255, 69);
             this.button2.TabIndex = 6;
@@ -125,7 +124,7 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(12, 94);
+            this.checkBox1.Location = new System.Drawing.Point(16, 77);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(316, 23);
             this.checkBox1.TabIndex = 7;
@@ -135,9 +134,9 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.checkedListBox1);
-            this.groupBox1.Location = new System.Drawing.Point(277, 115);
+            this.groupBox1.Location = new System.Drawing.Point(12, 106);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(431, 140);
+            this.groupBox1.Size = new System.Drawing.Size(513, 169);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Удалить все файлы и папки с началами";
@@ -147,7 +146,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.ClientSize = new System.Drawing.Size(720, 267);
+            this.ClientSize = new System.Drawing.Size(807, 287);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button2);
@@ -155,7 +154,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";

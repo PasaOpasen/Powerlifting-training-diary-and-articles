@@ -94,7 +94,7 @@ Program.F1.chart1.Series[i].Points.Clear();
                 if (checkBox4.Checked)
                     list.Add(Program.masn[i].Sum);
                 if (checkBox5.Checked)
-                    list.Add(Program.masn[i].Tonn);
+                    list.Add(Program.masn[i].Tonnage);
                 if (checkBox6.Checked)
                     list.Add(Program.masn[i].Weight);
             }
@@ -148,10 +148,10 @@ Program.F1.chart1.Series[i].Points.Clear();
                     }
             if (checkBox5.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
-                    if (Program.masn[i].Tonn > 0)
+                    if (Program.masn[i].Tonnage > 0)
                     {
-                        Program.F1.chart1.Series[4].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonn);
-                        //Program.F1.chart1.Series[4+6].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonn);
+                        Program.F1.chart1.Series[4].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonnage);
+                        //Program.F1.chart1.Series[4+6].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonnage);
                     }
             if (checkBox6.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
@@ -178,7 +178,7 @@ Program.F1.chart1.Series[i].Points.Clear();
                     if (Program.masn[i].Sum > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[3].Points.AddXY(Program.masn[i].Time, Program.masn[i].Sum / Program.masn[i].Weight);
             if (checkBox5.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
-                    if (Program.masn[i].Tonn > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[4].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonn / Program.masn[i].Weight);
+                    if (Program.masn[i].Tonnage > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[4].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonnage / Program.masn[i].Weight);
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)

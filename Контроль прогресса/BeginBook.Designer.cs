@@ -129,11 +129,12 @@
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(234, 153);
+            this.textBox7.Location = new System.Drawing.Point(244, 153);
             this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(100, 26);
+            this.textBox7.Size = new System.Drawing.Size(90, 26);
             this.textBox7.TabIndex = 66;
             this.textBox7.Text = "73,5";
+            this.textBox7.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label10
             // 
@@ -185,6 +186,7 @@
             this.textBox5.Size = new System.Drawing.Size(100, 26);
             this.textBox5.TabIndex = 60;
             this.textBox5.Text = "160";
+            this.textBox5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label4
             // 
@@ -227,6 +229,7 @@
             this.textBox3.Size = new System.Drawing.Size(100, 26);
             this.textBox3.TabIndex = 55;
             this.textBox3.Text = "140";
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label3
             // 
@@ -269,6 +272,7 @@
             this.textBox1.Size = new System.Drawing.Size(100, 26);
             this.textBox1.TabIndex = 50;
             this.textBox1.Text = "100";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label11
             // 
@@ -283,7 +287,7 @@
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(266, 196);
+            this.button1.Location = new System.Drawing.Point(293, 219);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(98, 30);
             this.button1.TabIndex = 71;
@@ -294,7 +298,7 @@
             // button2
             // 
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button2.Location = new System.Drawing.Point(16, 191);
+            this.button2.Location = new System.Drawing.Point(12, 209);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(178, 40);
             this.button2.TabIndex = 72;
@@ -313,7 +317,7 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // Form7
+            // BeginBook
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -345,9 +349,10 @@
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "Form7";
+            this.Name = "BeginBook";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Начать новый дневник";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).EndInit();

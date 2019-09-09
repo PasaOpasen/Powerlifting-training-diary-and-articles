@@ -20,14 +20,9 @@ namespace Контроль_прогресса
             textBox1.Hide();
 
             using (StreamReader re = new StreamReader("Adress.txt"))
-                textBox1.Text = re.ReadLine().Replace("\n", "")/*"Набор данных по умолчанию.txt"*/;
-
+                textBox1.Text = re.ReadLine().Replace("\n", "");
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {

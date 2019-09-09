@@ -85,7 +85,7 @@ namespace Контроль_прогресса
                 //list.Add(p[i].ToString());
                 list.Add($"Дата записи: {p[i].Time}");
                 list.Add($"Максимальные результаты в базовых упражнениях: присед = {p[i].Squat}, жим = {p[i].Press}, тяга = {p[i].Lift}");
-                list.Add($"\tТоннаж = {p[i].Tonn}");
+                list.Add($"\tТоннаж = {p[i].Tonnage}");
                 string s = p[i].Comment;
                 //string s = new string(p[i].Comment.ToCharArray());
                 //s = s.Substring(s.IndexOf("Another: ")+8,s.Length);

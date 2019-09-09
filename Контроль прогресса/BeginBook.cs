@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Библиотека_классов;
 using static Библиотека_классов.PowerLift;
 using System.IO;
 
@@ -36,25 +37,32 @@ namespace Контроль_прогресса
             numericUpDown6.Value = 1;
             numericUpDown7.Value = 1;
             numericUpDown8.Value = 1;
-
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             try
             {
-                double press1 = Convert.ToDouble(textBox1.Text), sq1 = Convert.ToDouble(textBox3.Text), l1 = Convert.ToDouble(textBox5.Text), w = Convert.ToDouble(textBox7.Text);
+                double press1 = Convert.ToDouble(textBox1.Text),
+                    sq1 = Convert.ToDouble(textBox3.Text),
+                    l1 = Convert.ToDouble(textBox5.Text),
+                    w = Convert.ToDouble(textBox7.Text);
                 int press2 = Convert.ToInt32(numericUpDown6.Value),
                 sq2 = Convert.ToInt32(numericUpDown7.Value),
                 l2 = Convert.ToInt32(numericUpDown8.Value);
-                Program.mas = new List<Библиотека_классов.PowerLift>();
-                Program.mas.Add(new Библиотека_классов.PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, DateTime.Now));
+                Program.mas = new List<PowerLift>();
+                Program.mas.Add(new PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, DateTime.Now));
             }
             catch
             {
                 MessageBox.Show("Введены некорректные данные, перепроверьте их");
             }
 
+            SaveMas();
+        }
+
+        private void SaveMas()
+        {
             SaveFileDialog savedialog = new SaveFileDialog();
             savedialog.Title = "Сохранить файл как...";
             savedialog.OverwritePrompt = true;
@@ -65,19 +73,17 @@ namespace Контроль_прогресса
             {
                 try
                 {
-                    string s;
-                     s = savedialog.FileName;
+                    string s = savedialog.FileName;
                     Program.filename = s;
                     Program.masn = Program.mas.ToArray();
                     string[] st = new string[Program.masn.Length];
                     for (int i = 0; i < st.Length; i++)
                         st[i] = Program.mas[i].ToString();
                     System.IO.File.WriteAllLines(s, st);
-
                 }
                 catch
                 {
-                    MessageBox.Show("Невозможно сохранит файлйцтцйивйцивйц", "Ошибка",
+                    MessageBox.Show("Невозможно сохранит файл", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
@@ -86,5 +92,6 @@ namespace Контроль_прогресса
                 }
             }
         }
+
     }
 }

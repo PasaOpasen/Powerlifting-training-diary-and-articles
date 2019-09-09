@@ -330,8 +330,8 @@ namespace Контроль_прогресса
 
             PowerLift res = new PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, t);
             //Program.mas.Add(new PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, t));
-            res.Tonn = tonn;
-            //Program.mas.Last().Tonn = tonn;
+            res.Tonnage = tonn;
+            //Program.mas.Last().Tonnage = tonn;
 
             //s += "Tonnage = " + tonn;
             if (textBox13.Text.Length > 0) s += "| Комментарий: " + textBox13.Text;

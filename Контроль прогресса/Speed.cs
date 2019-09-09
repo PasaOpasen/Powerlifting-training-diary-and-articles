@@ -20,8 +20,9 @@ namespace Контроль_прогресса
         private void button1_Click(object sender, EventArgs e)
         {
             string[] w = textBox1.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            string[] st=textBox2.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            for(int i = 0; i < w.Length; i++)
+            string[] st = textBox2.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < w.Length; i++)
             {
                 Program.F2.textBox10.Text = w[i];
                 Program.F2.numericUpDown4.Value = Convert.ToInt32(st[i]);

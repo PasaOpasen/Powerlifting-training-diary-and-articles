@@ -19,17 +19,16 @@ namespace Контроль_прогресса
             Color col = Color.FromArgb(200, Color.Transparent);
             for (int i = 1; i <= 7; i++)
                 this.Controls["label" + i.ToString()].BackColor = col;
-        }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.Close();
+            numericUpDown1_ValueChanged(new object(), new EventArgs());
+
+            textBox1.TextChanged += (object o, EventArgs e) => numericUpDown1_ValueChanged(o, e);
+            textBox2.TextChanged += (object o, EventArgs e) => numericUpDown1_ValueChanged(o, e);
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            label9.Text = "Узнать";
-            label8.Text = "Узнать";
+            SetLabels();
         }
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
@@ -37,33 +36,18 @@ namespace Контроль_прогресса
             numericUpDown1_ValueChanged(sender, e);
         }
 
-        private void label8_Click(object sender, EventArgs e)
+        private void SetLabels()
         {
-            try
-            {
-                double weight = Convert.ToDouble(textBox1.Text);
-                int set = (int)numericUpDown1.Value;
-                int nset = (int)numericUpDown2.Value;
-                string txt = XPM(PM(weight, set), nset).ToString();
-                if (txt.Length >= 6) txt = txt.Substring(0, 6);
-                label8.Text = txt; 
-            }
-            catch { label8.Text = error; }
-        }
-        string error = "Ошибка";
+            double weight = Convert.ToDouble(textBox1.Text);
+            int set = (int)numericUpDown1.Value;
+            int nset = (int)numericUpDown2.Value;
+            double tmp = PM(weight, set);
+            string txt = Math.Round(XPM(tmp, nset), 2).ToString();
+            label8.Text = txt;
 
-        private void label9_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                double weight = Convert.ToDouble(textBox1.Text);
-                int set = (int)numericUpDown1.Value;
-                double nw = Convert.ToDouble(textBox2.Text);
-                string txt=Set(PM(weight, set), nw).ToString();
-                if (txt.Length >= 6) txt = txt.Substring(0, 6);
-                label9.Text =txt ;
-            }
-            catch { label9.Text = error; }
+            double nw = Convert.ToDouble(textBox2.Text);
+            txt = Math.Round(Set(tmp, nw), 1).ToString();
+            label9.Text = txt;
         }
     }
 }

@@ -17,12 +17,14 @@ namespace Контроль_прогресса
         public BeginForm()
         {
             InitializeComponent();
-            textBox1.Hide();
+           // textBox1.Hide();
 
-            using (StreamReader re = new StreamReader("Adress.txt"))
-                textBox1.Text = re.ReadLine().Replace("\n", "");
+            if (File.Exists("Adress.txt"))
+                using (StreamReader re = new StreamReader("Adress.txt"))
+                    textBox1.Text = re.ReadLine().Replace("\n", "");
+            else
+                textBox1.Text = Path.Combine(Environment.CurrentDirectory, Program.filename);
         }
-
 
         private void button2_Click(object sender, EventArgs e)
         {

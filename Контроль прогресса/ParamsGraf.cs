@@ -14,7 +14,6 @@ namespace Контроль_прогресса
 {
     public partial class ParamsGraf : Form
     {
-        //PowerLift[] masn;
         public ParamsGraf()
         {
             InitializeComponent();
@@ -44,18 +43,17 @@ namespace Контроль_прогресса
 
         private void button1_Click(object sender, EventArgs e)
         {
-            for(int i=0;i<6;i++)
+            for (int i = 0; i < 6; i++)
             {
-Program.F1.chart1.Series[i].Points.Clear();
+                Program.F1.chart1.Series[i].Points.Clear();
                 Program.F1.chart1.Series[i].IsVisibleInLegend = false;
             }
-            
+
             //if (radioButton2.Checked) Program.F1.GetMAssFromFile();
             if (Program.mas.Count > 1)
             {
                 Program.mas.Sort();
-                //Program.masn = PowerLift.Correct(Program.mas.Where(n => !(n.Sum == 0)).ToArray());
-                if(checkBox7.Checked)Program.masn = PowerLift.Correct(Program.mas.ToArray());
+                if (checkBox7.Checked) Program.masn = PowerLift.Correct(Program.mas.ToArray());
                 else Program.masn = Program.mas.ToArray();
 
                 if (checkBox1.Checked) Program.F1.chart1.Series[0].IsVisibleInLegend = true;
@@ -65,7 +63,7 @@ Program.F1.chart1.Series[i].Points.Clear();
                 if (checkBox5.Checked) Program.F1.chart1.Series[4].IsVisibleInLegend = true;
                 if (checkBox6.Checked) Program.F1.chart1.Series[5].IsVisibleInLegend = true;
 
-                if (radioButton4.Checked) { ShowAbsolete(); /*Program.F1.chart1.Series[4].IsVisibleInLegend = true;*/ }
+                if (radioButton4.Checked) { ShowAbsolete(); }
                 else
                     try { ShowOtn(); }
                     catch { ShowAbsolete(); }
@@ -77,7 +75,6 @@ Program.F1.chart1.Series[i].Points.Clear();
                 this.Dispose();
             }
             else MessageBox.Show("Невозможно вывести график при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл.");
-            //this.Close();
         }
 
         private void FindMin()
@@ -86,7 +83,7 @@ Program.F1.chart1.Series[i].Points.Clear();
             for (int i = 0; i < Program.masn.Length; i++)
             {
                 if (checkBox1.Checked)
-                   list.Add(Program.masn[i].Squat);
+                    list.Add(Program.masn[i].Squat);
                 if (checkBox2.Checked)
                     list.Add(Program.masn[i].Press);
                 if (checkBox3.Checked)
@@ -100,8 +97,9 @@ Program.F1.chart1.Series[i].Points.Clear();
             }
 
             list.RemoveAll(n => n == 0);
+            
             double t = 0.05;
-                Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min()*(1-t);
+            Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() * (1 - t);
             Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() * (1 + t);
         }
 
@@ -166,7 +164,7 @@ Program.F1.chart1.Series[i].Points.Clear();
         {
             if (checkBox1.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
-                    if (Program.masn[i].Squat > 0 && Program.masn[i].Weight!=0) Program.F1.chart1.Series[0].Points.AddXY(Program.masn[i].Time, Program.masn[i].Squat/ Program.masn[i].Weight);
+                    if (Program.masn[i].Squat > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[0].Points.AddXY(Program.masn[i].Time, Program.masn[i].Squat / Program.masn[i].Weight);
             if (checkBox2.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Press > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[1].Points.AddXY(Program.masn[i].Time, Program.masn[i].Press / Program.masn[i].Weight);
@@ -186,17 +184,11 @@ Program.F1.chart1.Series[i].Points.Clear();
             Program.F1.GetMAssFromFile();
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        int ves = 0;
+        bool ves = false;
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            ves++;
-            ves %= 2;
-            if (ves == 1) checkBox6.Hide();
+            ves=!ves;
+            if (ves) checkBox6.Hide();
             else checkBox6.Show();
         }
 

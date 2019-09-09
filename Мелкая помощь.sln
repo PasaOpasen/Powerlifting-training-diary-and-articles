@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Контроль прогр
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMdator", "RMdator\RMdator.csproj", "{94D98531-DCB1-4C0C-8190-238C89DC1492}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Библиотека графики", "..\Code\Библиотека графики\Библиотека графики.csproj", "{CE3C0ED7-208C-4043-89A9-19E93F1E2E46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE3C0ED7-208C-4043-89A9-19E93F1E2E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE3C0ED7-208C-4043-89A9-19E93F1E2E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE3C0ED7-208C-4043-89A9-19E93F1E2E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE3C0ED7-208C-4043-89A9-19E93F1E2E46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

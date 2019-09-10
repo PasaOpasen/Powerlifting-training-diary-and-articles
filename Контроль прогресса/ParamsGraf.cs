@@ -17,8 +17,6 @@ namespace Контроль_прогресса
         public ParamsGraf()
         {
             InitializeComponent();
-            radioButton1.Checked = true;
-            radioButton4.Checked = true;
             checkBox1.Checked = true;
             checkBox2.Checked = true;
             checkBox3.Checked = true;
@@ -31,14 +29,6 @@ namespace Контроль_прогресса
             groupBox1.BackColor = col;
             for (int i = 1; i <= 2; i++)
                 this.Controls["groupBox" + i.ToString()].BackColor = col;
-            col = Color.Transparent;
-            for (int i = 1; i <= 7; i++)
-                try { groupBox1.Controls["checkBox" + i.ToString()].BackColor = col; }
-                catch { groupBox2.Controls["checkBox" + i.ToString()].BackColor = col; }
-            for (int i = 1; i <= 4; i++)
-                try { groupBox1.Controls["radioButton" + i.ToString()].BackColor = col; }
-                catch { groupBox2.Controls["radioButton" + i.ToString()].BackColor = col; }
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -181,20 +171,59 @@ namespace Контроль_прогресса
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            Program.F1.GetMAssFromFile();
+            Program.FileChooseByRadioButton2(ref radioButton1, ref radioButton2);
         }
 
-        bool ves = false;
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            ves=!ves;
-            if (ves) checkBox6.Hide();
-            else checkBox6.Show();
+            checkBox6.Hide();
         }
 
         private void Form3_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            checkBox6.Show();
+        }
+
+        private void CorrectShowOrHide()
+        {
+            if (checkBox1.Checked || checkBox2.Checked || checkBox3.Checked || checkBox4.Checked)
+                checkBox7.Show();
+            else
+                checkBox7.Hide();
+        }
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
+        }
+
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            CorrectShowOrHide();
         }
     }
 }

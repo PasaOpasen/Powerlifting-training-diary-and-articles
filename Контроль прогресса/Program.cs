@@ -39,5 +39,18 @@ namespace Контроль_прогресса
 
             Application.Run(F1);
         }
+
+        public static void FileChooseByRadioButton2(ref RadioButton radioButton1,ref RadioButton radioButton2)
+        {
+            if (radioButton2.Checked)
+            {
+                bool b = Program.F1.GetMAssFromFile();
+                if (!b)
+                {
+                    Program.F1.GetMass();
+                    radioButton1.Checked = true;
+                }
+            }
+        }
     }
 }

@@ -93,15 +93,7 @@ namespace Контроль_прогресса
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton2.Checked)
-            {
-                bool b = Program.F1.GetMAssFromFile();
-                if (!b)
-                {
-                    Program.F1.GetMass();
-                    radioButton1.Checked = true;
-                }
-            }
+            Program.FileChooseByRadioButton2(ref radioButton1, ref radioButton2);
         }
 
         private void button2_Click_1(object sender, EventArgs e)

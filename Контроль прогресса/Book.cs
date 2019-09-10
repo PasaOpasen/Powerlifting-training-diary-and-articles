@@ -93,7 +93,15 @@ namespace Контроль_прогресса
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            Program.F1.GetMAssFromFile();
+            if (radioButton2.Checked)
+            {
+                bool b = Program.F1.GetMAssFromFile();
+                if (!b)
+                {
+                    Program.F1.GetMass();
+                    radioButton1.Checked = true;
+                }
+            }
         }
 
         private void button2_Click_1(object sender, EventArgs e)
@@ -101,6 +109,11 @@ namespace Контроль_прогресса
             listBox1.Items.Clear();
             listmas = Resp(Program.mas.ToArray());
             button1.Show();
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

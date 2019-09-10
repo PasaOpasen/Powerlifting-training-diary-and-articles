@@ -38,6 +38,7 @@ namespace Контроль_прогресса
                  }
              };
         }
+
         public void GetMass()
         {
             Program.filename = Program.F5.textBox1.Text;
@@ -104,8 +105,8 @@ namespace Контроль_прогресса
 
         private void добавитьЗаписьОТренировкеВДневникToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.F2 = new Results();
             GetMass();
+            Program.F2 = new Results();
             Program.F2.ShowDialog();
         }
 

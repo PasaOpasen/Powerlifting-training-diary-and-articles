@@ -33,6 +33,7 @@ namespace Контроль_прогресса
             groupBox7.Hide();
             label20.Hide();
             DownHide();
+            
 
 
             Color col = Color.FromArgb(90, Color.Transparent);
@@ -53,7 +54,6 @@ namespace Контроль_прогресса
             Program.F1.GetMass();
             p = (Program.mas.Count == 0) ? new PowerLift(100, 50, 120, 67, DateTime.Now) : new PowerLift(Program.mas.Last());
 
-            textBox2.Text = textBox4.Text = textBox6.Text = "1";
             textBox8.Text = DateTime.Now.ToString().Split(' ')[0];
             textBox1.Text = p.Press.ToString();
             textBox3.Text = p.Squat.ToString();
@@ -86,22 +86,22 @@ namespace Контроль_прогресса
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             GiveCombVal();
-            if (!checkBox1.Checked) { label6.Hide(); label4.Hide(); label5.Hide(); textBox3.Hide(); textBox4.Hide(); numericUpDown7.Hide(); }
-            else { label6.Show(); label4.Show(); label5.Show(); textBox3.Show(); textBox4.Show(); numericUpDown7.Show(); }
+            if (!checkBox1.Checked) { label6.Hide(); label4.Hide(); label5.Hide(); textBox3.Hide(); numericUpDown7.Hide(); }
+            else { label6.Show(); label4.Show(); label5.Show(); textBox3.Show(); numericUpDown7.Show(); }
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             GiveCombVal();
-            if (!checkBox2.Checked) { label1.Hide(); label3.Hide(); label2.Hide(); textBox1.Hide(); textBox2.Hide(); numericUpDown6.Hide(); }
-            else { label1.Show(); label3.Show(); label2.Show(); textBox1.Show(); textBox2.Show(); numericUpDown6.Show(); }
+            if (!checkBox2.Checked) { label1.Hide(); label3.Hide(); label2.Hide(); textBox1.Hide();  numericUpDown6.Hide(); }
+            else { label1.Show(); label3.Show(); label2.Show(); textBox1.Show(); numericUpDown6.Show(); }
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
             GiveCombVal();
-            if (!checkBox3.Checked) { label9.Hide(); label7.Hide(); label8.Hide(); textBox5.Hide(); textBox6.Hide(); numericUpDown8.Hide(); }
-            else { label9.Show(); label7.Show(); label8.Show(); textBox5.Show(); textBox6.Show(); numericUpDown8.Show(); }
+            if (!checkBox3.Checked) { label9.Hide(); label7.Hide(); label8.Hide(); textBox5.Hide(); numericUpDown8.Hide(); }
+            else { label9.Show(); label7.Show(); label8.Show(); textBox5.Show();  numericUpDown8.Show(); }
         }
 
         private void label13_Click(object sender, EventArgs e)
@@ -111,9 +111,15 @@ namespace Контроль_прогресса
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            bool b = Program.F1.GetMAssFromFile();
-            if (!b)
-                radioButton1.Checked = true;
+            if (radioButton2.Checked)
+            {
+                bool b = Program.F1.GetMAssFromFile();
+                if (!b)
+                {
+                    Program.F1.GetMass();
+                    radioButton1.Checked = true;
+                }
+            }
         }
 
         private void label20_Click(object sender, EventArgs e)
@@ -168,6 +174,7 @@ namespace Контроль_прогресса
             numericUpDown4.Show();
             label15.Show();
             numericUpDown5.Show();
+            menuStrip1.Show();
         }
         private void DownHide()
         {
@@ -177,6 +184,7 @@ namespace Контроль_прогресса
             numericUpDown4.Hide();
             label15.Hide();
             numericUpDown5.Hide();
+            menuStrip1.Hide();
         }
         private void UpShow()
         {

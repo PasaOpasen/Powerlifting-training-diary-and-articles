@@ -58,7 +58,11 @@ namespace Контроль_прогресса
             }
             finally { s.Dispose(); }
         }
-        public void GetMAssFromFile()
+        /// <summary>
+        /// Задать массив из файла, сперва выбрав файл
+        /// </summary>
+        /// <returns></returns>
+        public bool GetMAssFromFile()
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -75,7 +79,9 @@ namespace Контроль_прогресса
                 }
 
                 sr.Close();
+                return true;
             }
+            return false;
         }
 
         private void button3_Click(object sender, EventArgs e)

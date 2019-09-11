@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using Библиотека_классов;
+using МатКлассы;
+using System.Diagnostics;
+
 
 namespace Контроль_прогресса
 {
@@ -92,12 +95,6 @@ namespace Контроль_прогресса
             Program.F3.ShowDialog();
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            this.linkLabel1.LinkVisited = true;
-            System.Diagnostics.Process.Start("https://vk.com/romandisease");
-        }
-
         private void определитьДневникПоУмолчаниюToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Program.F5.ShowDialog();
@@ -143,7 +140,24 @@ namespace Контроль_прогресса
 
         private void написатьАвторуToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://vk.me/romandisease");
+            string[] st = new string[]
+            {
+                "GitHub:\t https://github.com/PasaOpasen",
+                "Gmail:\t qtckpuhdsa@gmail.com",
+                "Discord:\t Пася Опасен#3065",
+                "Telegram:\t @PasaOpasen",
+                "Steam:\t https://steamcommunity.com/id/PasaOpasen",
+                "VK:\t https://vk.com/roman_disease",
+                "Instagram: ofdegradation",
+                "PornHub:\t https://rt.pornhub.com/users/demetrypaskal",
+                "",
+                "Открыть контакты через файл (вместе с ссылками)?"
+            };
+            if (MessageBox.Show(Expendator.StringArrayToString(st), "Контакты", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                Expendator.WriteInFile("Контакты автора.txt", st,2);
+                Process.Start("Контакты автора.txt");
+            }
         }
 
         private void скачатьМатериалыПоПауэрлифтингуToolStripMenuItem_Click(object sender, EventArgs e)

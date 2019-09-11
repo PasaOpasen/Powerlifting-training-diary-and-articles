@@ -29,19 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series49 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series50 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series51 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series52 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series53 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series54 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button3 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.действияСДневникамиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,11 +47,11 @@
             this.добавитьЗаписьОТренировкеВДневникToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.открытьДневникToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.начатьНовыйДневникToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.написатьАвторуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button6 = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.button7 = new System.Windows.Forms.Button();
-            this.написатьАвторуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -62,70 +60,70 @@
             // chart1
             // 
             this.chart1.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.DashDotDot;
-            chartArea9.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea9);
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend9.Name = "Legend1";
-            this.chart1.Legends.Add(legend9);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
             this.chart1.Location = new System.Drawing.Point(0, 24);
             this.chart1.Name = "chart1";
             this.chart1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            series49.BorderWidth = 2;
-            series49.ChartArea = "ChartArea1";
-            series49.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series49.Color = System.Drawing.Color.Blue;
-            series49.Legend = "Legend1";
-            series49.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series49.Name = "Присед";
-            series49.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series50.BorderWidth = 2;
-            series50.ChartArea = "ChartArea1";
-            series50.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series50.Color = System.Drawing.Color.Lime;
-            series50.Legend = "Legend1";
-            series50.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series50.Name = "Жим";
-            series50.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series51.BorderWidth = 2;
-            series51.ChartArea = "ChartArea1";
-            series51.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series51.Color = System.Drawing.Color.Red;
-            series51.Legend = "Legend1";
-            series51.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series51.Name = "Тяга";
-            series51.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series52.BorderWidth = 3;
-            series52.ChartArea = "ChartArea1";
-            series52.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series52.Color = System.Drawing.Color.Black;
-            series52.Legend = "Legend1";
-            series52.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series52.Name = "Сумма";
-            series52.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series53.BorderWidth = 2;
-            series53.ChartArea = "ChartArea1";
-            series53.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series53.Color = System.Drawing.Color.Green;
-            series53.Legend = "Legend1";
-            series53.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series53.Name = "Тоннаж";
-            series53.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            series53.YValuesPerPoint = 2;
-            series54.BorderWidth = 3;
-            series54.ChartArea = "ChartArea1";
-            series54.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series54.Color = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            series54.Legend = "Legend1";
-            series54.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
-            series54.Name = "Собственный вес";
-            series54.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
-            this.chart1.Series.Add(series49);
-            this.chart1.Series.Add(series50);
-            this.chart1.Series.Add(series51);
-            this.chart1.Series.Add(series52);
-            this.chart1.Series.Add(series53);
-            this.chart1.Series.Add(series54);
-            this.chart1.Size = new System.Drawing.Size(850, 572);
+            series7.BorderWidth = 2;
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Color = System.Drawing.Color.Blue;
+            series7.Legend = "Legend1";
+            series7.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series7.Name = "Присед";
+            series7.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series8.BorderWidth = 2;
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Color = System.Drawing.Color.Lime;
+            series8.Legend = "Legend1";
+            series8.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series8.Name = "Жим";
+            series8.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series9.BorderWidth = 2;
+            series9.ChartArea = "ChartArea1";
+            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series9.Color = System.Drawing.Color.Red;
+            series9.Legend = "Legend1";
+            series9.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series9.Name = "Тяга";
+            series9.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series10.BorderWidth = 3;
+            series10.ChartArea = "ChartArea1";
+            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series10.Color = System.Drawing.Color.Black;
+            series10.Legend = "Legend1";
+            series10.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series10.Name = "Сумма";
+            series10.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series11.BorderWidth = 2;
+            series11.ChartArea = "ChartArea1";
+            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series11.Color = System.Drawing.Color.Green;
+            series11.Legend = "Legend1";
+            series11.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series11.Name = "Тоннаж";
+            series11.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            series11.YValuesPerPoint = 2;
+            series12.BorderWidth = 3;
+            series12.ChartArea = "ChartArea1";
+            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series12.Color = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            series12.Legend = "Legend1";
+            series12.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+            series12.Name = "Собственный вес";
+            series12.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Date;
+            this.chart1.Series.Add(series7);
+            this.chart1.Series.Add(series8);
+            this.chart1.Series.Add(series9);
+            this.chart1.Series.Add(series10);
+            this.chart1.Series.Add(series11);
+            this.chart1.Series.Add(series12);
+            this.chart1.Size = new System.Drawing.Size(850, 405);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -134,7 +132,7 @@
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(715, 517);
+            this.button3.Location = new System.Drawing.Point(715, 350);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(122, 67);
             this.button3.TabIndex = 3;
@@ -142,34 +140,12 @@
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 497);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(549, 19);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Замечания и советы по улучшению дневника принимаю по адресу ";
-            // 
-            // linkLabel1
-            // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.BackColor = System.Drawing.Color.White;
-            this.linkLabel1.Location = new System.Drawing.Point(412, 524);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(252, 19);
-            this.linkLabel1.TabIndex = 6;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "https://vk.com/romandisease";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(33, 132);
+            this.pictureBox1.Location = new System.Drawing.Point(26, 74);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(631, 290);
+            this.pictureBox1.Size = new System.Drawing.Size(632, 290);
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
             // 
@@ -226,12 +202,26 @@
             this.начатьНовыйДневникToolStripMenuItem.Text = "Начать новый дневник";
             this.начатьНовыйДневникToolStripMenuItem.Click += new System.EventHandler(this.начатьНовыйДневникToolStripMenuItem_Click);
             // 
+            // написатьАвторуToolStripMenuItem
+            // 
+            this.написатьАвторуToolStripMenuItem.Name = "написатьАвторуToolStripMenuItem";
+            this.написатьАвторуToolStripMenuItem.Size = new System.Drawing.Size(111, 20);
+            this.написатьАвторуToolStripMenuItem.Text = "Контакты автора";
+            this.написатьАвторуToolStripMenuItem.Click += new System.EventHandler(this.написатьАвторуToolStripMenuItem_Click);
+            // 
+            // скачатьМатериалыПоПауэрлифтингуToolStripMenuItem
+            // 
+            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Name = "скачатьМатериалыПоПауэрлифтингуToolStripMenuItem";
+            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Size = new System.Drawing.Size(233, 20);
+            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Text = "Скачать материалы по пауэрлифтингу";
+            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Click += new System.EventHandler(this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem_Click);
+            // 
             // button6
             // 
             this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button6.Location = new System.Drawing.Point(715, 442);
+            this.button6.Location = new System.Drawing.Point(715, 275);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(121, 57);
             this.button6.TabIndex = 12;
@@ -244,7 +234,7 @@
             this.button7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(715, 349);
+            this.button7.Location = new System.Drawing.Point(715, 182);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(123, 73);
             this.button7.TabIndex = 13;
@@ -252,30 +242,14 @@
             this.button7.UseVisualStyleBackColor = false;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
-            // написатьАвторуToolStripMenuItem
-            // 
-            this.написатьАвторуToolStripMenuItem.Name = "написатьАвторуToolStripMenuItem";
-            this.написатьАвторуToolStripMenuItem.Size = new System.Drawing.Size(111, 20);
-            this.написатьАвторуToolStripMenuItem.Text = "Написать автору";
-            this.написатьАвторуToolStripMenuItem.Click += new System.EventHandler(this.написатьАвторуToolStripMenuItem_Click);
-            // 
-            // скачатьМатериалыПоПауэрлифтингуToolStripMenuItem
-            // 
-            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Name = "скачатьМатериалыПоПауэрлифтингуToolStripMenuItem";
-            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Size = new System.Drawing.Size(233, 20);
-            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Text = "Скачать материалы по пауэрлифтингу";
-            this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem.Click += new System.EventHandler(this.скачатьМатериалыПоПауэрлифтингуToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(850, 596);
+            this.ClientSize = new System.Drawing.Size(850, 429);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.linkLabel1);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.menuStrip1);
@@ -284,6 +258,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Контроль прогресса по трём базовым движениям. Дм. ПА.";
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -297,8 +272,6 @@
         #endregion
         private System.Windows.Forms.Button button3;
         public System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.LinkLabel linkLabel1;
         public System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem действияСДневникамиToolStripMenuItem;

@@ -58,8 +58,6 @@ namespace Контроль_прогресса
                     try { ShowOtn(); }
                     catch { ShowAbsolete(); }
 
-                Program.F1.label1.Hide();
-                Program.F1.linkLabel1.Hide();
                 Program.F1.pictureBox1.Hide();
 
                 this.Dispose();

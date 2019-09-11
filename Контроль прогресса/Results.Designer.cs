@@ -943,7 +943,6 @@
         private System.Windows.Forms.TextBox textBox13;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.NumericUpDown numericUpDown5;
         private System.Windows.Forms.NumericUpDown numericUpDown6;
         private System.Windows.Forms.NumericUpDown numericUpDown7;
         private System.Windows.Forms.NumericUpDown numericUpDown8;
@@ -969,5 +968,6 @@
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.GroupBox groupBox8;
+        public System.Windows.Forms.NumericUpDown numericUpDown5;
     }
 }

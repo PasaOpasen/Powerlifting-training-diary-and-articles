@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using МатКлассы;
 
 namespace Контроль_прогресса
 {
@@ -15,17 +16,70 @@ namespace Контроль_прогресса
         public Speed()
         {
             InitializeComponent();
+            button1.Hide();
+
+            int getlen(TextBox t) => t.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            void setColors()
+            {
+                if (len1 != len)
+                    label5.ForeColor = Color.Red;
+                else
+                    label5.ForeColor = Color.Green;
+
+                if (len2 != len)
+                    label6.ForeColor = Color.Red;
+                else
+                    label6.ForeColor = Color.Green;
+
+                if (len > 0 && len == len1 && len == len2)
+                    button1.Show();
+                else
+                    button1.Hide();
+            }
+
+
+            textBox1.TextChanged += (object o, EventArgs e) =>
+              {
+                  len = getlen(textBox1);
+                  label4.Text = len.ToString();
+
+                  if (len == 0)
+                      textBox3.Text = "";
+                  else
+                      textBox3.Text = Expendator.Max(Expendator.Repeat(1, len), textBox3.Text.ToIntMas()).ToStringFromExp();
+
+                  setColors();
+              };
+            textBox2.TextChanged += (object o, EventArgs e) =>
+            {
+                len1 = getlen(textBox2);
+                label5.Text = len1.ToString();
+
+                setColors();
+            };
+            textBox3.TextChanged += (object o, EventArgs e) =>
+            {
+                len2 = getlen(textBox3);
+                label6.Text = len2.ToString();
+
+                setColors();
+            };
+
         }
+
+        int len = 0, len1 = 0, len2 = 0;
 
         private void button1_Click(object sender, EventArgs e)
         {
             string[] w = textBox1.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string[] st = textBox2.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] sets = textBox3.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < w.Length; i++)
             {
                 Program.F2.textBox10.Text = w[i];
                 Program.F2.numericUpDown4.Value = Convert.ToInt32(st[i]);
+                Program.F2.numericUpDown5.Value = Convert.ToInt32(sets[i]);
                 Program.F2.button3_Click(new object(), new EventArgs());
             }
 

@@ -11,6 +11,7 @@ using System.IO;
 using Библиотека_классов;
 using МатКлассы;
 using System.Diagnostics;
+using JR.Utils.GUI.Forms;
 
 
 namespace Контроль_прогресса
@@ -145,19 +146,14 @@ namespace Контроль_прогресса
                 "GitHub:\t https://github.com/PasaOpasen",
                 "Gmail:\t qtckpuhdsa@gmail.com",
                 "Discord:\t Пася Опасен#3065",
+                "Instagram: ofdegradation",
                 "Telegram:\t @PasaOpasen",
                 "Steam:\t https://steamcommunity.com/id/PasaOpasen",
                 "VK:\t https://vk.com/roman_disease",
-                "Instagram: ofdegradation",
-                "PornHub:\t https://rt.pornhub.com/users/demetrypaskal",
-                "",
-                "Открыть контакты через файл (вместе с ссылками)?"
+                "PornHub: https://rt.pornhub.com/users/demetrypaskal"
             };
-            if (MessageBox.Show(Expendator.StringArrayToString(st), "Контакты", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-            {
-                Expendator.WriteInFile("Контакты автора.txt", st,2);
-                Process.Start("Контакты автора.txt");
-            }
+            FlexibleMessageBox.MAX_WIDTH_FACTOR = 2;
+            FlexibleMessageBox.Show(Expendator.StringArrayToString(st), "Контакты", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void скачатьМатериалыПоПауэрлифтингуToolStripMenuItem_Click(object sender, EventArgs e)

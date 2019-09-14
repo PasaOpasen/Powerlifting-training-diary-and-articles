@@ -35,7 +35,8 @@ namespace RMdator
             list.Add("3D (x,y,r) ="); boollist.Add(true);
             list.Add("x ="); boollist.Add(true);
             list.Add("center = "); boollist.Add(true);
-            list.Add("3D ur, uz(title , (x,y,r)"); boollist.Add(true);
+            list.Add("3D ur, uz(title ,"); boollist.Add(true);
+            list.Add("OnePoint("); boollist.Add(true);
             list.Add("urAbs"); boollist.Add(true);
             list.Add("urIm"); boollist.Add(true);
             list.Add("urRe"); boollist.Add(true);
@@ -44,6 +45,7 @@ namespace RMdator
             list.Add("uzRe"); boollist.Add(true);
         
             list.Add("uxw circle"); boollist.Add(false);
+            list.Add("f(w) from"); boollist.Add(false);
         }
 
         private void button1_Click(object sender, EventArgs e)

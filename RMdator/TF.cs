@@ -18,16 +18,11 @@ namespace RMdator
             InitializeComponent();
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             if (textBox1.Text.Length > 0)
             {
-form.checkedListBox1.Items.Add(textBox1.Text,true);
+                form.checkedListBox1.Items.Add(textBox1.Text,true);
                 form.list.Add(textBox1.Text);
             }
             

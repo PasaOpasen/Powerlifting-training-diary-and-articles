@@ -36,6 +36,13 @@ namespace RMdator
             list.Add("x ="); boollist.Add(true);
             list.Add("center = "); boollist.Add(true);
             list.Add("3D ur, uz(title , (x,y,r)"); boollist.Add(true);
+            list.Add("urAbs"); boollist.Add(true);
+            list.Add("urIm"); boollist.Add(true);
+            list.Add("urRe"); boollist.Add(true);
+            list.Add("uzAbs"); boollist.Add(true);
+            list.Add("uzIm"); boollist.Add(true);
+            list.Add("uzRe"); boollist.Add(true);
+        
             list.Add("uxw circle"); boollist.Add(false);
         }
 
@@ -96,6 +103,11 @@ namespace RMdator
             }
             );
             this.Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            new TF().ShowDialog();
         }
     }
 }

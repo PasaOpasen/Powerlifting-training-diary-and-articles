@@ -46,6 +46,7 @@ namespace RMdator
         
             list.Add("uxw circle"); boollist.Add(false);
             list.Add("f(w) from"); boollist.Add(false);
+            list.Add("Array"); boollist.Add(false);
         }
 
         private void button1_Click(object sender, EventArgs e)

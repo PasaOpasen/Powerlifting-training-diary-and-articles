@@ -43,10 +43,15 @@ namespace RMdator
             list.Add("uzAbs"); boollist.Add(true);
             list.Add("uzIm"); boollist.Add(true);
             list.Add("uzRe"); boollist.Add(true);
-        
+
             list.Add("uxw circle"); boollist.Add(false);
             list.Add("f(w) from"); boollist.Add(false);
             list.Add("Array"); boollist.Add(false);
+
+            foreach (char s in "ABCDEFGH")
+            {
+               list.Add($"{s}to"); boollist.Add(true);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

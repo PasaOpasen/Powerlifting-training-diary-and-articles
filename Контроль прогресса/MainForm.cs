@@ -41,6 +41,18 @@ namespace Контроль_прогресса
                              w.WriteLine(Program.filename);
                  }
              };
+
+            CreateDefaultFile();
+        }
+
+        public void CreateDefaultFile()
+        {
+            if(!File.Exists(Program.filename))
+            {
+               // File.Create(Program.filename);
+                StreamWriter f = new StreamWriter(Program.filename);f.Close();
+                MessageBox.Show($"Похоже, вы в первый раз открыли эту программу! Для вас автоматически создан дневник по умолчанию по адресу \"{Path.Combine(Environment.CurrentDirectory, Program.filename)}\". Если вы хотите изменить дневник или выбрать существующий, это можно сделать в программе", "Создан дневник по умолчанию", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         public void GetMass()
@@ -159,6 +171,7 @@ namespace Контроль_прогресса
         private void скачатьМатериалыПоПауэрлифтингуToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://yadi.sk/d/xTukkNXI3Zrq8y");
+            System.Diagnostics.Process.Start("https://github.com/PasaOpasen/LittleHelps/tree/master/Материалы%20по%20пауэрлифтингу%20и%20не%20только");
         }
     }
 }

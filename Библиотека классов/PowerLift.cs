@@ -77,11 +77,24 @@ namespace Библиотека_классов
 
         public PowerLift(Workout w, double val, int set, DateTime t) : this(w, val, set) { this.Time = t; }
 
+        /// <summary>
+        /// Вычисляет повторный максимум по данным val * set
+        /// </summary>
+        /// <param name="val"></param>
+        /// <param name="set"></param>
+        /// <returns></returns>
         public static double PM(double val, int set)
         {
             if (set <= 1) return val;
+            //tex: $\max = result \cdot (1+count \cdot 0.0333)$
             return val * (1.0 + set * coef);
         }
+        /// <summary>
+        /// Вычисляет наибольший вес по повторному максимуму и нужному числу повторений
+        /// </summary>
+        /// <param name="PM"></param>
+        /// <param name="set"></param>
+        /// <returns></returns>
         public static double XPM(double PM, int set)
         {
             if (set <= 1) return PM;
@@ -160,8 +173,12 @@ namespace Библиотека_классов
             res[0] = new PowerLift(p[0]);
             for (int i = 1; i < p.Length; i++)
             {
-                res[i] = new PowerLift(Math.Max(res[i - 1].Squat, p[i].Squat), Math.Max(res[i - 1].Press, p[i].Press), Math.Max(res[i - 1].Lift, p[i].Lift), Math.Max(p[i - 1].Weight, p[i].Weight), p[i].Time);
-                res[i].Tonnage = p[i].Tonnage;
+                ref var rs = ref res[i];
+                ref var rs0 = ref res[i-1];
+                ref var pp = ref p[i];
+
+                rs = new PowerLift(Math.Max(rs0.Squat, pp.Squat), Math.Max(rs0.Press, pp.Press), Math.Max(rs0.Lift, pp.Lift), Math.Max(p[i - 1].Weight, pp.Weight), pp.Time);
+                rs.Tonnage = pp.Tonnage;
             }
             return res.Where(n => n.Tonnage > 0).ToArray();
         }

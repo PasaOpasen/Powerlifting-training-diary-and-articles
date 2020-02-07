@@ -104,8 +104,12 @@ namespace Контроль_прогресса
         private void button3_Click(object sender, EventArgs e)
         {
             GetMass();
+            if (Program.mas.Count > 1)
+            {
             Program.F3 = new ParamsGraf();
             Program.F3.ShowDialog();
+            }
+            else MessageBox.Show("Невозможно вывести график при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл", "Мало данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void определитьДневникПоУмолчаниюToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,6 +143,8 @@ namespace Контроль_прогресса
         private void button7_Click(object sender, EventArgs e)
         {
             GetMass();
+            if (Program.mas.Count > 0)
+            {
             Program.mas.Sort();
             Program.masn = PowerLift.Correct(Program.mas.ToArray());
             PowerLift.Correct(Program.masn);
@@ -149,6 +155,8 @@ namespace Контроль_прогресса
                 + Environment.NewLine + $"Отношение приседа/жима/тяги к собственному весу: \t{p.SquatWeight}/{p.PressWeight}/{p.LiftWeight}.";
 
             MessageBox.Show(text, "Максимальные результаты по дневнику", MessageBoxButtons.OK);
+            }
+            else MessageBox.Show("Невозможно посчитать статистики при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл", "Файл пуст", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void написатьАвторуToolStripMenuItem_Click(object sender, EventArgs e)

@@ -40,29 +40,26 @@ namespace Контроль_прогресса
             }
 
             //if (radioButton2.Checked) Program.F1.GetMAssFromFile();
-            if (Program.mas.Count > 1)
-            {
-                Program.mas.Sort();
-                if (checkBox7.Checked) Program.masn = PowerLift.Correct(Program.mas.ToArray());
-                else Program.masn = Program.mas.ToArray();
 
-                if (checkBox1.Checked) Program.F1.chart1.Series[0].IsVisibleInLegend = true;
-                if (checkBox2.Checked) Program.F1.chart1.Series[1].IsVisibleInLegend = true;
-                if (checkBox3.Checked) Program.F1.chart1.Series[2].IsVisibleInLegend = true;
-                if (checkBox4.Checked) Program.F1.chart1.Series[3].IsVisibleInLegend = true;
-                if (checkBox5.Checked) Program.F1.chart1.Series[4].IsVisibleInLegend = true;
-                if (checkBox6.Checked) Program.F1.chart1.Series[5].IsVisibleInLegend = true;
+            Program.mas.Sort();
+            if (checkBox7.Checked) Program.masn = PowerLift.Correct(Program.mas.ToArray());
+            else Program.masn = Program.mas.ToArray();
 
-                if (radioButton4.Checked) { ShowAbsolete(); }
-                else
-                    try { ShowOtn(); }
-                    catch { ShowAbsolete(); }
+            if (checkBox1.Checked) Program.F1.chart1.Series[0].IsVisibleInLegend = true;
+            if (checkBox2.Checked) Program.F1.chart1.Series[1].IsVisibleInLegend = true;
+            if (checkBox3.Checked) Program.F1.chart1.Series[2].IsVisibleInLegend = true;
+            if (checkBox4.Checked) Program.F1.chart1.Series[3].IsVisibleInLegend = true;
+            if (checkBox5.Checked) Program.F1.chart1.Series[4].IsVisibleInLegend = true;
+            if (checkBox6.Checked) Program.F1.chart1.Series[5].IsVisibleInLegend = true;
 
-                Program.F1.pictureBox1.Hide();
+            if (radioButton4.Checked) { ShowAbsolete(); }
+            else
+                try { ShowOtn(); }
+                catch { ShowAbsolete(); }
 
-                this.Dispose();
-            }
-            else MessageBox.Show("Невозможно вывести график при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл.");
+            Program.F1.pictureBox1.Hide();
+
+            this.Dispose();
         }
 
         private void FindMin()
@@ -85,7 +82,7 @@ namespace Контроль_прогресса
             }
 
             list.RemoveAll(n => n == 0);
-            
+
             double t = 0.05;
             Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() * (1 - t);
             Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() * (1 + t);

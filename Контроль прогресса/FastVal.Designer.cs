@@ -42,6 +42,7 @@
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
@@ -156,7 +157,7 @@
             // 
             this.numericUpDown2.Location = new System.Drawing.Point(229, 87);
             this.numericUpDown2.Maximum = new decimal(new int[] {
-            11,
+            25,
             0,
             0,
             0});
@@ -196,6 +197,18 @@
             this.label9.TabIndex = 12;
             this.label9.Text = "Узнать";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.BackColor = System.Drawing.Color.Red;
+            this.label10.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label10.ForeColor = System.Drawing.Color.White;
+            this.label10.Location = new System.Drawing.Point(14, 186);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(476, 15);
+            this.label10.TabIndex = 13;
+            this.label10.Text = "Для значений больше 10 формула может давать неправильные результаты";
+            // 
             // FastVal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
@@ -203,7 +216,8 @@
             this.BackColor = System.Drawing.Color.DarkSeaGreen;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(507, 196);
+            this.ClientSize = new System.Drawing.Size(507, 210);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.numericUpDown2);
@@ -245,5 +259,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDown2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
     }
 }

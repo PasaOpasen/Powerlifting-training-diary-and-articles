@@ -33,14 +33,18 @@ namespace Контроль_прогресса
 
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
-            numericUpDown1_ValueChanged(sender, e);
+            SetLabels();
         }
 
         private void SetLabels()
-        {
+        {          
             double weight = Convert.ToDouble(textBox1.Text);
             int set = (int)numericUpDown1.Value;
             int nset = (int)numericUpDown2.Value;
+
+            if (nset > 10) label10.Show();
+            else label10.Hide();
+
             double tmp = PM(weight, set);
             string txt = Math.Round(XPM(tmp, nset), 2).ToString();
             label8.Text = txt;

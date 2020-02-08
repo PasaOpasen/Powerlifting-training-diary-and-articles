@@ -8,11 +8,35 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>% mutate(CountGroup=cut(Count,breaks = c(1,4,8,12,15,25)))
-allrows=1:11
-
+data %<>% mutate(CountGroup=cut(Count,breaks = c(1,3,6,9,12,20,30)))
+allrows=seq(data)
 
 summary(data)
+
+
+obj=ggplot(data %>% select(-Date,-Mail))+theme_bw()
+obj+geom_bar(aes(x=CountGroup))
+obj+geom_bar(aes(x=Body))
+obj+geom_point(aes(x=Weight,y=High,col=Body,shape=Experience),size=5)
+obj+geom_boxplot(aes(x=Type,y=SM))
+
+
+getPIE=function(vec,main=""){
+  ln=length(levels(vec))
+  x=numeric(ln)
+  ns=character(ln)
+  for(i in seq(ln)){
+    x[i]=sum(vec==levels(vec)[i])/length(vec)
+    ns[i]=paste0(levels(vec)[i]," (",round(x[i]*100,2),"%)")
+  }
+  pie(x=x,labels=ns,main=main)
+}
+
+getPIE(data$Body)
+getPIE(data$CountGroup)
+getPIE(data$Experience)
+getPIE(factor(data$Count))
+
 
 Error=function(target,weight) (target-weight)^2 %>% sum()
 Show=function(vals,rows){
@@ -22,25 +46,34 @@ Show=function(vals,rows){
 
 Show(data$Val*(1+0.0333*data$Count),allrows)
 
+md=nls(SM~Val*(est+coef*Count),
+       data=data,
+       start = list(est=1.0,coef=0.0333))
+summary(md)
+Show(predict(md,data[c(3:4,9)]),allrows)
+
+md=nls(SM~Val*(1+coef*Count),
+       data=data,
+       start = list(coef=0.0333))
+summary(md)
+Show(predict(md,data[3:4]),allrows)
+
 
 md=lm(SM~Val:Count+Val-1,data)
 summary(md)
 Show(predict(md,data[c(3:4,9,13)]),allrows)
 
 
-md=nls(SM~sqrt(Val)*(est+coef*Count),
-       data=data,
-       start = list(est=1.0,coef=0.0333))
-summary(md)
-Show(predict(md,data[c(3:4,9)]),allrows)
+p=prcomp(~Val+Count+High+Weight,data)
+summary(p)
+
+pr=predict(md,data[c(3:4,9,13)])
+obj+
+  geom_line(aes(x=Val,y=pr),size=1)+
+  geom_point(aes(x=Val,y=pr),size=3)+
+  geom_point(aes(x=Val,y=SM,col=Body,shape=Type),size=4)+theme(legend.position = c(0.85,0.3))
 
 
-md=nls(SM~Val*(1+coef*Count),
-       data=data,
-       start = list(coef=0.0333))
-summary(md)
-
-Show(predict(md,data[3:4]),allrows)
 
 
 

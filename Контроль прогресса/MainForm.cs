@@ -47,10 +47,10 @@ namespace Контроль_прогресса
 
         public void CreateDefaultFile()
         {
-            if(!File.Exists(Program.filename))
+            if (!File.Exists(Program.filename))
             {
-               // File.Create(Program.filename);
-                StreamWriter f = new StreamWriter(Program.filename);f.Close();
+                // File.Create(Program.filename);
+                StreamWriter f = new StreamWriter(Program.filename); f.Close();
                 MessageBox.Show($"Похоже, вы в первый раз открыли эту программу! Для вас автоматически создан дневник по умолчанию по адресу \"{Path.Combine(Environment.CurrentDirectory, Program.filename)}\". Если вы хотите изменить дневник или выбрать существующий, это можно сделать в программе", "Создан дневник по умолчанию", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -106,8 +106,8 @@ namespace Контроль_прогресса
             GetMass();
             if (Program.mas.Count > 1)
             {
-            Program.F3 = new ParamsGraf();
-            Program.F3.ShowDialog();
+                Program.F3 = new ParamsGraf();
+                Program.F3.ShowDialog();
             }
             else MessageBox.Show("Невозможно вывести график при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл", "Мало данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -145,16 +145,15 @@ namespace Контроль_прогресса
             GetMass();
             if (Program.mas.Count > 0)
             {
-            Program.mas.Sort();
-            Program.masn = PowerLift.Correct(Program.mas.ToArray());
-            PowerLift.Correct(Program.masn);
-            PowerLift p = Program.masn.Last();
-            string text = $"Присед = {p.Squat}; жим = {p.Press}; тяга = {p.Lift}; последний вес = {p.Weight}.{Environment.NewLine}Последняя тренировка: \t{p.Time.Date.ToString().Substring(0, 10)}."
-                + Environment.NewLine + $"Всего тренировок: \t{Program.masn.Length}"
-                + Environment.NewLine + $"Сумма = {p.Sum}, процентное соотношение присед-жим-тяга от суммы: \t{p.SquatPercent}-{p.PressPercent}-{p.LiftPercent}."
-                + Environment.NewLine + $"Отношение приседа/жима/тяги к собственному весу: \t{p.SquatWeight}/{p.PressWeight}/{p.LiftWeight}.";
+                Program.mas.Sort();
+                Program.masn = PowerLift.Correct(Program.mas.ToArray());
+                PowerLift p = Program.masn.Last();
+                string text = $"Присед = {p.Squat};  жим = {p.Press};  тяга = {p.Lift};  последний вес = {p.Weight}.{Environment.NewLine}Последняя тренировка: \t{p.Time.Date.ToString().Substring(0, 10)}."
+                    + Environment.NewLine + $"Всего тренировок: \t{Program.masn.Length}"
+                    + Environment.NewLine + $"Сумма = {p.Sum}, процентное соотношение присед-жим-тяга от суммы:  {p.SquatPercent}-{p.PressPercent}-{p.LiftPercent}."
+                    + Environment.NewLine + $"Отношение приседа/жима/тяги к собственному весу:  {p.SquatWeight}/{p.PressWeight}/{p.LiftWeight}.";
 
-            MessageBox.Show(text, "Максимальные результаты по дневнику", MessageBoxButtons.OK);
+                /*Flexible*/MessageBox.Show(text, "Максимальные результаты по дневнику", MessageBoxButtons.OK);
             }
             else MessageBox.Show("Невозможно посчитать статистики при пустых входных данных! Чтобы отслеживать прогресс, требуется иметь данные хотя бы о двух тренировках! Проверьте, правильно ли выбран файл данных, либо добавьте новые данные в файл", "Файл пуст", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }

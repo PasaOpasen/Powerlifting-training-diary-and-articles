@@ -57,12 +57,13 @@ namespace Контроль_прогресса
                 try { ShowOtn(); }
                 catch { ShowAbsolete(); }
 
+
             Program.F1.pictureBox1.Hide();
 
             this.Dispose();
         }
 
-        private void FindMin()
+        private void FindMinAbsolete()
         {
             var list = new List<double>();
             for (int i = 0; i < Program.masn.Length; i++)
@@ -83,14 +84,54 @@ namespace Контроль_прогресса
 
             list.RemoveAll(n => n == 0);
 
-            double t = 0.05;
-            Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() * (1 - t);
-            Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() * (1 + t);
+            const double t = 0.05;
+            double min = list.Min(), max = list.Max(), range = (max - min) * t;
+
+            //Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() * (1 - t);
+            //Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() * (1 + t);
+
+            Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() - range;
+            Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() + range;
+        }
+        private void FindMinOtn()
+        {
+            var list = new List<double>();
+            double weight;
+            for (int i = 0; i < Program.masn.Length; i++)
+            {
+                weight = Program.masn[i].Weight;
+
+                if (weight != 0)
+                {
+                    if (checkBox1.Checked)
+                        list.Add(Program.masn[i].Squat/weight);
+                    if (checkBox2.Checked)
+                        list.Add(Program.masn[i].Press / weight);
+                    if (checkBox3.Checked)
+                        list.Add(Program.masn[i].Lift / weight);
+                    if (checkBox4.Checked)
+                        list.Add(Program.masn[i].Sum / weight);
+                    if (checkBox5.Checked)
+                        list.Add(Program.masn[i].Tonnage / weight);
+                }
+
+            }
+
+            list.RemoveAll(n => n == 0);
+
+            const double t = 0.05;
+            double min = list.Min(), max = list.Max(), range = (max - min) * t;
+
+            //Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() * (1 - t);
+            //Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() * (1 + t);
+
+            Program.F1.chart1.ChartAreas[0].AxisY.Minimum = list.Min() - range;
+            Program.F1.chart1.ChartAreas[0].AxisY.Maximum = list.Max() + range;
         }
 
         private void ShowAbsolete()
         {
-            FindMin();
+            FindMinAbsolete();
 
             //for(int i=0;i<6;i++)
             //{
@@ -147,18 +188,24 @@ namespace Контроль_прогресса
         }
         private void ShowOtn()
         {
+            FindMinOtn();
+
             if (checkBox1.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Squat > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[0].Points.AddXY(Program.masn[i].Time, Program.masn[i].Squat / Program.masn[i].Weight);
+
             if (checkBox2.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Press > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[1].Points.AddXY(Program.masn[i].Time, Program.masn[i].Press / Program.masn[i].Weight);
+
             if (checkBox3.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Lift > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[2].Points.AddXY(Program.masn[i].Time, Program.masn[i].Lift / Program.masn[i].Weight);
+
             if (checkBox4.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Sum > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[3].Points.AddXY(Program.masn[i].Time, Program.masn[i].Sum / Program.masn[i].Weight);
+
             if (checkBox5.Checked)
                 for (int i = 0; i < Program.masn.Length; i++)
                     if (Program.masn[i].Tonnage > 0 && Program.masn[i].Weight != 0) Program.F1.chart1.Series[4].Points.AddXY(Program.masn[i].Time, Program.masn[i].Tonnage / Program.masn[i].Weight);

@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using МатКлассы;
+using JR.Utils.GUI.Forms;
+
 
 namespace Контроль_прогресса
 {
@@ -68,6 +70,19 @@ namespace Контроль_прогресса
         }
 
         int len = 0, len1 = 0, len2 = 0;
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+            var st = new string[]
+            {
+                "Выражение вида:",
+                "\tВеса: 50 80 100",
+                "\tРазы: 15 10 10",
+                "\tСеты: 1 1 2",
+                "означает 1 подход в 50кг на 15 раз + 1 подход в 80кг на 10 раз + 2 подхода в 100кг на 10 раз"
+            };
+            FlexibleMessageBox.Show(Expendator.StringArrayToString(st), "Пример использования", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {

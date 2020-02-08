@@ -148,6 +148,7 @@
             this.radioButton4.TabIndex = 4;
             this.radioButton4.TabStop = true;
             this.radioButton4.Text = "Абсолютные";
+            this.toolTip1.SetToolTip(this.radioButton4, "Абсолютные значения -- это сами веса");
             this.radioButton4.UseVisualStyleBackColor = true;
             this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
             // 
@@ -159,6 +160,7 @@
             this.radioButton3.Size = new System.Drawing.Size(144, 23);
             this.radioButton3.TabIndex = 5;
             this.radioButton3.Text = "Относительные";
+            this.toolTip1.SetToolTip(this.radioButton3, "Относительные значения -- это веса, делённые на ваш собственный вес");
             this.radioButton3.UseVisualStyleBackColor = true;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 

@@ -356,6 +356,7 @@
             this.groupBox3.TabIndex = 20;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Движения:";
+            this.toolTip1.SetToolTip(this.groupBox3, "Какие упражнения выполнялись на тренировке?");
             // 
             // checkBox4
             // 
@@ -373,7 +374,7 @@
             this.checkBox3.AutoSize = true;
             this.checkBox3.Checked = true;
             this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox3.Location = new System.Drawing.Point(219, 19);
+            this.checkBox3.Location = new System.Drawing.Point(215, 20);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(64, 23);
             this.checkBox3.TabIndex = 2;
@@ -386,7 +387,7 @@
             this.checkBox2.AutoSize = true;
             this.checkBox2.Checked = true;
             this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(132, 19);
+            this.checkBox2.Location = new System.Drawing.Point(128, 20);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(55, 23);
             this.checkBox2.TabIndex = 1;
@@ -399,7 +400,7 @@
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(17, 19);
+            this.checkBox1.Location = new System.Drawing.Point(13, 20);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(82, 23);
             this.checkBox1.TabIndex = 0;
@@ -707,9 +708,9 @@
             // button7
             // 
             this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button7.Location = new System.Drawing.Point(317, 131);
+            this.button7.Location = new System.Drawing.Point(326, 130);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(57, 25);
+            this.button7.Size = new System.Drawing.Size(70, 27);
             this.button7.TabIndex = 57;
             this.button7.Text = "ОК";
             this.button7.UseVisualStyleBackColor = true;
@@ -792,6 +793,7 @@
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.Name = "ускоренноеЗаданиеПодходовToolStripMenuItem";
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.Size = new System.Drawing.Size(185, 20);
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.Text = "Ускоренное задание подходов";
+            this.ускоренноеЗаданиеПодходовToolStripMenuItem.ToolTipText = "Открывает окно, позволяющее описать подходы максимально близко";
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.Click += new System.EventHandler(this.ускоренноеЗаданиеПодходовToolStripMenuItem_Click);
             // 
             // groupBox6
@@ -820,6 +822,8 @@
             this.groupBox6.TabIndex = 70;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Шаг 1. Лучший результат за тренировку";
+            this.toolTip1.SetToolTip(this.groupBox6, "Этот блок нужен для фиксации основного результата, типа \"сегодня я смог пожать 10" +
+        "0*5 при своём весе 70\"");
             // 
             // groupBox7
             // 
@@ -842,6 +846,8 @@
             this.groupBox7.TabIndex = 71;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Шаг 2. Запись подходов";
+            this.toolTip1.SetToolTip(this.groupBox7, "Этот блок нужен для более подробного отчёта о тренировке, который в будущем можно" +
+        " будет пересмотреть. Также здесь считается тоннаж");
             // 
             // groupBox8
             // 

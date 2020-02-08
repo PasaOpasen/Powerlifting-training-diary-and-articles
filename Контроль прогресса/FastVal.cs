@@ -45,13 +45,24 @@ namespace Контроль_прогресса
             if (nset > 10) label10.Show();
             else label10.Hide();
 
-            double tmp = PM(weight, set);
-            string txt = Math.Round(XPM(tmp, nset), 2).ToString();
-            label8.Text = txt;
+            string txt;
+            double tmp= PM(weight, set);
 
+            try
+            {
+            txt = Math.Round(XPM(tmp, nset), 2).ToString();
+            label8.Text = txt;
+            }
+            catch { label8.Text = ""; }
+
+            try
+            {
             double nw = Convert.ToDouble(textBox2.Text);
             txt = Math.Round(Set(tmp, nw), 1).ToString();
             label9.Text = txt;
+            }
+            catch { label9.Text = ""; }
+
         }
     }
 }

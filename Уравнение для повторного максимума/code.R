@@ -1,3 +1,4 @@
+#Загрузка данных####
 library(tidyverse)
 library(magrittr)
 
@@ -9,9 +10,16 @@ data=read_tsv("data.tsv",
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
 data %<>% mutate(CountGroup=cut(Count,breaks = c(1,3,6,9,12,20,30)))
-allrows=seq(data)
+allrows=1:nrow(data)
+
+
+
+#Разведочный анализ и описание выборки####
 
 summary(data)
+pairs(data %>% select(-Date,-Mail))
+GGally::ggpairs(data %>% select(-Date,-Mail))
+data[sapply(data, is.numeric)]%>% cor()%>% corrplot::corrplot(method = "number")
 
 
 obj=ggplot(data %>% select(-Date,-Mail))+theme_bw()
@@ -61,16 +69,26 @@ Show(predict(md,data[3:4]),allrows)
 
 md=lm(SM~Val:Count+Val-1,data)
 summary(md)
-Show(predict(md,data[c(3:4,9,13)]),allrows)
+Show(predict(md,data %>% select(Val,Count)),allrows)
+
+car::vif(md)
+plot(md)
+
+
+md=lm(SM~Val:Count+Val*Body-1+I(Val*Weight/(High-100))+I((Val-100)/Val),data)
+summary(md)
+Show(predict(md,data%>% select(Val,Count,Weight,High,Body)),allrows)
 
 
 p=prcomp(~Val+Count+High+Weight,data)
 summary(p)
 
-pr=predict(md,data[c(3:4,9,13)])
+
+pr=predict(md,data[c(3:4,9,13)], interval = "prediction", level = 0.95)
 obj+
-  geom_line(aes(x=Val,y=pr),size=1)+
-  geom_point(aes(x=Val,y=pr),size=3)+
+  #geom_ribbon(aes(x=Val,ymin = pr[,2], ymax = pr[,3]), fill = "grey70") +
+  geom_line(aes(x=Val,y=pr[,1]),size=1)+
+  geom_point(aes(x=Val,y=pr[,1]),size=3)+
   geom_point(aes(x=Val,y=SM,col=Body,shape=Type),size=4)+theme(legend.position = c(0.85,0.3))
 
 

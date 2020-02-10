@@ -9,7 +9,7 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>% mutate(CountGroup=cut(Count,breaks = c(1,3,6,9,12,20,30)))
+data %<>% mutate(CountGroup=cut(Count,breaks = c(1,3,6,9,12,20,30)),ValCoef=Val/Weight,SMcoef=SM/Weight)
 allrows=1:nrow(data)
 
 
@@ -48,7 +48,9 @@ getPIE(factor(data$Count))
 
 Error=function(target,weight) (target-weight)^2 %>% sum()
 Show=function(vals,rows){
-  cbind(value=vals,Target=data$SM[rows],ERROR=abs(data$SM[rows]-vals),data[rows,c(3:11,13)]) %>% tbl_df() %>% print()
+  cbind(value=vals,Target=data$SM[rows],
+        ERROR=abs(data$SM[rows]-vals),ErrorPercent=abs(data$SM[rows]-vals)/data$SM[rows]*100,
+        data[rows,c(3:11,13)]) %>% tbl_df() %>% print()
   cat("---------------------> Error is",Error(vals,data$SM[rows]),"\n")
 }
 
@@ -71,6 +73,10 @@ md=lm(SM~Val:Count+Val-1,data)
 summary(md)
 Show(predict(md,data %>% select(Val,Count)),allrows)
 
+md=lm(SMcoef~ValCoef:Count+ValCoef-1,data)
+summary(md)
+Show(predict(md,data %>% select(ValCoef,Count))*data$Weight,allrows)
+
 car::vif(md)
 plot(md)
 
@@ -84,7 +90,7 @@ p=prcomp(~Val+Count+High+Weight,data)
 summary(p)
 
 
-pr=predict(md,data[c(3:4,9,13)], interval = "prediction", level = 0.95)
+pr=predict(md,data%>% select(Val,Count,Weight,High,Body), interval = "prediction", level = 0.95)
 obj+
   #geom_ribbon(aes(x=Val,ymin = pr[,2], ymax = pr[,3]), fill = "grey70") +
   geom_line(aes(x=Val,y=pr[,1]),size=1)+

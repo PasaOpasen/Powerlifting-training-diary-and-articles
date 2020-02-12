@@ -1,19 +1,21 @@
 library(tidyverse)
 library(magrittr)
 library(ggformula)
+library(ggalt)
 
 
 mx=function(vals,count){
   t=vals*(1+0.0333*count)
   t[count==1]=vals[count==1]
-  return(t)
+  s=t[length(t)]*(1+runif(1,0.,0.02))
+  return(c(t,s))
 }
 
 
 x=c(100,120,115,105,130,120,125)
 y=c(10,4,6,10,3,6,5)
 
-vc=c(mx(x,y),mx(x+5,y))
+vc=c(mx(x,y),mx(x+4,y),mx(x+9,y))
 
 
 f=spline(vc,n=40)
@@ -25,6 +27,15 @@ ggplot(tb)+
 
 
 
+
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%(length(x)+1)==0,"проходка","тренировка")))
+
+ggplot(tb,aes(x=d,y=val))+
+  geom_xspline(size=1)+
+  geom_point(aes(col=day),size=4)
+  
+  #geom_line(,col="green",size=1.3)+
+  #geom_point(aes(x=d,y=val,size=factor(day/2),col=factor(ifelse(day==1,"red","green"))))
 
 
 

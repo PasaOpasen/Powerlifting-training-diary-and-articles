@@ -11,17 +11,17 @@ namespace Библиотека_классов
     /// <summary>
     /// Класс достижений в пауэрлифтинге
     /// </summary>
-    public class PowerLift : IComparable
+    public struct PowerLift : IComparable
     {
-        public double Squat { get; } = 0;
-        public double Lift { get; } = 0;
-        public double Press { get; } = 0;
-        public double Weight { get; } = 0;
-        public DateTime Time { get; } = DateTime.Now;
+        public double Squat { get; }
+        public double Lift { get; }
+        public double Press { get; } 
+        public double Weight { get; }
+        public DateTime Time { get; }
         public double Sum => Squat + Press + Lift;
-        public string Comment = "";
-        public double Tonnage = 0;
-        private static readonly double coef = 0.0333;
+        public string Comment;
+        public double Tonnage;
+        private const double coef = 0.0333;
         public double SquatPercent => Math.Round(Squat / Sum * 100, 2);
         public double PressPercent => Math.Round(Press / Sum * 100, 2);
         public double LiftPercent => Math.Round(Lift / Sum * 100, 2);
@@ -40,6 +40,10 @@ namespace Библиотека_классов
         }
         public PowerLift(double squat, double press, double lift)
         {
+            Tonnage = 0;
+            Weight = 0;
+            Time = DateTime.Now;
+            Comment = "";
             this.Squat = squat;
             this.Lift = lift;
             this.Press = press;
@@ -54,6 +58,14 @@ namespace Библиотека_классов
         public PowerLift(PowerLift p) : this(p.Squat, p.Press, p.Lift, p.Weight, p.Time) { this.Tonnage = p.Tonnage; }
         public PowerLift(Workout w, double val)
         {
+            this.Squat = 0;
+            this.Lift = 0;
+            this.Press = 0;
+            Tonnage = 0;
+            Weight = 0;
+            Time = DateTime.Now;
+            Comment = "";
+
             switch (w)
             {
                 case Workout.Squat:
@@ -186,7 +198,30 @@ namespace Библиотека_классов
         public int CompareTo(object obj) => CompareTo((PowerLift)obj);
         public int CompareTo(PowerLift p) => Time.CompareTo(p.Time);
 
-        //что-то неиспользованное
+        public override bool Equals(object obj)
+        {
+            return obj is PowerLift lift &&                                           
+                   Tonnage == lift.Tonnage&&
+                   Time == lift.Time && 
+                  Squat == lift.Squat &&
+                   Lift == lift.Lift &&
+                   Press == lift.Press &&
+                   Weight == lift.Weight ;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 568324721;
+            hashCode = hashCode * -1521134295 + Squat.GetHashCode();
+            hashCode = hashCode * -1521134295 + Lift.GetHashCode();
+            hashCode = hashCode * -1521134295 + Press.GetHashCode();
+            hashCode = hashCode * -1521134295 + Weight.GetHashCode();
+            hashCode = hashCode * -1521134295 + Time.GetHashCode();
+            hashCode = hashCode * -1521134295 + Tonnage.GetHashCode();
+            return hashCode;
+        }
+
+#if DEBUG
         public static void Generate(int lenth, double force = 40, double mass = 40, double speed = 20, bool fo = true, bool ma = false, bool sp = false)
         {
             double sum = force + mass + speed;
@@ -251,5 +286,6 @@ namespace Библиотека_классов
             Mass,
             Speed
         };
+#endif
     }
 }

@@ -9,7 +9,7 @@ namespace Библиотека_классов
         public static void Make(int a, int b, string s = "", int step = 1)
         {
             for (int i = a; i <= b; i += step)
-                Directory.CreateDirectory(s + ((s == "") ? s : "\\") + i.ToString());
+                Directory.CreateDirectory(s + (( s.Equals(string.Empty)) ? s : "\\") + i.ToString());
         }
     }
 }

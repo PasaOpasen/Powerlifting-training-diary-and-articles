@@ -176,9 +176,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MathClasses\Классы\Классы %28библиотека%29.csproj">
-      <Project>{cd3eefde-74ed-48da-8e82-1e6abab1a140}</Project>
-      <Name>Классы %28библиотека%29</Name>
+    <ProjectReference Include="..\..\MathClasses\MathClassesLibrary\MathClassesLibrary.csproj">
+      <Project>{1c2eda9a-9f1f-4054-a768-4939b0e0a190}</Project>
+      <Name>MathClassesLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MathClasses\Библиотека графики\Библиотека графики.csproj">
+      <Project>{72477714-acf0-4659-a0df-12f481bc85ec}</Project>
+      <Name>Библиотека графики</Name>
     </ProjectReference>
     <ProjectReference Include="..\Библиотека классов\Библиотека классов.csproj">
       <Project>{715aa568-0697-47bd-840a-ee1e12795111}</Project>

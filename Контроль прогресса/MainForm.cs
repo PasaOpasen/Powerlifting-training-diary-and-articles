@@ -35,7 +35,7 @@ namespace Контроль_прогресса
              {
                  if (Program.changefile)
                  {
-                     var res = MessageBox.Show("Требуется ли сохранить текущий файл по умолчанию как постоянный файл по умолчанию?", "Сохранение данных", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                     var res = MessageBox.Show("Требуется ли сохранить текущий файл по умолчанию (тот, что открыт последним) как постоянный файл по умолчанию?", "Сохранение данных", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                      if (res == System.Windows.Forms.DialogResult.Yes)
                          using (StreamWriter w = new StreamWriter("Adress.txt"))
                              w.WriteLine(Program.filename);
@@ -51,7 +51,7 @@ namespace Контроль_прогресса
             {
                 // File.Create(Program.filename);
                 StreamWriter f = new StreamWriter(Program.filename); f.Close();
-                MessageBox.Show($"Похоже, вы в первый раз открыли эту программу! Для вас автоматически создан дневник по умолчанию по адресу \"{Path.Combine(Environment.CurrentDirectory, Program.filename)}\". Если вы хотите изменить дневник или выбрать существующий, это можно сделать в программе", "Создан дневник по умолчанию", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Похоже, вы в первый раз открыли эту программу! Для вас автоматически создан дневник по умолчанию по адресу \"{Path.Combine(Environment.CurrentDirectory, Program.filename)}\"; добавьте в него несколько тренировок, чтобы увидеть результаты. Если вы хотите изменить дневник или выбрать существующий, это можно сделать в программе. Вы можете ознакомиться с возможностями программы, задав по умолчанию дневник из файла \"sample.txt\"", "Создан дневник по умолчанию", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

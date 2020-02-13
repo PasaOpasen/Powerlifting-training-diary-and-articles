@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F7D1B8E7-3897-453E-8793-C4BA208496DF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Контроль_прогресса</RootNamespace>
-    <AssemblyName>Контроль прогресса</AssemblyName>
+    <RootNamespace>ProgressControl</RootNamespace>
+    <AssemblyName>ProgressControl</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

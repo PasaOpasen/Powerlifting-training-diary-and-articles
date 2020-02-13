@@ -18,6 +18,8 @@ namespace Контроль_прогресса
         private int dru = 1;
         double tonn = 0;
         string s = "";
+        static readonly string[] DayOfWeek = new string[] { "воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота" };
+
 
         public Results()
         {
@@ -33,7 +35,7 @@ namespace Контроль_прогресса
             groupBox7.Hide();
             label20.Hide();
             DownHide();
-            
+
 
 
             Color col = Color.FromArgb(90, Color.Transparent);
@@ -63,17 +65,21 @@ namespace Контроль_прогресса
         private void SetToolTips()
         {
             toolTip1.AutoPopDelay = 8000;
-            string mes = "Чтобы начать вводить данные о новом упражнении, заполните компоненты и нажмите на /добавить новое упражнение/; чтобы продолжить заполнять данные об упражнении, заполните компоненты и нажмите /добавить в серию подходов/";
+            const string mes = "Чтобы начать вводить данные о новом упражнении, заполните компоненты и нажмите на /добавить новое упражнение/; чтобы продолжить заполнять данные об упражнении, заполните компоненты и нажмите /добавить в серию подходов/";
             toolTip1.SetToolTip(label23, mes);
             toolTip1.SetToolTip(button5, "Очистить все данные о новом упражнении");
             toolTip1.SetToolTip(button6, "Отсортировать список возможных упражнений");
-            toolTip1.SetToolTip(button7, "Зафиксировать верхние данные, чтобы можно было увидеть, как они отобразятся в дневнике");
+            toolTip1.SetToolTip(button7, "Зафиксировать верхние данные, чтобы можно было увидеть, как они отобразятся в дневнике (необязательно)");
             toolTip1.SetToolTip(button8, "Зафиксировать комментарий");
             toolTip1.SetToolTip(checkBox4, "Если нужно не просто зафиксировать результат, а полностью описать тренировку, выберите этот пункт");
+            
+            var now = DateTime.Now;
+            toolTip1.SetToolTip(radioButton3, $"Сегодня {now.Date.ToShortDateString()}, {DayOfWeek[(int)now.DayOfWeek]}");
+            toolTip1.SetToolTip(radioButton6, $"Вчера было {now.AddDays(-1).Date.ToShortDateString()}, {DayOfWeek[(int)now.AddDays(-1).DayOfWeek]}");
         }
         private void SetComboBox()
         {
-            if (textBox3.Text.Length>1)
+            if (textBox3.Text.Length > 1)
                 comboBox1.Text = "Присед со штангой на плечах";
             else if (textBox1.Text.Length > 1)
                 comboBox1.Text = "Жим лёжа";
@@ -93,7 +99,7 @@ namespace Контроль_прогресса
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             GiveCombVal();
-            if (!checkBox2.Checked) { label1.Hide(); label3.Hide(); label2.Hide(); textBox1.Hide();  numericUpDown6.Hide(); }
+            if (!checkBox2.Checked) { label1.Hide(); label3.Hide(); label2.Hide(); textBox1.Hide(); numericUpDown6.Hide(); }
             else { label1.Show(); label3.Show(); label2.Show(); textBox1.Show(); numericUpDown6.Show(); }
         }
 
@@ -101,7 +107,7 @@ namespace Контроль_прогресса
         {
             GiveCombVal();
             if (!checkBox3.Checked) { label9.Hide(); label7.Hide(); label8.Hide(); textBox5.Hide(); numericUpDown8.Hide(); }
-            else { label9.Show(); label7.Show(); label8.Show(); textBox5.Show();  numericUpDown8.Show(); }
+            else { label9.Show(); label7.Show(); label8.Show(); textBox5.Show(); numericUpDown8.Show(); }
         }
 
         private void label13_Click(object sender, EventArgs e)
@@ -145,9 +151,9 @@ namespace Контроль_прогресса
                 button4.Text = "Добавить новое упражнение";
             }
         }
-        private void AddToLists(int number,string name)
+        private void AddToLists(int number, string name)
         {
-            string tmp=$"Другое упражнение №{number}: {name} ;";
+            string tmp = $"Другое упражнение №{number}: {name} ;";
             s += tmp;
             listBox1.Items.Add(tmp);
         }
@@ -307,9 +313,9 @@ namespace Контроль_прогресса
 
         private PowerLift GetNew()
         {
-            double press1 = Convert.ToDouble(textBox1.Text), 
-                sq1 = Convert.ToDouble(textBox3.Text), 
-                l1 = Convert.ToDouble(textBox5.Text), 
+            double press1 = Convert.ToDouble(textBox1.Text),
+                sq1 = Convert.ToDouble(textBox3.Text),
+                l1 = Convert.ToDouble(textBox5.Text),
                 w = Convert.ToDouble(textBox7.Text);
             int press2 = Convert.ToInt32(numericUpDown6.Value),
             sq2 = Convert.ToInt32(numericUpDown7.Value),
@@ -327,6 +333,7 @@ namespace Контроль_прогресса
 
             return res;
         }
+
         private DateTime GetTime()
         {
             DateTime t = DateTime.Now;
@@ -360,6 +367,11 @@ namespace Контроль_прогресса
                 comboBox1.Text = "Становая тяга классикой";
             else
                 comboBox1.Text = "";
+        }
+
+        private void быстраяОценкаПМToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.F6.ShowDialog();
         }
     }
 }

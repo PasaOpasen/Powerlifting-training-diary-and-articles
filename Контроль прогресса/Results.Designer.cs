@@ -78,8 +78,10 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button6 = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.label23 = new System.Windows.Forms.Label();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.button7 = new System.Windows.Forms.Button();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label23 = new System.Windows.Forms.Label();
             this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
             this.button8 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -87,9 +89,8 @@
             this.button9 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ускоренноеЗаданиеПодходовToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.быстраяОценкаПМToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -99,10 +100,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).BeginInit();
-            this.groupBox5.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -310,6 +311,7 @@
             this.radioButton5.TabIndex = 3;
             this.radioButton5.Text = "Выбрать на \r\nкалендаре";
             this.radioButton5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.toolTip1.SetToolTip(this.radioButton5, "Поможет выбрать день, который был давно или когда помнишь только день недели ");
             this.radioButton5.UseVisualStyleBackColor = true;
             this.radioButton5.CheckedChanged += new System.EventHandler(this.radioButton5_CheckedChanged);
             // 
@@ -328,6 +330,7 @@
             this.radioButton4.Size = new System.Drawing.Size(81, 23);
             this.radioButton4.TabIndex = 1;
             this.radioButton4.Text = "Другая";
+            this.toolTip1.SetToolTip(this.radioButton4, "Задать день по его дате");
             this.radioButton4.UseVisualStyleBackColor = true;
             this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
             // 
@@ -696,14 +699,34 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
-            // label23
+            // groupBox6
             // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(20, 53);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(18, 19);
-            this.label23.TabIndex = 56;
-            this.label23.Text = "?";
+            this.groupBox6.Controls.Add(this.textBox1);
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Controls.Add(this.label2);
+            this.groupBox6.Controls.Add(this.label3);
+            this.groupBox6.Controls.Add(this.textBox3);
+            this.groupBox6.Controls.Add(this.label6);
+            this.groupBox6.Controls.Add(this.label5);
+            this.groupBox6.Controls.Add(this.label4);
+            this.groupBox6.Controls.Add(this.textBox5);
+            this.groupBox6.Controls.Add(this.button7);
+            this.groupBox6.Controls.Add(this.label9);
+            this.groupBox6.Controls.Add(this.label8);
+            this.groupBox6.Controls.Add(this.label7);
+            this.groupBox6.Controls.Add(this.label10);
+            this.groupBox6.Controls.Add(this.textBox7);
+            this.groupBox6.Controls.Add(this.numericUpDown6);
+            this.groupBox6.Controls.Add(this.numericUpDown7);
+            this.groupBox6.Controls.Add(this.numericUpDown8);
+            this.groupBox6.Location = new System.Drawing.Point(7, 113);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(409, 164);
+            this.groupBox6.TabIndex = 70;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Шаг 1. Лучший результат за тренировку";
+            this.toolTip1.SetToolTip(this.groupBox6, "Этот блок нужен для фиксации основного результата, типа \"сегодня я смог пожать 10" +
+        "0*5 при своём весе 70\"");
             // 
             // button7
             // 
@@ -715,6 +738,39 @@
             this.button7.Text = "ОК";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.label15);
+            this.groupBox7.Controls.Add(this.textBox10);
+            this.groupBox7.Controls.Add(this.label12);
+            this.groupBox7.Controls.Add(this.label14);
+            this.groupBox7.Controls.Add(this.button3);
+            this.groupBox7.Controls.Add(this.label23);
+            this.groupBox7.Controls.Add(this.numericUpDown4);
+            this.groupBox7.Controls.Add(this.label11);
+            this.groupBox7.Controls.Add(this.numericUpDown5);
+            this.groupBox7.Controls.Add(this.button4);
+            this.groupBox7.Controls.Add(this.button6);
+            this.groupBox7.Controls.Add(this.button5);
+            this.groupBox7.Controls.Add(this.comboBox1);
+            this.groupBox7.Location = new System.Drawing.Point(7, 283);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(523, 165);
+            this.groupBox7.TabIndex = 71;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Шаг 2. Запись подходов";
+            this.toolTip1.SetToolTip(this.groupBox7, "Этот блок нужен для более подробного отчёта о тренировке, который в будущем можно" +
+        " будет пересмотреть. Также здесь считается тоннаж");
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(20, 53);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(18, 19);
+            this.label23.TabIndex = 56;
+            this.label23.Text = "?";
             // 
             // monthCalendar1
             // 
@@ -781,7 +837,8 @@
             // 
             this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ускоренноеЗаданиеПодходовToolStripMenuItem});
+            this.ускоренноеЗаданиеПодходовToolStripMenuItem,
+            this.быстраяОценкаПМToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(880, 24);
@@ -796,59 +853,6 @@
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.ToolTipText = "Открывает окно, позволяющее описать подходы максимально близко";
             this.ускоренноеЗаданиеПодходовToolStripMenuItem.Click += new System.EventHandler(this.ускоренноеЗаданиеПодходовToolStripMenuItem_Click);
             // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.textBox1);
-            this.groupBox6.Controls.Add(this.label1);
-            this.groupBox6.Controls.Add(this.label2);
-            this.groupBox6.Controls.Add(this.label3);
-            this.groupBox6.Controls.Add(this.textBox3);
-            this.groupBox6.Controls.Add(this.label6);
-            this.groupBox6.Controls.Add(this.label5);
-            this.groupBox6.Controls.Add(this.label4);
-            this.groupBox6.Controls.Add(this.textBox5);
-            this.groupBox6.Controls.Add(this.button7);
-            this.groupBox6.Controls.Add(this.label9);
-            this.groupBox6.Controls.Add(this.label8);
-            this.groupBox6.Controls.Add(this.label7);
-            this.groupBox6.Controls.Add(this.label10);
-            this.groupBox6.Controls.Add(this.textBox7);
-            this.groupBox6.Controls.Add(this.numericUpDown6);
-            this.groupBox6.Controls.Add(this.numericUpDown7);
-            this.groupBox6.Controls.Add(this.numericUpDown8);
-            this.groupBox6.Location = new System.Drawing.Point(7, 113);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(409, 164);
-            this.groupBox6.TabIndex = 70;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Шаг 1. Лучший результат за тренировку";
-            this.toolTip1.SetToolTip(this.groupBox6, "Этот блок нужен для фиксации основного результата, типа \"сегодня я смог пожать 10" +
-        "0*5 при своём весе 70\"");
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.label15);
-            this.groupBox7.Controls.Add(this.textBox10);
-            this.groupBox7.Controls.Add(this.label12);
-            this.groupBox7.Controls.Add(this.label14);
-            this.groupBox7.Controls.Add(this.button3);
-            this.groupBox7.Controls.Add(this.label23);
-            this.groupBox7.Controls.Add(this.numericUpDown4);
-            this.groupBox7.Controls.Add(this.label11);
-            this.groupBox7.Controls.Add(this.numericUpDown5);
-            this.groupBox7.Controls.Add(this.button4);
-            this.groupBox7.Controls.Add(this.button6);
-            this.groupBox7.Controls.Add(this.button5);
-            this.groupBox7.Controls.Add(this.comboBox1);
-            this.groupBox7.Location = new System.Drawing.Point(7, 283);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(523, 165);
-            this.groupBox7.TabIndex = 71;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Шаг 2. Запись подходов";
-            this.toolTip1.SetToolTip(this.groupBox7, "Этот блок нужен для более подробного отчёта о тренировке, который в будущем можно" +
-        " будет пересмотреть. Также здесь считается тоннаж");
-            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.button1);
@@ -859,6 +863,14 @@
             this.groupBox8.TabIndex = 72;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Шаг 4. Сохранение данных";
+            // 
+            // быстраяОценкаПМToolStripMenuItem
+            // 
+            this.быстраяОценкаПМToolStripMenuItem.Name = "быстраяОценкаПМToolStripMenuItem";
+            this.быстраяОценкаПМToolStripMenuItem.Size = new System.Drawing.Size(130, 20);
+            this.быстраяОценкаПМToolStripMenuItem.Text = "Быстрая оценка ПМ";
+            this.быстраяОценкаПМToolStripMenuItem.ToolTipText = "Поможет определить, какой из подходов потребовал больше усилий";
+            this.быстраяОценкаПМToolStripMenuItem.Click += new System.EventHandler(this.быстраяОценкаПМToolStripMenuItem_Click);
             // 
             // Results
             // 
@@ -900,13 +912,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).EndInit();
-            this.groupBox5.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -975,5 +987,6 @@
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.GroupBox groupBox8;
         public System.Windows.Forms.NumericUpDown numericUpDown5;
+        private System.Windows.Forms.ToolStripMenuItem быстраяОценкаПМToolStripMenuItem;
     }
 }

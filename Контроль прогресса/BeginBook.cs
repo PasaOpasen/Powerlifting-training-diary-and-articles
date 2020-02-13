@@ -50,8 +50,10 @@ namespace Контроль_прогресса
                 int press2 = Convert.ToInt32(numericUpDown6.Value),
                 sq2 = Convert.ToInt32(numericUpDown7.Value),
                 l2 = Convert.ToInt32(numericUpDown8.Value);
-                Program.mas = new List<PowerLift>();
-                Program.mas.Add(new PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, DateTime.Now));
+                Program.mas = new List<PowerLift>
+                {
+                    new PowerLift(PM(sq1, sq2), PM(press1, press2), PM(l1, l2), w, DateTime.Now)
+                };
             }
             catch
             {
@@ -63,12 +65,14 @@ namespace Контроль_прогресса
 
         private void SaveMas()
         {
-            SaveFileDialog savedialog = new SaveFileDialog();
-            savedialog.Title = "Сохранить файл как...";
-            savedialog.OverwritePrompt = true;
-            savedialog.CheckPathExists = true;
-            savedialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
-            savedialog.ShowHelp = true;
+            SaveFileDialog savedialog = new SaveFileDialog
+            {
+                Title = "Сохранить файл как...",
+                OverwritePrompt = true,
+                CheckPathExists = true,
+                Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*",
+                ShowHelp = true
+            };
             if (savedialog.ShowDialog() == DialogResult.OK)
             {
                 try

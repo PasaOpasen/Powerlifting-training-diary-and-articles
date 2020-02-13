@@ -7,7 +7,7 @@ using Библиотека_классов;
 
 namespace Контроль_прогресса
 {
-    static class Program
+    internal static class Program
     {
         public static MainForm F1;
         public static Results F2;

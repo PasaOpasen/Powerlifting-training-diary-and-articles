@@ -46,7 +46,11 @@ getPIE(data$Experience)
 getPIE(factor(data$Count))
 
 
-Error=function(target,weight) (target-weight)^2 %>% sum()
+Error=function(target,weight)
+  {
+    s=(target-weight)^2 %>% sum()
+    return(sqrt(s/length(weight)))
+  } 
 Show=function(vals,rows){
   cbind(value=vals,Target=data$SM[rows],
         ERROR=abs(data$SM[rows]-vals),ErrorPercent=abs(data$SM[rows]-vals)/data$SM[rows]*100,
@@ -69,37 +73,48 @@ summary(md)
 Show(predict(md,data[3:4]),allrows)
 
 
-md=lm(SM~Val:Count+Val-1,data)
+md=lm(SM~Val:Count:CountGroup+Val:CountGroup-1,data)
 summary(md)
-Show(predict(md,data %>% select(Val,Count)),allrows)
+Show(predict(md,data %>% select(Val,Count,CountGroup)),allrows)
 
-md=lm(SMcoef~ValCoef:Count+ValCoef-1,data)
+
+md=lm(SMcoef~ValCoef:Count:CountGroup+ValCoef:CountGroup-1,data)
 summary(md)
-Show(predict(md,data %>% select(ValCoef,Count))*data$Weight,allrows)
+Show(predict(md,data %>% select(ValCoef,Count,CountGroup))*data$Weight,allrows)
 
 car::vif(md)
 plot(md)
 
 
-md=lm(SM~Val:Count+Val*Body-1+I(Val*Weight/(High-100))+I((Val-100)/Val),data)
+md=lm(SM~Val+Val:Count-1+Val:Body:Count+Val:Experience:Count+
+        Val:Body+#Val:Sex+
+        Val:Experience+
+        I(Val*Weight/(High-100))+
+        I((Val-100)/Val)+poly(Val/Weight,2)
+      ,data)
 summary(md)
-Show(predict(md,data%>% select(Val,Count,Weight,High,Body)),allrows)
+Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience
+                               )),allrows)
 
 
-p=prcomp(~Val+Count+High+Weight,data)
-summary(p)
+md=step(md,direction = "both")
+summary(md)
+Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience)),allrows)
+
+anova(md)
 
 
-pr=predict(md,data%>% select(Val,Count,Weight,High,Body), interval = "prediction", level = 0.95)
+
+pr=predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience,CountGroup), interval = "prediction", level = 0.95)
 obj+
   #geom_ribbon(aes(x=Val,ymin = pr[,2], ymax = pr[,3]), fill = "grey70") +
-  geom_line(aes(x=Val,y=pr[,1]),size=1,col="grey70")+
+  geom_line(aes(x=Val,y=pr[,1]),size=1,col="grey70",linetype="dotted")+
   geom_point(aes(x=Val,y=pr[,1]),size=3)+
-  geom_point(aes(x=Val,y=SM,col=Body,shape=Type),size=4)+theme(legend.position = c(0.85,0.3))
+  geom_point(aes(x=Val,y=SM,col=Body,shape=Type),size=4)+theme(legend.position = c(0.85,0.25))
 
 
 #Рассмотрение остатков####
-d2=data %>% mutate(res=SM-predict(md,data%>% select(Val,Count,Weight,High,Body))) %>% select(-Date,-Mail)
+d2=data %>% mutate(res=SM-predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience))) %>% select(-Date,-Mail)
 
 ob=ggplot(d2,aes(y=res))
 

@@ -45,45 +45,64 @@ getPIE(data$CountGroup)
 getPIE(data$Experience)
 getPIE(factor(data$Count))
 
-
+#Функция ошибок####
 Error=function(target,weight)
   {
     s=(target-weight)^2 %>% sum()
     return(sqrt(s/length(weight)))
   } 
-Show=function(vals,rows){
-  cbind(value=vals,Target=data$SM[rows],
-        ERROR=abs(data$SM[rows]-vals),ErrorPercent=abs(data$SM[rows]-vals)/data$SM[rows]*100,
-        data[rows,c(3:11,13)]) %>% tbl_df() %>% print()
-  cat("---------------------> Error is",Error(vals,data$SM[rows]),"\n")
+Show=function(vals,df=data){
+  cbind(value=vals,Target=df$SM,
+        ERROR=abs(df$SM-vals),
+        ErrorPercent=abs(df$SM-vals)/df$SM*100,
+        df[,c(3:11,13)]) %>% tbl_df()%>% arrange(ERROR,ErrorPercent,Count,Weight) %>% print()
+  cat("\n")
+  rg=range(df$SM-vals)
+  if(rg[1]<0)cat("-------------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
+  if(rg[2]>0)cat("-------------------> Наибольшая ошибка в меньшую сторону:",rg[2],"\n")
+  cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$SM),"\n")
 }
 
-Show(data$Val*(1+0.0333*data$Count),allrows)
+#Модели####
 
-md=nls(SM~Val*(est+coef*Count),
-       data=data,
-       start = list(est=1.0,coef=0.0333))
-summary(md)
-Show(predict(md,data[c(3:4,9)]),allrows)
+#начальная
+Show(data$Val*(1+0.0333*data$Count))
 
+#оптимизация чисто коэффициента
 md=nls(SM~Val*(1+coef*Count),
        data=data,
        start = list(coef=0.0333))
 summary(md)
-Show(predict(md,data[3:4]),allrows)
+Show(predict(md,data[3:4]))
 
 
+#оптимизация чисто коэффициента c поправкой на его группу
+md=lm(I(SM/Val-1)~Val:Count:CountGroup,data)
+summary(md)
+Show((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
+
+
+#Val+Val*Count с поправкой на группу
 md=lm(SM~Val:Count:CountGroup+Val:CountGroup-1,data)
 summary(md)
-Show(predict(md,data %>% select(Val,Count,CountGroup)),allrows)
-
-
-md=lm(SMcoef~ValCoef:Count:CountGroup+ValCoef:CountGroup-1,data)
-summary(md)
-Show(predict(md,data %>% select(ValCoef,Count,CountGroup))*data$Weight,allrows)
+Show(predict(md,data %>% select(Val,Count,CountGroup)))
 
 car::vif(md)
 plot(md)
+
+
+md=step(md,
+        direction = "forward",
+        scope = (~
+                   Val:Body+Val:Count:Body+
+                   Val:Experience+Val:Count:Experience+
+                   Val:Count:CountGroup:Body+Val:CountGroup:Body+
+                   I(Val*Weight/(High-100))+
+                   I((Val-100)/Val)+poly(Val/Weight,2)
+                 ))
+summary(md)
+Show(predict(md,data))
+
 
 
 md=lm(SM~Val+Val:Count-1+Val:Body:Count+Val:Experience:Count+
@@ -94,12 +113,12 @@ md=lm(SM~Val+Val:Count-1+Val:Body:Count+Val:Experience:Count+
       ,data)
 summary(md)
 Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience
-                               )),allrows)
+                               )))
 
 
 md=step(md,direction = "both")
 summary(md)
-Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience)),allrows)
+Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience)))
 
 anova(md)
 

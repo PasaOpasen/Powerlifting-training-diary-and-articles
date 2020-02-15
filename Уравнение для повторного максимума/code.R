@@ -2,6 +2,9 @@
 library(tidyverse)
 library(magrittr)
 library(ggformula)
+library(ggthemes)
+library(tidyquant)
+library(ggvis)
 
 data=read_tsv("data.tsv",
               skip=1,col_names = F,na="",
@@ -9,24 +12,20 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>% mutate(CountGroup=cut(Count,breaks = c(1,3,6,9,12,20,30)),ValCoef=Val/Weight,SMcoef=SM/Weight)
+data %<>% mutate(
+  CountGroup=cut(Count,breaks = c(1,3,6,12,20,30))
+  )%>% select(-Date,-Mail)
+levels(data$CountGroup)=c("2-3","4-6","7-12","13-20",">20")
 allrows=1:nrow(data)
 
 
 
 #Разведочный анализ и описание выборки####
 
+psych::describe(data)
 summary(data)
-pairs(data %>% select(-Date,-Mail))
-GGally::ggpairs(data %>% select(-Date,-Mail))
-data[sapply(data, is.numeric)]%>% cor()%>% corrplot::corrplot(method = "number")
 
 
-obj=ggplot(data %>% select(-Date,-Mail))+theme_bw()
-obj+geom_bar(aes(x=CountGroup))
-obj+geom_bar(aes(x=Body))
-obj+geom_point(aes(x=Weight,y=High,col=Body,shape=Experience),size=5)
-obj+geom_boxplot(aes(x=Type,y=SM))
 
 
 getPIE=function(vec,main=""){
@@ -43,7 +42,34 @@ getPIE=function(vec,main=""){
 getPIE(data$Body)
 getPIE(data$CountGroup)
 getPIE(data$Experience)
-getPIE(factor(data$Count))
+getPIE(data$Sex)
+
+
+data %<>%select(-Age,-Experience)
+pairs(data %>% select(-Count))
+GGally::ggpairs(data%>% select(-Count),title="Диаграмы взаимодействий между переменными в выборке",
+                lower = list(continuous = "smooth_loess", combo = "box"))
+
+data[sapply(data, is.numeric)]%>% cor()%>% corrplot::corrplot(method = "number")
+
+
+obj=ggplot(data %>% select(-Count))+theme_bw()
+obj+geom_bar(aes(x=CountGroup))
+obj+geom_bar(aes(x=Body))
+obj+geom_point(aes(x=Weight,y=High,col=Body,shape=Experience),size=5)
+obj+geom_boxplot(aes(x=Type,y=SM))
+
+bx=obj+geom_boxplot(aes(x=CountGroup,y=SM/Val))+
+  labs(title = "Отношение повторного максимума к многоповторному в зависимости от числа повторений",
+       x="Диапазон повторений",y="Отношение повторного максимума к многоповторному",
+       caption = "Каждый диапазон повторений действует по своим законам \n и нуждается в собственной версии модели")+
+  theme_tq()
+
+bx+facet_grid(~Body)+theme_bw()+labs(caption="caption")
+bx+facet_grid(~Sex)+theme_bw()+labs(caption="caption")
+bx+facet_grid(~Type)+theme_bw()+labs(caption="caption")
+
+
 
 #Функция ошибок####
 Error=function(target,weight)
@@ -52,6 +78,7 @@ Error=function(target,weight)
     return(sqrt(s/length(weight)))
   } 
 Show=function(vals,df=data){
+  #vals=predict(model,df)
   cbind(value=vals,Target=df$SM,
         ERROR=abs(df$SM-vals),
         ErrorPercent=abs(df$SM-vals)/df$SM*100,
@@ -80,6 +107,8 @@ Show(predict(md,data[3:4]))
 md=lm(I(SM/Val-1)~Val:Count:CountGroup,data)
 summary(md)
 Show((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
+boot::cv.glm(data=data, glmfit=md,K=6)
+
 
 
 #Val+Val*Count с поправкой на группу

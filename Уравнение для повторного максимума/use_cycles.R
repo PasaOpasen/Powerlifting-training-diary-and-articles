@@ -47,7 +47,7 @@ ggplot(tb,aes(x=d,y=val))+
        y="Требуемое усилие",
        caption="Не используйте такой цикл больше 2-3 проходов подряд, он может привести к перетренированности") +
   guides(color=guide_legend(title="Тип дня"))+
-  theme_bw()+ guides(color=FALSE)
+  theme_bw()+theme(legend.position = c(0.85,0.15))#+ guides(color=FALSE)
   
 
 

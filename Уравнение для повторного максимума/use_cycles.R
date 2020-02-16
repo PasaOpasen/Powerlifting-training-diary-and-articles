@@ -6,11 +6,14 @@ library(ggalt)
 
 #простой цикл####
 
-mx=function(vals,count){
+mx=function(vals,count, withcomp=T){
   t=vals*(1+0.0333*count)
   t[count==1]=vals[count==1]
-  s=t[length(t)]*(1+runif(1,0.,0.005))
+  if(withcomp){
+      s=t[length(t)]*(1+runif(1,0.,0.005))
   return(c(t,s))
+  }
+  return(t)
 }
 
 
@@ -54,28 +57,62 @@ ggplot(tb,aes(x=d,y=val))+
 
 
 
-mx2=function(vals,count){
-  t=vals*(1+0.0333*count)
-  t[count==1]=vals[count==1]
-  return(t)
-}
-
 
 #155 верхошанский
 x=c(100,125,107.5,132.5,120,140,127.5,147.5,117.5,132.5,125,162.5)
 y=c(6,5,5,4,3,3,3,2,5,2,2,1)
-vc=c(mx2(x,y),mx2(x+8,y),mx2(x+15,y))
-plot(vc,type = "b")
+vc=c(mx(x,y,F),mx(x+8,y,F),mx(x+15,y,F))
+lb=paste0(c(x,x+8,x+15) %>% round(),"x",c(y,y,y))
+
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%length(x)==0,"проходка","тренировка")))
+
+ggplot(tb,aes(x=d,y=val))+
+  geom_hline(yintercept = 155,size=1.,linetype="dashed",alpha=0.7)+
+  geom_hline(yintercept = vc[length(vc)],size=1.,linetype="dashed",alpha=0.7)+
+  geom_xspline(size=1,spline_shape = -0.7,linetype="dotdash",col="green",alpha=0.9)+
+  geom_point(aes(col=day),size=4)+
+  annotate("text", x = 3.5, y = 159, label = "Начальные результаты") +
+  annotate("text", x = 3, y = 176, label = "Итоговые результаты") +
+  annotate("text", x = tb$d+0.4, y = tb$val-ifelse(seq(tb$d)%%length(x)!=0,0.8,0.3), label = lb) +
+  labs(title='Пиковый цикл Верхошанского (три прохода)',
+       subtitle="Медленный подъём чуть выше бывшего максимума, затем отдых (разгон) и проходка",
+       x="Номер тренировки",
+       y="Требуемое усилие",
+       caption="Файл с циклом прилагается") +
+  guides(color=guide_legend(title="Тип дня"))+
+  theme_bw()+theme(legend.position = c(0.85,0.15))#+ guides(color=FALSE)
+
+
 
 
 #160 Том МакКаллоу
 
-x=c(112,112,117,122,126,131,136,141,145,150,155,160,166,177,122.5,122.5,128,133,138,143,149,154,159,165,170,175,182,195,136,136,142,148,154,160,165,171,177,183,190,195,203,216)
+x=c(110,112,117,122,126,131,136,141,145,150,155,160,166,177,120,122.5,128,133,138,143,149,154,159,165,170,175,182,195,134,136,142,148,154,160,165,171,177,183,190,195,203,216)
 y=rep(c(10,10,8,8,5,5,5,5,3,3,2,2,1,1),3)
-vc=c(mx2(x,y))
+vc=c(mx(x,y,F))
+ct=length(y)/3
+
 plot(vc,type = "b")
 
+lb=paste0(x ,"x", y)
 
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%ct==0,"проходка","тренировка")))
+
+ggplot(tb,aes(x=d,y=val))+
+  geom_hline(yintercept = 160,size=1.,linetype="dashed",alpha=0.7)+
+  geom_hline(yintercept = vc[length(vc)],size=1.,linetype="dashed",alpha=0.7)+
+  geom_xspline(size=1,spline_shape = -0.7,linetype="dotdash",col="green",alpha=0.9)+
+  geom_point(aes(col=day),size=4)+
+  annotate("text", x = 35, y = 162, label = "Начальные результаты") +
+  annotate("text", x = 35, y = 214, label = "Итоговые результаты") +
+  annotate("text", x = tb$d+0.4, y = tb$val-ifelse(seq(tb$d)%%ct!=0,0.8,0.3), label = lb) +
+  labs(title='Тягловый цикл Тома Маккелоу (три прохода)',
+       subtitle="Колебание, подъём, колебание, проходка",
+       x="Номер тренировки",
+       y="Требуемое усилие",
+       caption="Файл с циклом прилагается") +
+  guides(color=guide_legend(title="Тип дня"))+
+  theme_bw()+theme(legend.position = c(0.85,0.1))#+ guides(color=FALSE)
 
 
 

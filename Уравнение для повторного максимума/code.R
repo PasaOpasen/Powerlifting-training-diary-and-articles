@@ -13,9 +13,9 @@ data=read_tsv("data.tsv",
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
 data %<>% mutate(
-  CountGroup=cut(Count,breaks = c(1,3,6,12,20,30))
+  CountGroup=cut(Count,breaks = c(1,3,7,12,20,30))
   )%>% select(-Date,-Mail)
-levels(data$CountGroup)=c("2-3","4-6","7-12","13-20",">20")
+levels(data$CountGroup)=c("2-3","4-7","8-12","13-20",">20")
 allrows=1:nrow(data)
 
 
@@ -48,9 +48,10 @@ getPIE(data%>% filter(Sex=="Женщина") %$% Body,main = "Телосложе
 chisq.test(data%>% filter(Sex=="Мужчина") %>%select(Body) %>% table())
 
 
-par(mfrow=c(2,1),mai=rep(0.1,4))
+par(mfrow=c(3,1),mai=rep(0.1,4))
 getPIE(data$CountGroup,main = "Диапазон повторений")
 getPIE(data$Experience,main = "Опыт тренировок")
+getPIE(data$Type,main = "Движение")
 par(mfrow=c(1,1),mai=rep(0.1,4))
 
 
@@ -59,7 +60,7 @@ pairs(data %>% select(-Count))
 GGally::ggpairs(data%>% select(-Count),title="Диаграмы взаимодействий между переменными в выборке",
                 lower = list(continuous = "smooth_loess", combo = "box"))
 
-data[sapply(data, is.numeric)]%>% cor()%>% corrplot::corrplot(method = "number")
+GGally::ggcorr(data,label=T,label_round = 2)
 data %$% cor(SM,Val*Count)
 
 
@@ -100,6 +101,21 @@ Show=function(vals,df=data){
   cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$SM),"\n")
 }
 
+
+ResAn=function(res){
+  shapiro.test(res) %>% print()
+  p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
+    geom_boxplot()+theme_bw()
+  print(p)
+  
+  p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
+    geom_boxplot() +facet_grid(vars(Body),vars(Type))+theme_bw()
+  p
+}
+ResAn(data$SM-data$Val*(1+0.0333*data$Count))
+
+ResVal=function(vals)ResAn(data$SM-vals)
+
 #Модели####
 
 #начальная
@@ -111,12 +127,13 @@ md=nls(SM~Val*(1+coef*Count),
        start = list(coef=0.0333))
 summary(md)
 Show(predict(md,data[3:4]))
-
+ResVal(predict(md,data[3:4]))
 
 #оптимизация чисто коэффициента c поправкой на его группу
 md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)
 summary(md)
 Show((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
+ResVal((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
 boot::cv.glm(data=data, glmfit=md,K=6)
 
 #надо глянуть это:
@@ -129,6 +146,7 @@ md=lm(SM~Val+Val:Count:CountGroup-1,data)
 md=lm(SM~Val:Count:CountGroup+Val:CountGroup-1,data)
 summary(md)
 Show(predict(md,data %>% select(Val,Count,CountGroup)))
+ResVal(predict(md,data %>% select(Val,Count,CountGroup)))
 
 car::vif(md)
 plot(md)
@@ -145,7 +163,7 @@ md=step(md,
                  ))
 summary(md)
 Show(predict(md,data))
-
+ResVal(predict(md,data %>% select(Val,Count,CountGroup)))
 
 
 md=lm(SM~Val+Val:Count-1+Val:Body:Count+Val:Experience:Count+

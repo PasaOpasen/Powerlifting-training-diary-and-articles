@@ -39,10 +39,19 @@ getPIE=function(vec,main=""){
   pie(x=x,labels=ns,main=main)
 }
 
-getPIE(data$Body)
-getPIE(data$CountGroup)
-getPIE(data$Experience)
-getPIE(data$Sex)
+par(mfrow=c(2,2),mai=rep(0.1,4))
+getPIE(data$Sex,main = "Пол испытуемых")
+getPIE(data$Body,main = "Телосложение испытуемых")
+getPIE(data %>% filter(Sex=="Мужчина") %$% Body,main = "Телосложение: мужчины")
+getPIE(data%>% filter(Sex=="Женщина") %$% Body,main = "Телосложение: женщины")
+
+chisq.test(data%>% filter(Sex=="Мужчина") %>%select(Body) %>% table())
+
+
+par(mfrow=c(2,1),mai=rep(0.1,4))
+getPIE(data$CountGroup,main = "Диапазон повторений")
+getPIE(data$Experience,main = "Опыт тренировок")
+par(mfrow=c(1,1),mai=rep(0.1,4))
 
 
 data %<>%select(-Age,-Experience)
@@ -51,6 +60,7 @@ GGally::ggpairs(data%>% select(-Count),title="Диаграмы взаимоде�
                 lower = list(continuous = "smooth_loess", combo = "box"))
 
 data[sapply(data, is.numeric)]%>% cor()%>% corrplot::corrplot(method = "number")
+data %$% cor(SM,Val*Count)
 
 
 obj=ggplot(data %>% select(-Count))+theme_bw()
@@ -82,7 +92,7 @@ Show=function(vals,df=data){
   cbind(value=vals,Target=df$SM,
         ERROR=abs(df$SM-vals),
         ErrorPercent=abs(df$SM-vals)/df$SM*100,
-        df[,c(3:11,13)]) %>% tbl_df()%>% arrange(ERROR,ErrorPercent,Count,Weight) %>% print()
+        df[,c(3:11)]) %>% tbl_df()%>% arrange(ERROR,ErrorPercent,Count,Weight) %>% print()
   cat("\n")
   rg=range(df$SM-vals)
   if(rg[1]<0)cat("-------------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
@@ -104,11 +114,15 @@ Show(predict(md,data[3:4]))
 
 
 #оптимизация чисто коэффициента c поправкой на его группу
-md=lm(I(SM/Val-1)~Val:Count:CountGroup,data)
+md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)
 summary(md)
 Show((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
 boot::cv.glm(data=data, glmfit=md,K=6)
 
+#надо глянуть это:
+md=lm(I(SM/Val-1)~Count:CountGroup-1,data)
+md=lm(I(SM-Val)~Val:Count:CountGroup-1,data)
+md=lm(SM~Val+Val:Count:CountGroup-1,data)
 
 
 #Val+Val*Count с поправкой на группу

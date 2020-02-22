@@ -110,7 +110,7 @@ ggplot(tb,aes(x=d,y=val))+
        subtitle="Колебание, подъём, колебание, проходка",
        x="Номер тренировки",
        y="Требуемое усилие",
-       caption="Файл с циклом прилагается") +
+       caption="Файл с циклом прилагается. Первый день цикла сдвинут вниз для удобства визуализации") +
   guides(color=guide_legend(title="Тип дня"))+
   theme_bw()+theme(legend.position = c(0.85,0.1))#+ guides(color=FALSE)
 

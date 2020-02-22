@@ -5,6 +5,7 @@ library(ggformula)
 library(ggthemes)
 library(tidyquant)
 library(ggvis)
+library(plotrix)
 
 data=read_tsv("data.tsv",
               skip=1,col_names = F,na="",
@@ -13,10 +14,11 @@ data=read_tsv("data.tsv",
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
 data %<>% mutate(
-  CountGroup=cut(Count,breaks = c(1,3,7,12,20,30))
-  )%>% select(-Date,-Mail)
+  CountGroup=cut(Count,breaks = c(1,3,7,12,20,50))
+  )%>% select(-Date,-Mail) %>% filter(Count>1,Val<SM)
 levels(data$CountGroup)=c("2-3","4-7","8-12","13-20",">20")
 allrows=1:nrow(data)
+maxerror=2
 
 
 
@@ -27,8 +29,7 @@ summary(data)
 
 
 
-
-getPIE=function(vec,main=""){
+getparam=function(vec){
   ln=length(levels(vec))
   x=numeric(ln)
   ns=character(ln)
@@ -36,8 +37,18 @@ getPIE=function(vec,main=""){
     x[i]=sum(vec==levels(vec)[i])/length(vec)
     ns[i]=paste0(levels(vec)[i]," (",round(x[i]*100,2),"%)")
   }
-  pie(x=x,labels=ns,main=main)
+  return(list(x=x,ns=ns))
 }
+
+getPIE=function(vec,main=""){
+  lst=getparam(vec)
+  pie(x=lst$x,labels=lst$ns,main=main)
+}
+getFan=function(vec,main=""){
+  pr=getparam(vec)
+  fan.plot(pr$x,labels=pr$ns,main=main)
+}
+
 
 par(mfrow=c(2,2),mai=rep(0.1,4))
 getPIE(data$Sex,main = "Пол испытуемых")
@@ -55,13 +66,25 @@ getPIE(data$Type,main = "Движение")
 par(mfrow=c(1,1),mai=rep(0.1,4))
 
 
-data %<>%select(-Age,-Experience)
+getFan(cut(data$Age,breaks=c(0,20,30,40,100)))
+
+
+data %<>%select(-Age)
 pairs(data %>% select(-Count))
 GGally::ggpairs(data%>% select(-Count),title="Диаграмы взаимодействий между переменными в выборке",
                 lower = list(continuous = "smooth_loess", combo = "box"))
 
 GGally::ggcorr(data,label=T,label_round = 2)
 data %$% cor(SM,Val*Count)
+
+byCountGroup=ggplot(data,aes(y=SM/Val,col=Sex))+facet_wrap(~CountGroup)+theme_bw()
+byCountGroup+geom_point(aes(x=Age))
+byCountGroup+geom_point(aes(x=Weight))
+
+ggplot(data,aes(x=Experience,y=SM/Val))+geom_boxplot()+facet_wrap(~CountGroup)+theme_bw()
+#есть ли значимые различия в разных возрастных группах для фиксированного диапазона
+aov(SM/Val~Experience,data %>% filter(CountGroup=="2-3")) %>% summary()
+
 
 
 obj=ggplot(data %>% select(-Count))+theme_bw()
@@ -83,21 +106,27 @@ bx+facet_grid(~Type)+theme_bw()+labs(caption="caption")
 
 
 #Функция ошибок####
-Error=function(target,weight)
-  {
-    s=(target-weight)^2 %>% sum()
-    return(sqrt(s/length(weight)))
-  } 
+Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
+
 Show=function(vals,df=data){
   #vals=predict(model,df)
-  cbind(value=vals,Target=df$SM,
+  err=df$SM-vals
+  cbind(value=vals,Target=df$SM,Set=paste0(df$Val,"*",df$Count),
         ERROR=abs(df$SM-vals),
-        ErrorPercent=abs(df$SM-vals)/df$SM*100,
-        df[,c(3:11)]) %>% tbl_df()%>% arrange(ERROR,ErrorPercent,Count,Weight) %>% print()
+        ErrorPercent=abs(err)/df$SM*100,
+        df[,c(3:11)]) %>% tbl_df() %>% select(-Count)%>% arrange(-ERROR,-ErrorPercent,Count,Weight) %>% 
+        filter(ERROR>1)%>% print()
   cat("\n")
-  rg=range(df$SM-vals)
-  if(rg[1]<0)cat("-------------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
-  if(rg[2]>0)cat("-------------------> Наибольшая ошибка в меньшую сторону:",rg[2],"\n")
+  rg=range(err)
+  
+  if(rg[1]<0)cat("------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
+  if(rg[2]>0)cat("------------> Наибольшая ошибка в меньшую сторону:",rg[2],"\n")
+  
+  s=sum(abs(err)/df$SM*100>maxerror)
+  len=length(err)
+  cat("Модель ошиблась более чем на",maxerror,"% в",s,"случаях из",len,"(",s/len*100,"%)\n")
+  s=sum(abs(err)>maxerror)
+  cat("Модель ошиблась более чем на",maxerror,"кг в",s,"случаях из",len,"(",s/len*100,"%)\n")
   cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$SM),"\n")
 }
 
@@ -117,6 +146,9 @@ ResAn(data$SM-data$Val*(1+0.0333*data$Count))
 ResVal=function(vals)ResAn(data$SM-vals)
 
 #Модели####
+
+shapiro.test(data$SM)
+hist(data$SM)
 
 #начальная
 Show(data$Val*(1+0.0333*data$Count))
@@ -153,7 +185,7 @@ plot(md)
 
 
 md=step(md,
-        direction = "forward",
+        direction = "both",
         scope = (~
                    Val:Body+Val:Count:Body+
                    Val:Experience+Val:Count:Experience+
@@ -167,19 +199,18 @@ ResVal(predict(md,data %>% select(Val,Count,CountGroup)))
 
 
 md=lm(SM~Val+Val:Count-1+Val:Body:Count+Val:Experience:Count+
-        Val:Body+#Val:Sex+
+        Val:Body+Val:Count:CountGroup+Val:CountGroup+#Val:Sex
         Val:Experience+
         I(Val*Weight/(High-100))+
         I((Val-100)/Val)+poly(Val/Weight,2)
       ,data)
 summary(md)
-Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience
-                               )))
+Show(predict(md,data))
 
 
 md=step(md,direction = "both")
 summary(md)
-Show(predict(md,data%>% select(Val,Count,Weight,High,Body,Sex,Experience)))
+Show(predict(md,data))
 
 anova(md)
 

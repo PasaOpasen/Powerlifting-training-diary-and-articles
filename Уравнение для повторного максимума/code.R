@@ -6,17 +6,21 @@ library(ggthemes)
 library(tidyquant)
 library(ggvis)
 library(plotrix)
+library(car)
 
 data=read_tsv("data.tsv",
               skip=1,col_names = F,na="",
-              col_types = "fddnfffnnnff"
+              col_types = "fddnfffnnnff",
+              comment="#"
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
 data %<>% mutate(
-  CountGroup=cut(Count,breaks = c(1,3,7,12,20,50))
-  )%>% select(-Date,-Mail) %>% filter(Count>1,Val<SM)
+  CountGroup=cut(Count,breaks = c(1,3,7,12,20,50)),
+  AgeGroup=cut(Age,breaks = c(1,19,27,35,70))
+  )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
 levels(data$CountGroup)=c("2-3","4-7","8-12","13-20",">20")
+levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
 allrows=1:nrow(data)
 maxerror=2
 
@@ -61,8 +65,14 @@ chisq.test(data%>% filter(Sex=="Мужчина") %>%select(Body) %>% table())
 
 par(mfrow=c(3,1),mai=rep(0.1,4))
 getPIE(data$CountGroup,main = "Диапазон повторений")
+ggplot(data,aes(x=CountGroup))+geom_bar()+theme_classic()+labs(title="Количество человек в каждом диапазоне повторений",x="Диапазон повторений",y="Количество")
 getPIE(data$Experience,main = "Опыт тренировок")
+ggplot(data,aes(x=Experience))+geom_bar()+theme_classic()+labs(title="Распределение по опыту тренировок",x="Опыт тренировок",y="Количество")
+ggplot(data,aes(x=AgeGroup))+geom_bar()+theme_classic()+labs(title="Распределение по возрасту",x="Возрастная группа",y="Количество")
+
 getPIE(data$Type,main = "Движение")
+
+
 par(mfrow=c(1,1),mai=rep(0.1,4))
 
 
@@ -114,7 +124,7 @@ Show=function(vals,df=data){
   cbind(value=vals,Target=df$SM,Set=paste0(df$Val,"*",df$Count),
         ERROR=abs(df$SM-vals),
         ErrorPercent=abs(err)/df$SM*100,
-        df[,c(3:11)]) %>% tbl_df() %>% select(-Count)%>% arrange(-ERROR,-ErrorPercent,Count,Weight) %>% 
+        df[,c(3:11)]) %>% tbl_df() %>% select(-Count)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)
@@ -144,6 +154,20 @@ ResAn=function(res){
 ResAn(data$SM-data$Val*(1+0.0333*data$Count))
 
 ResVal=function(vals)ResAn(data$SM-vals)
+
+
+
+qqPlot(md,main="Q-Q plot")
+
+durbinWatsonTest(md)#тест на автокорреляцию
+
+ncvTest(md)#однородность дисперсии
+
+gvlma::gvlma(md) %>% summary()
+
+vif(md)
+plot(md)
+
 
 #Модели####
 
@@ -180,9 +204,7 @@ summary(md)
 Show(predict(md,data %>% select(Val,Count,CountGroup)))
 ResVal(predict(md,data %>% select(Val,Count,CountGroup)))
 
-car::vif(md)
-plot(md)
-
+md=lm(SM~Val:Count:CountGroup+Val:CountGroup+Val+Val:Count,data)
 
 md=step(md,
         direction = "both",

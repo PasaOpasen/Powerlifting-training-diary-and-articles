@@ -176,6 +176,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Code\ДОПОЛНЕНИЯ\Demo_For_FlexibleMessageBox-noexe\Demo_For_FlexibleMessageBox\Demo_For_FlexibleMessageBox.csproj">
+      <Project>{f1fd937b-c84e-4f6c-b533-4982bd43914f}</Project>
+      <Name>Demo_For_FlexibleMessageBox</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MathClasses\MathClassesLibrary\MathClassesLibrary.csproj">
       <Project>{1c2eda9a-9f1f-4054-a768-4939b0e0a190}</Project>
       <Name>MathClassesLibrary</Name>
@@ -187,10 +191,6 @@
     <ProjectReference Include="..\Библиотека классов\Библиотека классов.csproj">
       <Project>{715aa568-0697-47bd-840a-ee1e12795111}</Project>
       <Name>Библиотека классов</Name>
-    </ProjectReference>
-    <ProjectReference Include="D:\Code\ДОПОЛНЕНИЯ\Demo_For_FlexibleMessageBox-noexe\Demo_For_FlexibleMessageBox\Demo_For_FlexibleMessageBox.csproj">
-      <Project>{f1fd937b-c84e-4f6c-b533-4982bd43914f}</Project>
-      <Name>Demo_For_FlexibleMessageBox</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

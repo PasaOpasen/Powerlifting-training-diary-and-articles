@@ -13,11 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgressControl", "Конт
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMdator", "RMdator\RMdator.csproj", "{94D98531-DCB1-4C0C-8190-238C89DC1492}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo_For_FlexibleMessageBox", "D:\Code\ДОПОЛНЕНИЯ\Demo_For_FlexibleMessageBox-noexe\Demo_For_FlexibleMessageBox\Demo_For_FlexibleMessageBox.csproj", "{F1FD937B-C84E-4F6C-B533-4982BD43914F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Библиотека графики", "..\MathClasses\Библиотека графики\Библиотека графики.csproj", "{72477714-ACF0-4659-A0DF-12F481BC85EC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathClassesLibrary", "..\MathClasses\MathClassesLibrary\MathClassesLibrary.csproj", "{1C2EDA9A-9F1F-4054-A768-4939B0E0A190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo_For_FlexibleMessageBox", "..\Code\ДОПОЛНЕНИЯ\Demo_For_FlexibleMessageBox-noexe\Demo_For_FlexibleMessageBox\Demo_For_FlexibleMessageBox.csproj", "{F1FD937B-C84E-4F6C-B533-4982BD43914F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,12 +67,6 @@ Global
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Release|Any CPU.Build.0 = Release|Any CPU
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Release|x86.ActiveCfg = Release|Any CPU
 		{94D98531-DCB1-4C0C-8190-238C89DC1492}.Release|x86.Build.0 = Release|Any CPU
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|x86.ActiveCfg = Debug|x86
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|x86.Build.0 = Debug|x86
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|Any CPU.ActiveCfg = Release|x86
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|x86.ActiveCfg = Release|x86
-		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|x86.Build.0 = Release|x86
 		{72477714-ACF0-4659-A0DF-12F481BC85EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72477714-ACF0-4659-A0DF-12F481BC85EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72477714-ACF0-4659-A0DF-12F481BC85EC}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -89,6 +83,12 @@ Global
 		{1C2EDA9A-9F1F-4054-A768-4939B0E0A190}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1C2EDA9A-9F1F-4054-A768-4939B0E0A190}.Release|x86.ActiveCfg = Release|Any CPU
 		{1C2EDA9A-9F1F-4054-A768-4939B0E0A190}.Release|x86.Build.0 = Release|Any CPU
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|x86.ActiveCfg = Debug|x86
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Debug|x86.Build.0 = Debug|x86
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|Any CPU.ActiveCfg = Release|x86
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|x86.ActiveCfg = Release|x86
+		{F1FD937B-C84E-4F6C-B533-4982BD43914F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

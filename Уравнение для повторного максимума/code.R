@@ -15,12 +15,20 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>% mutate(
-  CountGroup=cut(Count,breaks = c(1,3,7,12,20,50)),
-  AgeGroup=cut(Age,breaks = c(1,19,27,35,70))
+data %<>%filter(Count<=20) %>%  mutate(
+  CountGroup=cut(Count,breaks = c(1,3,7,12,20)),
+  AgeGroup=cut(Age,breaks = c(1,19,27,35,70)),
+  Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T)
   )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
-levels(data$CountGroup)=c("2-3","4-7","8-12","13-20",">20")
+levels(data$CountGroup)=c("2-3","4-7","8-12","13-20")#,">20")
 levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
+
+ex=data$Experience %>% as.numeric()
+ex[ex==6]=5
+ex %<>%factor() 
+levels(ex)=c("До двух лет","2-3 года","4-5 лет","6-10 лет","больше 10 лет")
+data %<>%mutate(Experience=factor(ex,ordered = T)) 
+
 allrows=1:nrow(data)
 maxerror=2
 
@@ -127,7 +135,7 @@ Show=function(vals,df=data){
         df[,c(3:11)]) %>% tbl_df() %>% select(-Count)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
-  rg=range(err)
+  rg=range(err)#;print(err);print(rg)
   
   if(rg[1]<0)cat("------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
   if(rg[2]>0)cat("------------> Наибольшая ошибка в меньшую сторону:",rg[2],"\n")
@@ -138,6 +146,11 @@ Show=function(vals,df=data){
   s=sum(abs(err)>maxerror)
   cat("Модель ошиблась более чем на",maxerror,"кг в",s,"случаях из",len,"(",s/len*100,"%)\n")
   cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$SM),"\n")
+}
+ShowErrors=function(model,power.coef=1,sum.coef=0){
+  Show(predict(model,data)*power.coef+sum.coef)
+  cat("Оценки кросс-валидации",boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=5)$delta,"\n") 
+  #cat("AIC =",AIC(model),"\n")
 }
 
 
@@ -151,6 +164,7 @@ ResAn=function(res){
     geom_boxplot() +facet_grid(vars(Body),vars(Type))+theme_bw()
   p
 }
+
 ResAn(data$SM-data$Val*(1+0.0333*data$Count))
 
 ResVal=function(vals)ResAn(data$SM-vals)
@@ -166,8 +180,13 @@ ncvTest(md)#однородность дисперсии
 gvlma::gvlma(md) %>% summary()
 
 vif(md)
+par(mfrow=c(2,2))
 plot(md)
+par(mfrow=c(1,1))
 
+outlierTest(md)
+
+influencePlot(md,main="Диаграмма влияния",sub="Размеры кругов пропорциональны расстояниям Кука")
 
 #Модели####
 
@@ -178,43 +197,66 @@ hist(data$SM)
 Show(data$Val*(1+0.0333*data$Count))
 
 #оптимизация чисто коэффициента
+md=nls(SM~Val*(s+coef*Count)^t+k*Weight/Val,
+       data=data,
+       start = list(s=1,coef=0.0333,t=1,k=0))
+summary(md)
+Show(predict(md,data))
+ResVal(predict(md,data[3:4]))
+
 md=nls(SM~Val*(1+coef*Count),
        data=data,
        start = list(coef=0.0333))
 summary(md)
-Show(predict(md,data[3:4]))
-ResVal(predict(md,data[3:4]))
+Show(predict(md,data))
 
 #оптимизация чисто коэффициента c поправкой на его группу
 md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)
 summary(md)
 Show((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
 ResVal((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
-boot::cv.glm(data=data, glmfit=md,K=6)
+
 
 #надо глянуть это:
-md=lm(I(SM/Val-1)~Count:CountGroup-1,data)
+md=lm(I(SM/Val-1)~Count:CountGroup-1,data);ShowErrors(md,data$Val,data$Val)
 md=lm(I(SM-Val)~Val:Count:CountGroup-1,data)
 md=lm(SM~Val+Val:Count:CountGroup-1,data)
 
 
+############################################################################################################
 #Val+Val*Count с поправкой на группу
 md=lm(SM~Val:Count:CountGroup+Val:CountGroup-1,data)
 summary(md)
-Show(predict(md,data %>% select(Val,Count,CountGroup)))
+Show(predict(md,data))
+ShowErrors(md)
 ResVal(predict(md,data %>% select(Val,Count,CountGroup)))
 
-md=lm(SM~Val:Count:CountGroup+Val:CountGroup+Val+Val:Count,data)
+md=lm(SM~Val:Count:CountGroup+Val:CountGroup+Val+Val:Count-1,data)
+md=lm(SM~Val:Count:CountGroup+Val-1,data)
+md=lm(SM~Val:Count:CountGroup+Val:Body-1,data)
 
+md=lm(SM~Val:CountGroup:Count+Val:Type:Body-1,data)
+
+#md=lm(SM~Val:Count+Val-1,data,subset = data$Count<4)
 md=step(md,
         direction = "both",
-        scope = (~
-                   Val:Body+Val:Count:Body+
-                   Val:Experience+Val:Count:Experience+
-                   Val:Count:CountGroup:Body+Val:CountGroup:Body+
+        scope = (~.+
+                   Val:Body+
+                   Val:Count:Body+
+                   Val:Experience+
+                   Val:AgeGroup:Experience+
+                   Val:Count:Experience+
+                   Val:Count:CountGroup:Body+
+                   Val:CountGroup:Body+
+                   I(Val*Count/Weight):CountGroup+
                    I(Val*Weight/(High-100))+
-                   I((Val-100)/Val)+poly(Val/Weight,2)
-                 ))
+                   I((Val-100)/Val)+
+                   poly(Val/Weight,2)+
+                   Val+Val:Count+
+                   Val:Weight:Body
+                 ),steps=5000)
+
+
 summary(md)
 Show(predict(md,data))
 ResVal(predict(md,data %>% select(Val,Count,CountGroup)))

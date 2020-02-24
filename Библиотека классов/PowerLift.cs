@@ -134,9 +134,8 @@ namespace Библиотека_классов
         }
         public static PowerLift[] GetFromFile(StreamReader file)
         {
-            var res = new List<PowerLift>();
-            string s = ""; string com = "";
-            s = file.ReadLine();
+            var res = new List<PowerLift>(100);
+            string s = file.ReadLine(); string com = "";
 
             void Setscom()
             {

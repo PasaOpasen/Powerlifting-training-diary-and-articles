@@ -7,6 +7,8 @@ library(tidyquant)
 library(ggvis)
 library(plotrix)
 library(car)
+#library(DAAG)
+library(leaps)
 
 data=read_tsv("data.tsv",
               skip=1,col_names = F,na="",
@@ -149,22 +151,24 @@ Show=function(vals,df=data){
 }
 ShowErrors=function(model,power.coef=1,sum.coef=0){
   Show(predict(model,data)*power.coef+sum.coef)
-  cat("Оценки кросс-валидации",boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=5)$delta,"\n") 
+  cat("Оценки кросс-валидации",boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=10)$delta,"\n") 
   #cat("AIC =",AIC(model),"\n")
 }
 
 
 ResAn=function(res){
   shapiro.test(res) %>% print()
+  
   p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
     geom_boxplot()+theme_bw()
   print(p)
   
-  p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
-    geom_boxplot() +facet_grid(vars(Body),vars(Type))+theme_bw()
-  p
+  (p+facet_grid(vars(Type))) %>% print()
+  
+  p+facet_grid(vars(Body),vars(Type))
 }
 
+#из этого графика можно сделать вывод, что модель неплохо работает на диапазоне 2-3, но на диапазоне 13-20 ошибка какая-то сильно отличающаяся от тенденции уменьшения ошибок, так что этот диапазон надо бы и вообще убрать, так как там уже играют роль свойства красных волокон, не говорящие о силе
 ResAn(data$SM-data$Val*(1+0.0333*data$Count))
 
 ResVal=function(vals)ResAn(data$SM-vals)
@@ -209,7 +213,6 @@ md=nls(SM~Val*(1+coef*Count),
        start = list(coef=0.0333))
 summary(md)
 Show(predict(md,data))
-
 #оптимизация чисто коэффициента c поправкой на его группу
 md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)
 summary(md)
@@ -219,9 +222,18 @@ ResVal((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
 
 #надо глянуть это:
 md=lm(I(SM/Val-1)~Count:CountGroup-1,data);ShowErrors(md,data$Val,data$Val)
-md=lm(I(SM-Val)~Val:Count:CountGroup-1,data)
+md=lm(I(SM-Val)~Val:Count:CountGroup-1,data);ShowErrors(md,sum.coef=data$Val)
 md=lm(SM~Val+Val:Count:CountGroup-1,data)
 
+
+md=lm(I(SM^2)~Val+Val:Count-1,data)
+Show(predict(md,data) %>% sqrt())
+
+md=lm(sqrt(SM)~Val+Val:Count-1,data)
+Show(predict(md,data)^2)
+
+
+md=lm(SM~Val:Count+Val:CountGroup-1,data)
 
 ############################################################################################################
 #Val+Val*Count с поправкой на группу
@@ -255,6 +267,8 @@ md=step(md,
                    Val+Val:Count+
                    Val:Weight:Body
                  ),steps=5000)
+
+#md=regsubsets(md$call$formula,data=data,nbest = 10)
 
 
 summary(md)

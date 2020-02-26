@@ -132,6 +132,7 @@ namespace Библиотека_классов
             s.Write(p[p.Length - 1]);
             s.Close();
         }
+        
         public static PowerLift[] GetFromFile(StreamReader file)
         {
             var res = new List<PowerLift>(100);

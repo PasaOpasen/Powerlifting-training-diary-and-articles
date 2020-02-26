@@ -17,12 +17,12 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>%filter(Count<=20) %>%  mutate(
-  CountGroup=cut(Count,breaks = c(1,3,7,12,20)),
+data %<>%filter(Count<=20) %>% arrange(Val,Count,Weight) %>%  mutate(
+  CountGroup=cut(Count,breaks = c(1,3,6,10,20)),
   AgeGroup=cut(Age,breaks = c(1,19,27,35,70)),
   Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T)
   )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
-levels(data$CountGroup)=c("2-3","4-7","8-12","13-20")#,">20")
+levels(data$CountGroup)=c("2-3","4-6","7-10","11-20")#,">20")
 levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
 
 ex=data$Experience %>% as.numeric()
@@ -160,7 +160,7 @@ ResAn=function(res){
   shapiro.test(res) %>% print()
   
   p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
-    geom_boxplot()+theme_bw()
+    geom_boxplot()+labs(x="Группа повторений",y="Остатки (цель - предсказание)",title="Распределения остатков в зависимости от группы повторений")+theme_bw()
   print(p)
   
   (p+facet_grid(vars(Type))) %>% print()
@@ -213,6 +213,15 @@ md=nls(SM~Val*(1+coef*Count),
        start = list(coef=0.0333))
 summary(md)
 Show(predict(md,data))
+
+
+md=nls(SM~Val^vk*(1+coef*Count)^kk,
+       data=data,
+       start = list(coef=0.0333,vk=1.,kk=1.))
+summary(md)
+Show(predict(md,data))
+
+
 #оптимизация чисто коэффициента c поправкой на его группу
 md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)
 summary(md)
@@ -224,7 +233,7 @@ ResVal((predict(md,data %>% select(Val,Count,CountGroup))+1)*data$Val)
 md=lm(I(SM/Val-1)~Count:CountGroup-1,data);ShowErrors(md,data$Val,data$Val)
 md=lm(I(SM-Val)~Val:Count:CountGroup-1,data);ShowErrors(md,sum.coef=data$Val)
 md=lm(SM~Val+Val:Count:CountGroup-1,data)
-
+md=lm(SM~Val:CountGroup+Val:Count:CountGroup+I((High-120)/Weight):Count:CountGroup-1,data)
 
 md=lm(I(SM^2)~Val+Val:Count-1,data)
 Show(predict(md,data) %>% sqrt())
@@ -235,6 +244,7 @@ Show(predict(md,data)^2)
 
 md=lm(SM~Val:Count+Val:CountGroup-1,data)
 
+Show(predict(md,data)[data$Count<11],data %>% filter(Count<11))
 ############################################################################################################
 #Val+Val*Count с поправкой на группу
 md=lm(SM~Val:Count:CountGroup+Val:CountGroup-1,data)

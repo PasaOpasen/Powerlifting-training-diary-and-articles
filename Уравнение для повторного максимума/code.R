@@ -151,8 +151,12 @@ Show=function(vals,df=data){
 }
 ShowErrors=function(model,power.coef=1,sum.coef=0){
   Show(predict(model,data)*power.coef+sum.coef)
-  cat("Оценки кросс-валидации",boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=10)$delta,"\n") 
-  #cat("AIC =",AIC(model),"\n")
+  cat("Оценка кросс-валидации для всего набора данных",
+      boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=10)$delta[1],"\n")
+  cat("Оценка кросс-валидации для не более чем 10 повторений",
+      boot::cv.glm(data %>% filter(Count<11),glm(formula = md$call$formula,data=data %>% filter(Count<11)),K=10)$delta[1],"\n") 
+  cat("Оценка кросс-валидации для не более чем 6 повторений",
+      boot::cv.glm(data %>% filter(Count<7),glm(formula = md$call$formula,data=data %>% filter(Count<7)),K=10)$delta[1],"\n") 
 }
 
 

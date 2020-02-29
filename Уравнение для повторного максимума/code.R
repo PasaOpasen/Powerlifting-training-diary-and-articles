@@ -17,12 +17,13 @@ data=read_tsv("data.tsv",
               ) %>% tbl_df()
 
 colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
-data %<>%filter(Count<=20) %>% arrange(Val,Count,Weight) %>%  mutate(
-  CountGroup=cut(Count,breaks = c(1,3,6,10,20)),
+data %<>%#filter(Count<=20) %>% 
+  arrange(Val,Count,Weight) %>%  mutate(
+  CountGroup=cut(Count,breaks = c(1,3,6,10,20,40)),
   AgeGroup=cut(Age,breaks = c(1,19,27,35,70)),
   Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T)
   )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
-levels(data$CountGroup)=c("2-3","4-6","7-10","11-20")#,">20")
+levels(data$CountGroup)=c("2-3","4-6","7-10","11-20",">20")
 levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
 
 ex=data$Experience %>% as.numeric()
@@ -41,6 +42,38 @@ maxerror=2
 psych::describe(data)
 summary(data)
 
+
+data %>% ggplot(aes(x=factor(Count),y=SM/Val-1))+geom_boxplot()+theme_bw()
+#data %>% ggplot(aes(x=CountGroup,y=SM/Val))+geom_boxplot()+theme_bw()
+data %>% ggplot(aes(x=factor(Count),y=(SM/Val-1)/Count))+geom_boxplot()+theme_bw()
+
+
+gr=data$CountGroup %>% as.numeric()
+cors=function(inds)cor(data$SM[inds],data$Val[inds])
+
+cors(gr<2)
+cors(gr==2)
+cors(gr==3)
+cors(gr==4)
+cors(gr==5)
+
+m=lm(SM~Val:factor(Count)-1,data) 
+m%>% summary()
+cf=coefficients(m)[1:7]
+cf-cf[4]
+coefficients(m)[1:7] %>% plot(x=2:8,type="b")
+
+#по этому графику видно, что повторения делятся на линейные группы, то есть в пределах группы они дают одинаковый прирост
+plot(seq(-10,10,length.out=50) %>% map_dbl(function(x)1/(1+exp(-x))) )
+
+# а что если там квадратичная зависимость от 2 до 6?
+m=lm(SM~Val:I((Count-1)^2)-1,data %>% filter(Count<7)) 
+
+
+
+sigma=nls(v~1+b/(1+exp(-k*n)),
+          data=data.frame(v=coefficients(m)[1:7],n=1:7),
+          start = list(b=0.3,k=1))
 
 
 getparam=function(vec){

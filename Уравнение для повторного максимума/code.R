@@ -21,10 +21,13 @@ data %<>%#filter(Count<=20) %>%
   arrange(Val,Count,Weight) %>%  mutate(
   CountGroup=cut(Count,breaks = c(1,3,6,10,20,40)),
   AgeGroup=cut(Age,breaks = c(1,19,27,35,70)),
-  Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T)
+  Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T),
+  Index=Weight/(0.01*High)^2,
+  IndexGroup=cut(Index,breaks = c(0,16,18.5,24.99,30,35,40,60))
   )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
 levels(data$CountGroup)=c("2-3","4-6","7-10","11-20",">20")
 levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
+levels(data$IndexGroup)=c("выраженный дефицит","дефицит","норма","избыток","ожирение1","ожирение2","ожирение3")
 
 ex=data$Experience %>% as.numeric()
 ex[ex==6]=5
@@ -35,6 +38,7 @@ data %<>%mutate(Experience=factor(ex,ordered = T))
 allrows=1:nrow(data)
 maxerror=2
 
+data %$%  table(Body,IndexGroup)
 
 
 #Разведочный анализ и описание выборки####
@@ -124,11 +128,13 @@ getFan(cut(data$Age,breaks=c(0,20,30,40,100)))
 
 data %<>%select(-Age)
 pairs(data %>% select(-Count))
-GGally::ggpairs(data%>% select(-Count),title="Диаграмы взаимодействий между переменными в выборке",
+GGally::ggpairs(data%>% select(-Count,-Mail),title="Диаграмы взаимодействий между переменными в выборке",
                 lower = list(continuous = "smooth_loess", combo = "box"))
 
 GGally::ggcorr(data,label=T,label_round = 2)
 data %$% cor(SM,Val*Count)
+
+data %>% ggplot(aes(x=Val,y=SM))+geom_smooth()+geom_point(aes(col=CountGroup),size=3)+theme_bw()
 
 byCountGroup=ggplot(data,aes(y=SM/Val,col=Sex))+facet_wrap(~CountGroup)+theme_bw()
 byCountGroup+geom_point(aes(x=Age))
@@ -167,7 +173,7 @@ Show=function(vals,df=data){
   cbind(value=vals,Target=df$SM,Set=paste0(df$Val,"*",df$Count),
         ERROR=abs(df$SM-vals),
         ErrorPercent=abs(err)/df$SM*100,
-        df[,c(3:11)]) %>% tbl_df() %>% select(-Count)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        df[,c(3:11)]) %>% tbl_df() %>% select(-Count, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)#;print(err);print(rg)

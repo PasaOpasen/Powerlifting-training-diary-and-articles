@@ -38,7 +38,12 @@ data %<>%mutate(Experience=factor(ex,ordered = T))
 allrows=1:nrow(data)
 maxerror=2
 
-data %$%  table(Body,IndexGroup)
+#уникальные записи (где один от каждого человека берётся только одна запись)
+#объяснить, по каким признакам людей считать одинаковыми
+data.unique=data %>% select(AgeGroup,High,Body,Experience,Sex,IndexGroup,Mail) %>% unique()
+
+
+data.unique %$%  table(Body,IndexGroup)
 
 
 #Разведочный анализ и описание выборки####
@@ -51,6 +56,20 @@ data %>% ggplot(aes(x=factor(Count),y=SM/Val-1))+geom_boxplot()+theme_bw()
 #data %>% ggplot(aes(x=CountGroup,y=SM/Val))+geom_boxplot()+theme_bw()
 data %>% ggplot(aes(x=factor(Count),y=(SM/Val-1)/Count))+geom_boxplot()+theme_bw()
 
+#По этому соотношению надо бы выбросы удалить
+data %>% ggplot(aes(x=factor(Count),y=100*Val/SM))+geom_boxplot()+coord_flip()+theme_bw()#+
+  #annotate("text", x=10, y = mean(100*Val/SM), label = "Начальные результаты")
+
+data %>% mutate(perc=100*Val/SM) %>% filter(Count<=15) %>% 
+  group_by(factor(Count)) %>% 
+  summarise(mean=t.test(perc)$estimate,
+            down=t.test(perc)$conf.int[1],
+            up=t.test(perc)$conf.int[2])
+
+#как насчёт какой-то такой модели?
+lm(Val/SM~Count+I(Count^2)+I(Val/Weight),data) %>% summary()
+lm(Val/SM~Count:CountGroup,data) %>% summary()
+lm(Val/SM~Count+I(Count^2)+I(Val/Weight),data) %>% plot()
 
 gr=data$CountGroup %>% as.numeric()
 cors=function(inds)cor(data$SM[inds],data$Val[inds])
@@ -101,13 +120,15 @@ getFan=function(vec,main=""){
 }
 
 
-par(mfrow=c(2,2),mai=rep(0.1,4))
-getPIE(data$Sex,main = "Пол испытуемых")
-getPIE(data$Body,main = "Телосложение испытуемых")
-getPIE(data %>% filter(Sex=="Мужчина") %$% Body,main = "Телосложение: мужчины")
-getPIE(data%>% filter(Sex=="Женщина") %$% Body,main = "Телосложение: женщины")
 
-chisq.test(data%>% filter(Sex=="Мужчина") %>%select(Body) %>% table())
+par(mfrow=c(2,2),mai=rep(0.1,4))
+
+getPIE(data.unique$Sex,main = "Пол испытуемых")
+getPIE(data.unique$Body,main = "Телосложение испытуемых")
+getPIE(data.unique %>% filter(Sex=="Мужчина") %$% Body,main = "Телосложение: мужчины")
+getPIE(data.unique%>% filter(Sex=="Женщина") %$% Body,main = "Телосложение: женщины")
+
+chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(Body) %>% table())
 
 
 par(mfrow=c(3,1),mai=rep(0.1,4))
@@ -173,7 +194,7 @@ Show=function(vals,df=data){
   cbind(value=vals,Target=df$SM,Set=paste0(df$Val,"*",df$Count),
         ERROR=abs(df$SM-vals),
         ErrorPercent=abs(err)/df$SM*100,
-        df[,c(3:11)]) %>% tbl_df() %>% select(-Count, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        df[,c(3:15)]) %>% tbl_df() %>% select(-Count, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)#;print(err);print(rg)
@@ -264,6 +285,12 @@ md=nls(SM~Val^vk*(1+coef*Count)^kk,
 summary(md)
 Show(predict(md,data))
 
+
+md=nls(SM~Val*(1+coef*Count)^(kk+Count*t),
+       data=data,
+       start = list(coef=0.033,kk=0.01,t=0))
+summary(md)
+Show(predict(md,data))
 
 #оптимизация чисто коэффициента c поправкой на его группу
 md=lm(I(SM/Val-1)~Val:Count:CountGroup-1,data)

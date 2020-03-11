@@ -40,7 +40,7 @@ maxerror=2
 
 #уникальные записи (где один от каждого человека берётся только одна запись)
 #объяснить, по каким признакам людей считать одинаковыми
-data.unique=data %>% select(AgeGroup,High,Body,Experience,Sex,IndexGroup,Mail) %>% unique()
+data.unique=data %>% select(AgeGroup,High,Body,Experience,Sex,IndexGroup) %>% unique()
 
 
 data.unique %$%  table(Body,IndexGroup)
@@ -119,6 +119,15 @@ getFan=function(vec,main=""){
   fan.plot(pr$x,labels=pr$ns,main=main)
 }
 
+
+getPIE(data.unique$Body)
+
+#среди эндоморфов избыток веса встречается почаще
+ggplot(data.unique,aes(x=Body,fill=IndexGroup))+geom_bar(position=position_dodge2())+
+  labs(x="Тип телосложения",y="Количество ответивших",fill="Индекс массы тела")+
+  coord_flip()+theme_bw()+theme(legend.position = "bottom")
+
+chisq.test(data.unique%>% filter(IndexGroup=="ожирение1") %>%select(Body) %>% table())
 
 
 par(mfrow=c(2,2),mai=rep(0.1,4))

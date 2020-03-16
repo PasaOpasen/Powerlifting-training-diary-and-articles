@@ -1688,7 +1688,10 @@ summary {
 </ol>
 <div id="о-данных-и-ресурсах" class="section level2">
 <h2>О данных и ресурсах</h2>
-<p>С целью</p>
+<p>Для сбора наблюдений был создан <a href="https://forms.gle/R4zZqQJ3ggNdEuQ67">опрос в Google Forms</a> на русском языке и <a href="https://forms.gle/dbthrvE5Y95beqUL9">его англоязычный аналог</a>.</p>
+<p>Русскоязычный опрос распространялся через соц. сеть ВКонтакте преимущественно в следующих группах: <a href="https://vk.com/powerliftingnews">Пауэрлифтинг | Тяжелая атлетика</a>, <a href="https://vk.com/ilovepowerlifting">Я ♥ ПАУЭРЛИФТИНГ</a>, <a href="https://vk.com/powerliftingworld">ПАУЭРЛИФТИНГ И ЖИМ ЛЁЖА 18+</a>, <a href="https://vk.com/tvoytrenercom">Твой Тренер</a>; аналогично англоязычный опрос распространялся на Facebook преимущественно здесь: <a href="https://www.facebook.com/PowerliftingMotivation/">Powerlifting Motivation</a>, <a href="https://www.facebook.com/groups/IPLPowerlifting/">International Powerlifting League (IPL)</a>, <a href="https://www.facebook.com/groups/powerliftingmotivation/">Powerlifting Motivation Chat</a>. Кроме того, несколько наблюдений я собрал лично.</p>
+<p>Спустя два месяца от создания опросов данные были выгружены и началась их обработка. Теперь эти данные и всё, связанное с ними (в том числе последняя версия этого документа), хранятся <a href="https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Уравнение%20для%20повторного%20максимума">в моём репозитории</a>.</p>
+<p>Для обработки данных и создания отчёта использовалась среда <a href="https://rstudio.com">RStudio</a> и <strong>язык R версии 3.6.2</strong>.</p>
 </div>
 <div id="отправная-точка" class="section level2">
 <h2>Отправная точка</h2>
@@ -1736,6 +1739,7 @@ summary {
 <p>Сперва будет произведён разведочных анализ собранных данных с целью выявить в них некоторые закономерности, подтвердить или опровергнуть некоторые простые гипотезы, обнаружить выбросы, принять решение о включении тех или иные факторов в модель.</p>
 <p>После этого будет построена серия моделей, среди которых будет выбрана лучшая. По правилам машинного обучения лучшей моделью считается та, что даёт наименьшую ошибку при перекрёстной проверке и (согласно принципу бритвы Оккама) наиболее проста в объяснении.</p>
 <p>В конце я опишу возможности применения полученной модели.</p>
+<hr />
 </div>
 </div>
 <div id="описание-выборки-и-разведочный-анализ-данных" class="section level1">

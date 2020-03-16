@@ -35,9 +35,13 @@ setwd("C:\\Users\\крендель\\Desktop\\Мелкая помощь\\Урав
 1. выявить математические закономерности в силовых показателях человека.
 
 ## О данных и ресурсах
-С целью 
+Для сбора наблюдений был создан [опрос в Google Forms](https://forms.gle/R4zZqQJ3ggNdEuQ67) на русском языке и [его англоязычный аналог](https://forms.gle/dbthrvE5Y95beqUL9). 
 
+Русскоязычный опрос распространялся через соц. сеть ВКонтакте преимущественно в следующих группах: [Пауэрлифтинг | Тяжелая атлетика](https://vk.com/powerliftingnews), [Я ♥ ПАУЭРЛИФТИНГ](https://vk.com/ilovepowerlifting), [ПАУЭРЛИФТИНГ И ЖИМ ЛЁЖА 18+](https://vk.com/powerliftingworld), [Твой Тренер](https://vk.com/tvoytrenercom); аналогично англоязычный опрос распространялся на Facebook преимущественно здесь: [Powerlifting Motivation](https://www.facebook.com/PowerliftingMotivation/), [International Powerlifting League (IPL)](https://www.facebook.com/groups/IPLPowerlifting/), [Powerlifting Motivation Chat](https://www.facebook.com/groups/powerliftingmotivation/). Кроме того, несколько наблюдений я собрал лично.
 
+Спустя два месяца от создания опросов данные были выгружены и началась их обработка. Теперь эти данные и всё, связанное с ними (в том числе последняя версия этого документа), хранятся [в моём репозитории](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Уравнение%20для%20повторного%20максимума).
+
+Для обработки данных и создания отчёта использовалась среда [RStudio](https://rstudio.com) и **язык R версии `r getRversion()`**. 
 
 ## Отправная точка
 В книге ["Система тренировок КУБ"](https://forum.steelfactor.ru/index.php?showtopic=44596) на странице 23 (34 в оригинальной версии) приводится формула для определения повторного максимума: 
@@ -114,6 +118,8 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{self})+\varepsilon$$
 В конце я опишу возможности применения полученной модели.
 
 
+
+***
 # Описание выборки и разведочный анализ данных
 
 ## О прошедших опрос

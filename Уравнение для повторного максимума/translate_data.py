@@ -1,4 +1,4 @@
-# coding=<unicode-escape>
+# -*- coding: utf-8 -*-
 
 word_pairs = [
     ('Присед','Squat'),

@@ -43,10 +43,13 @@ maxerror=2
 data.unique=data %>% select(AgeGroup,High,Body,Experience,Sex,IndexGroup) %>% unique()
 
 
-data.unique %$%  table(Body,IndexGroup)
+
 
 
 #Разведочный анализ и описание выборки####
+
+data.unique %$%  table(Body,IndexGroup)
+
 
 psych::describe(data)
 summary(data)

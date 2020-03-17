@@ -15,6 +15,51 @@ knitr::opts_chunk$set(echo = TRUE,include = TRUE,tidy = TRUE,cache = FALSE,eval 
 ```{r,echo=FALSE}
 library(knitr)
 setwd("C:\\Users\\крендель\\Desktop\\Мелкая помощь\\Уравнение для повторного максимума")
+
+#Загрузка данных####
+library(tidyverse)
+library(magrittr)
+library(ggformula)
+library(ggthemes)
+library(tidyquant)
+library(ggvis)
+library(plotrix)
+library(car)
+#library(DAAG)
+library(leaps)
+
+data=read_tsv("data(rus).tsv",
+              skip=1,col_names = F,na="",
+              col_types = "fddnfffnnnff",
+              comment="#"
+              ) %>% tbl_df()
+
+colnames(data)=c("Date","SM","Val","Count","Type","Sex","Experience","Age","Weight","High","Body","Mail")
+data %<>%#filter(Count<=20) %>% 
+  arrange(Val,Count,Weight) %>%  mutate(
+  CountGroup=cut(Count,breaks = c(1,3,6,10,20,40)),
+  AgeGroup=cut(Age,breaks = c(1,19,27,35,70)),
+  Experience=factor(Experience,levels = c("До двух лет","2-3 года","4-5 лет","6-10 лет","11-15 лет" ,"больше 15 лет"),ordered = T),
+  Index=Weight/(0.01*High)^2,
+  IndexGroup=cut(Index,breaks = c(0,16,18.5,24.99,30,35,40,60))
+  )%>% select(-Date)#,-Mail) %>% filter(Count>1,Val<SM)
+levels(data$CountGroup)=c("2-3","4-6","7-10","11-20",">20")
+levels(data$AgeGroup)=c("<20","20-27","28-35",">35")
+levels(data$IndexGroup)=c("выраженный дефицит","дефицит","норма","избыток","ожирение1","ожирение2","ожирение3")
+
+ex=data$Experience %>% as.numeric()
+ex[ex==6]=5
+ex %<>%factor() 
+levels(ex)=c("До двух лет","2-3 года","4-5 лет","6-10 лет","больше 10 лет")
+data %<>%mutate(Experience=factor(ex,ordered = T)) 
+
+allrows=1:nrow(data)
+maxerror=2
+
+#уникальные записи (где один от каждого человека берётся только одна запись)
+#объяснить, по каким признакам людей считать одинаковыми
+data.unique=data %>% select(AgeGroup,High,Body,Experience,Sex,IndexGroup) %>% unique()
+
 ```
 
 ***
@@ -37,7 +82,7 @@ setwd("C:\\Users\\крендель\\Desktop\\Мелкая помощь\\Урав
 ## О данных и ресурсах
 Для сбора наблюдений был создан [опрос в Google Forms](https://forms.gle/R4zZqQJ3ggNdEuQ67) на русском языке и [его англоязычный аналог](https://forms.gle/dbthrvE5Y95beqUL9). 
 
-Русскоязычный опрос распространялся через соц. сеть ВКонтакте преимущественно в следующих группах: [Пауэрлифтинг | Тяжелая атлетика](https://vk.com/powerliftingnews), [Я ♥ ПАУЭРЛИФТИНГ](https://vk.com/ilovepowerlifting), [ПАУЭРЛИФТИНГ И ЖИМ ЛЁЖА 18+](https://vk.com/powerliftingworld), [Твой Тренер](https://vk.com/tvoytrenercom); аналогично англоязычный опрос распространялся на Facebook преимущественно здесь: [Powerlifting Motivation](https://www.facebook.com/PowerliftingMotivation/), [International Powerlifting League (IPL)](https://www.facebook.com/groups/IPLPowerlifting/), [Powerlifting Motivation Chat](https://www.facebook.com/groups/powerliftingmotivation/). Кроме того, несколько наблюдений я собрал лично.
+Русскоязычный опрос распространялся через соц. сеть ВКонтакте преимущественно в следующих группах: [Пауэрлифтинг | Тяжелая атлетика](https://vk.com/powerliftingnews), [Я ♥ ПАУЭРЛИФТИНГ](https://vk.com/ilovepowerlifting), [ПАУЭРЛИФТИНГ И ЖИМ ЛЁЖА 18+](https://vk.com/powerliftingworld), [Твой Тренер](https://vk.com/tvoytrenercom); аналогично англоязычный опрос распространялся на Facebook преимущественно здесь: [Powerlifting Motivation](https://www.facebook.com/PowerliftingMotivation/), [International Powerlifting League (IPL)](https://www.facebook.com/groups/IPLPowerlifting/), [Powerlifting Motivation Chat](https://www.facebook.com/groups/powerliftingmotivation/), [Powerlifting Memes](https://www.facebook.com/groups/powerliftingmemes/). Кроме того, несколько наблюдений я собрал лично.
 
 Спустя два месяца от создания опросов данные были выгружены и началась их обработка. Теперь эти данные и всё, связанное с ними (в том числе последняя версия этого документа), хранятся [в моём репозитории](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Уравнение%20для%20повторного%20максимума).
 
@@ -50,6 +95,8 @@ setwd("C:\\Users\\крендель\\Desktop\\Мелкая помощь\\Урав
 $$RM=WEIGHT \cdot (1+0.0333\cdot REPS).$$
 
 Например, если вы можете пожать 100 кг на 5 раз, то из этой формулы следует, что вы сможете пожать 115 на раз и 90 на 9 раз.
+
+К слову, примерно такая модель с некоторыми поправками на диапазон повторений используется на сайте [Symmetric Strength](https://symmetricstrength.com). Там максимально возможное количество повторений равно 10. 
 
 Лично на мне эта формула хорошо работает и мне захотелось уточнить её для других людей разной комплекции и уровня подготовки. Также интересно то, что здесь имеется, по сути, очень простая линейная модель с двумя *предикторами*: рабочим весом и *взаимодействием* рабочего веса с числом повторений, и нет зависимости от самого упражнения, опыта человека и других характеристик, то есть в перспективе возможно с большой точностью описать наши возможности одной простой формулой, и это будет верно почти для всех людей, невзирая на все различия между ними.
 
@@ -122,6 +169,8 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{self})+\varepsilon$$
 ***
 # Описание выборки и разведочный анализ данных
 
+С помощью опроса было получено `r nrow(data)` наблюдений, всего они содержатся в файле [data(rus).csv](). После некоторых преобразований над переменными наблюдение содержит 
+
 ## О прошедших опрос
 
 ## Исправление опечаток
@@ -172,7 +221,8 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{self})+\varepsilon$$
 # Выводы
 
 ***
-# Простые возможности для применения
+***
+# Возможности для применения
 
 ## Оценка наличия прогресса в тренировках
 
@@ -187,7 +237,7 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{self})+\varepsilon$$
 Если вы ходите поднять свой $RM$ на 15 кг, не обязательно ставить цель "в конце цикла поднять $RM+15$ кг на раз". Зная $RM+15$, можно рассчитать свой целевой 2ПМ, 3ПМ или 4ПМ и стремиться к концу цикла достичь именно тех величин. 
 
 ***
-# Возможности для примерения в анализе силовых циклов
+## Возможности для примерения в анализе силовых циклов
 
 Известно, что невозможно постоянно увеличивать вес отягощений, так как рано или поздно спортсмен упрётся в *тренировочное плато* и может дойти до перетренированности, истощиться, заболеть, в результате чего произойдёт снижение силовых показателей. Основной способ обойти эту проблему и многие годы увеличивать силовые показатели --- это **циклирование** (периодизация нагрузок). При этом даже сейчас циклы строятся больше на основе опыта (методом проб и ошибок) и интуиции, чем с использованием каких-то научных знаний. И хоть за последние полвека уже тысячи спортсменов доказали пользу нескольких моделей циклирования и разнообразия нагрузок, текущая ситуация далека от идеальной. Я считаю, что построенная ранее модель (или аналогичная ей) может сделать в этом направлении шаг вперёд.
 

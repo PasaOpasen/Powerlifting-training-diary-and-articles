@@ -21,7 +21,7 @@
 13.02.2020 18:35:59	150	140	3	Bench press	Male	6-10 years	24	84	176	Mesomorph	burtick@yandex.ru											
 13.02.2020 18:36:38	135	120	5	Bench press	Male	4-5 years	20	81	176	Ectomorph	ilya-goryunov-2013@mail.ru											
 13.02.2020 18:38:52	105	90	9	Bench press	Male	2-3 years	16	54	167	Ectomorph	forttop@mail.ru											
-13.02.2020 18:38:58	105	90	9	Bench press	Male	2-3 years	16	54	167	Ectomorph	forttop@mail.ru											
+#дубликат 13.02.2020 18:38:58	105	90	9	Bench press	Male	2-3 years	16	54	167	Ectomorph	forttop@mail.ru											
 13.02.2020 18:41:47	250	150	35	Deadlift	Male	6-10 years	26	90	178	Ectomorph	escudoboot@mail.ru											
 13.02.2020 18:42:36	220	180	8	Bench press	Male	more than 15 years	38	160	188	Endomorph	omna81@rambler.ru											
 13.02.2020 19:36:38	290	200	20	Deadlift	Male	6-10 years	28	107	185	Endomorph	pavelbob1991@mail.ru											
@@ -80,7 +80,7 @@
 25.02.2020 22:33:35	140	100	12	Bench press	Male	less than 2 years	30	76	174	Ectomorph	stan.last.c@gmail.com											
 28.02.2020 11:49:07	110	105	3	Bench press	Male	2-3 years	18	95	190	Endomorph												
 29.02.2020 14:52:39	95	90	6	Bench press	Male	less than 2 years	22	74	177	Mesomorph												
-29.02.2020 14:53:42	95	90	6	Bench press	Male	less than 2 years	22	74	177	Mesomorph												
+#дубликат предыдущего 29.02.2020 14:53:42	95	90	6	Bench press	Male	less than 2 years	22	74	177	Mesomorph												
 01.03.2020 16:25:53	170	140	7	Bench press	Male	4-5 years	46	130	178	Endomorph												
 01.03.2020 16:38:03	115	90	9	Bench press	Male	less than 2 years	26	94	184	Endomorph												
 01.03.2020 16:38:44	205	150	12	Bench press	Male	6-10 years	30	105	184	Endomorph	dmitrododchuk2801@gmail.com											
@@ -121,17 +121,17 @@
 01.03.2020 20:32:37	157.5	120	10	Bench press	Male	4-5 years	28	90	170	Endomorph	goldenelf@mail.ru											
 01.03.2020 20:33:16	120	100	5	Bench press	Male	2-3 years	37	95	175	Endomorph												
 01.03.2020 20:43:26	210	152.5	12	Deadlift	Male	4-5 years	20	85	184	Endomorph	msemionov87@gmail.com											
-01.03.2020 20:53:18	300	100	3	Squat	Male	less than 2 years	15	76	185	Ectomorph	chernov2004@156smr.ru											
+#бред 01.03.2020 20:53:18	300	100	3	Squat	Male	less than 2 years	15	76	185	Ectomorph	chernov2004@156smr.ru											
 01.03.2020 20:54:22	70	62	6	Bench press	Male	less than 2 years	15	66	177	Ectomorph	damirrr2004@mail.ru											
 01.03.2020 20:59:48	190	160	5	Bench press	Male	6-10 years	32	112	188	Endomorph												
 01.03.2020 21:07:53	160	132.5	8	Bench press	Male	6-10 years	39	94	178	Mesomorph	ac32@yandex.ru											
 01.03.2020 21:08:44	250	180	10	Squat	Male	4-5 years	20	100	180	Endomorph												
 01.03.2020 21:13:12	170	80	35	Bench press	Male	2-3 years	21	90	183	Ectomorph	v-pav@list.ru											
 01.03.2020 21:23:44	180	150	6	Bench press	Male	6-10 years	28	83	169	Mesomorph												
-01.03.2020 21:31:10	160	160	3	Deadlift	Male	2-3 years	15	67	170	Ectomorph												
+#не понял 01.03.2020 21:31:10	160	160	3	Deadlift	Male	2-3 years	15	67	170	Ectomorph												
 01.03.2020 21:43:32	140	130	2	Deadlift	Male	4-5 years	18	55	170	Ectomorph												
 01.03.2020 21:50:59	90	85	2	Bench press	Female	11-15 years	26	59	162	Mesomorph	e.taskaeva@1001tur.ru											
-01.03.2020 21:53:20	97.5	50	10	Squat	Female	less than 2 years	29	56	165	Endomorph	anyuta.ivanova90@mail.ru # был присед 10*50											
+#явно что-то не то 01.03.2020 21:53:20	97.5	50	10	Squat	Female	less than 2 years	29	56	165	Endomorph	anyuta.ivanova90@mail.ru # был присед 10*50											
 01.03.2020 21:57:16	140	100	24	Bench press	Male	6-10 years	37	105	182	Endomorph												
 01.03.2020 22:01:21	230	175	5	Squat	Male	6-10 years	29	92	184	Ectomorph	skifon4567@yandex.ru											
 01.03.2020 22:06:43	225	200	4	Bench press	Male	more than 15 years	43	97	171	Mesomorph												
@@ -200,7 +200,7 @@
 3/15/2020 20:18:00	260.0	240.0	 2	Deadlift	Male	4-5 years	25	125.000	194	Mesomorph	nejc.pivec1994@gmail.com
 3/15/2020 20:41:56	140.0	130.0	 3	Bench press	Male	2-3 years	30	 83.000	178	Mesomorph	mathkr@hotmail.com
 3/15/2020 21:56:45	130	109	 5	Bench press	Male	less than 2 years	26	108	183	Endomorph	NA # перевёл веса в кг
-3/15/2020 23:18:16	 70.0	 70.0	10	Deadlift	Female	less than 2 years	23	 60.000	164	Mesomorph	undeadharshead@gmail.com
+#не понял 3/15/2020 23:18:16	 70.0	 70.0	10	Deadlift	Female	less than 2 years	23	 60.000	164	Mesomorph	undeadharshead@gmail.com
 3/15/2020 23:54:07	190.0	180.0	 2	Deadlift	Male	more than 15 years	29	100.000	169	Endomorph	elcancerdemi@gmail.com
 3/15/2020 23:55:01	140.0	130.0	 4	Bench press	Male	more than 15 years	29	100.000	169	Endomorph	elcancerdemi@gmail.com
 3/15/2020 23:55:48	140.0	120.0	 4	Squat	Male	more than 15 years	29	100.000	169	Endomorph	elcancerdemi@gmail.com

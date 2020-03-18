@@ -152,9 +152,19 @@ GGally::ggpairs(data%>% select(RM,Action,IndexGroup),
                 lower = list(combo = "box")) #%>% ggplotly()
 
 
-ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_wrap(vars(Action))
+ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_wrap(vars(Action))+coord_flip()+
+  labs(x="Группа по индексу массы",y="Повторный максимум",
+       title="Зависимость повторного максимума от индекса массы тела",
+       subtitle = "Из графика видно, что жим лёжа имеет тенденцию увеличиваться с ростом индекса массы тела. \nОднако для приседа и тяги это верно лишь до некоторого порога")+
+  theme_bw()
+  
 ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_grid(Action~BodyType)
-ggplot(data,aes(x=Index,y=RM))+geom_point()+facet_wrap(~Action)
+
+(ggplot(data,aes(x=Index,y=RM,col=BodyType))+geom_point()+
+    facet_wrap(~Action)+geom_smooth(method = "lm",se = F)+
+    theme_bw()+theme(legend.position = "bottom")+
+    labs(x="Индекс массы тела",y="Повторный максимум",col="Телосложение",
+         title = "Зависимость повторного максимума от индекса массы тела")) %>% ggplotly()
 
 
 GGally::ggpairs(data%>% select(-Count,-Mail,-Age,-Sex,-Index,-Height,-CountGroup,-AgeGroup,-Weight),
@@ -167,22 +177,57 @@ GGally::ggpairs(data%>% select(-Count,-Mail,-Age,-Sex,-Index,-Height,-CountGroup
 
 data %>% ggplot(aes(x=factor(Count),y=RM/MRM-1))+geom_boxplot()+theme_bw()
 #data %>% ggplot(aes(x=CountGroup,y=RM/MRM))+geom_boxplot()+theme_bw()
-data %>% ggplot(aes(x=factor(Count),y=(RM/MRM-1)/Count))+geom_boxplot()+theme_bw()
+data %>% ggplot(aes(x=factor(Count),y=(RM/MRM-1)/Count))+
+  geom_boxplot()+theme_bw()+
+  geom_hline(yintercept = 0.0333,size =1.3,col="red")+
+  labs(x="Число повторений",title = "Оценка параметра для разного числа повторений",
+       subtitle = "Красным цветом обозначен параметр из книги Лилли. Как видно, он может быть верен для числа повторений от 2 до 5")
+
+
+data.ct=data %>% filter(Count<=10|Count==12)
 
 #По этому соотношению надо бы выбросы удалить
-data %>% ggplot(aes(x=factor(Count),y=100*MRM/RM))+geom_boxplot()+coord_flip()+theme_bw()#+
-  #annotate("text", x=10, y = mean(100*MRM/RM), label = "Начальные результаты")
+prc=data.ct %>% ggplot(aes(x=factor(Count),y=100*MRM/RM))+geom_boxplot()+coord_flip()+theme_bw()+
+  labs(x="Число повторений",y="Какой процент составляет МПМ от ПМ")
+prc %>% ggplotly()
 
-data %>% mutate(perc=100*MRM/RM) %>% filter(Count<=15) %>% 
+#(prc+facet_grid(vars(Action))) %>% ggplotly()
+
+cors=sapply(2:10, function(x) data %>% filter(Count==x) %$% cor(RM,MRM))
+names(cors)= paste(2:10,"repeats")
+cors
+
+
+
+
+#есть ли разница в проценте в зависимости от чего-то
+cat("p-значения для телосложений:\n")
+pvalues=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~BodyType,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues)=names(cors)
+pvalues
+cat("p-значения для типа движения:\n")
+pvalues=sapply(2:6, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~Action,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues)=paste(2:6,"repeats")
+pvalues
+cat("p-значения для групп по индексу массы:\n")
+pvalues=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~IndexGroup,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues)=paste(2:10,"repeats")
+pvalues
+
+
+
+
+df=data %>% mutate(perc=100*MRM/RM) %>% filter(Count<=10|Count==12|Count==15|Count==20) %>% 
   group_by(factor(Count)) %>% 
   summarise(mean=t.test(perc,conf.level = 0.99)$estimate,
             down=t.test(perc,conf.level = 0.99)$conf.int[1],
-            up=t.test(perc,conf.level = 0.99)$conf.int[2])
+            up=t.test(perc,conf.level = 0.99)$conf.int[2]) 
+names(df)=c("Число повторений","Ожидаемый %","Нижняя граница","Верхняя граница")
+df
 
 
 
-
-#как насчёт какой-то такой модели?
+#как насчёт какой-то такой модели?####
 lm(MRM/RM~Count+I(Count^2)+I(MRM/Weight),data) %>% summary()
 lm(MRM/RM~Count:CountGroup,data) %>% summary()
 lm(MRM/RM~Count+I(Count^2)+I(MRM/Weight),data) %>% plot()

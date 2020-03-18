@@ -43,7 +43,26 @@ maxerror=2
 #объяснить, по каким признакам людей считать одинаковыми
 data.unique=data %>% select(AgeGroup,Height,BodyType,Experience,Sex,IndexGroup) %>% unique()
 
+#функции
+getparam=function(vec){
+  ln=length(levels(vec))
+  x=numeric(ln)
+  ns=character(ln)
+  for(i in seq(ln)){
+    x[i]=sum(vec==levels(vec)[i])/length(vec)
+    ns[i]=paste0(levels(vec)[i]," (",round(x[i]*100,2),"%)")
+  }
+  return(list(x=x,ns=ns))
+}
 
+getPIE=function(vec,main=""){
+  lst=getparam(vec)
+  pie(x=lst$x,labels=lst$ns,main=main)
+}
+getFan=function(vec,main=""){
+  pr=getparam(vec)
+  fan.plot(pr$x,labels=pr$ns,main=main)
+}
 
 
 
@@ -52,6 +71,11 @@ data.unique=data %>% select(AgeGroup,Height,BodyType,Experience,Sex,IndexGroup) 
 
 psych::describe(data)
 summary(data %>% select(-Mail))
+
+
+
+
+
 
 data %<>%select(-Age)
 pairs(data %>% select(-Count))
@@ -127,27 +151,6 @@ sigma=nls(v~1+b/(1+exp(-k*n)),
           data=data.frame(v=coefficients(m)[1:7],n=1:7),
           start = list(b=0.3,k=1))
 
-
-
-getparam=function(vec){
-  ln=length(levels(vec))
-  x=numeric(ln)
-  ns=character(ln)
-  for(i in seq(ln)){
-    x[i]=sum(vec==levels(vec)[i])/length(vec)
-    ns[i]=paste0(levels(vec)[i]," (",round(x[i]*100,2),"%)")
-  }
-  return(list(x=x,ns=ns))
-}
-
-getPIE=function(vec,main=""){
-  lst=getparam(vec)
-  pie(x=lst$x,labels=lst$ns,main=main)
-}
-getFan=function(vec,main=""){
-  pr=getparam(vec)
-  fan.plot(pr$x,labels=pr$ns,main=main)
-}
 
 
 getPIE(data.unique$BodyType)

@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,include = TRUE,tidy = TRUE,cache = FALSE,eval = TRUE, message = FALSE,warning = FALSE,fig.align = "center")
+knitr::opts_chunk$set(echo = F,include = TRUE,tidy = TRUE,cache = FALSE,eval = TRUE, message = FALSE,warning = FALSE,fig.align = "center")
 ```
 
 ```{r,echo=FALSE}
@@ -199,7 +199,9 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{own})+\varepsilon$$
 ***
 # Описание выборки и разведочный анализ данных
 
-С помощью опроса было получено **всего `r nrow(data)` наблюдений** (исключая явные аномалии), они содержатся в файле [data(rus).tsv](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Уравнение%20для%20повторного%20максимума/data(rus).tsv). После некоторых преобразований над переменными каждое наблюдение наблюдение содержит следующую информацию:
+С помощью опроса было получено **всего `r nrow(data)` наблюдений** (исключая явные аномалии), принадлежащие **`r nrow(data.unique)`** людям[^10]; они содержатся в файле [data(rus).tsv](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Уравнение%20для%20повторного%20максимума/data(rus).tsv). После некоторых преобразований над переменными каждое наблюдение наблюдение содержит следующую информацию:
+
+[^10]: дело в том, что одни и те же люди могли вносить более одного ответа. В итоге два наблюдения считаются принадлежащими одному человеку, если они совпадают по переменным AgeGroup, Height, BodyType, Experience, Sex, IndexGroup (которые вряд ли изменятся за время между фиксацией разных наблюдений)
 
 * **RM** -- собственно повторный максимум
 
@@ -236,7 +238,82 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{own})+\varepsilon$$
 summary(data %>% select(-Mail))
 ```
 
-Иллюстрация парных взаимодействий:
+Сама таблица **data**:
+```{r,echo=F}
+data
+```
+
+
+Почти все испытуемые -- мужчины, поэтому результаты, которые будут получены, не следует обобщать на женщин. Возможно даже, что позднее придётся удалить принадлежащие женщинам наблюдения из выборки, если окажется, что те сильно выделяются.
+```{r}
+getPIE(data.unique$Sex,main = "Пол испытуемых")
+```
+
+
+Среди испытуемый почти половину составляли эндоморфы:
+```{r,echo=F}
+getPIE(data.unique$BodyType,main="Тип телосложения испытуемых")
+```
+
+и тест хи-квадрат говорит, что это отличие статистически значимо, то есть среди пауэрлифтеров эндоморфы встречаются чаще эктоморфов или мезоморфов:
+```{r}
+chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(BodyType) %>% table())
+```
+
+Больше половины наблюдений относятся к жиму лёжа. Я думаю, это связано с тем, что большинство спортсменов предпочитают это упражнение двум другим, вдобавок на жиме лёжа относительно проще замерять МПМ и, скорее всего, многие из ответивших специализировались именно на жиме лёжа.
+```{r}
+getPIE(data$Action, main="Движение")
+```
+
+Распределение по другим факторам:
+```{r,cache=T}
+par(mfrow=c(1,1),mai=rep(0.7,4))
+getPIE(data$CountGroup,main = "Диапазон повторений")
+getPIE(data$Experience,main = "Опыт тренировок")
+getPIE(data$AgeGroup,main = "Возрастная группа")
+#getPIE(data$IndexGroup,main = "Группа по индексу массы тела")
+par(mfrow=c(1,1))
+
+ggplot(data,aes(x=CountGroup,fill=Action))+geom_bar()+theme_classic()+labs(title="Количество наблюдений в каждом диапазоне повторений",x="Диапазон повторений",y="Количество")
+
+ggplot(data,aes(x=Experience,fill=AgeGroup))+geom_bar()+theme_classic()+labs(title="Распределение по опыту тренировок",x="Опыт тренировок",y="Количество")
+
+(ggplot(data,aes(x=AgeGroup,fill=IndexGroup))+geom_bar()+theme_classic()+labs(title="Распределение по возрасту",x="Возрастная группа",y="Количество")) %>% ggplotly()
+```
+
+Распределение по индексу массы тела:
+```{r}
+#среди эндоморфов избыток веса встречается почаще
+data.unique %$%  table(BodyType,IndexGroup)
+
+ggplot(data.unique,aes(x=BodyType,fill=IndexGroup))+geom_bar(position=position_dodge2())+
+  labs(x="Тип телосложения",y="Количество ответивших",fill="Индекс массы тела")+
+  coord_flip()+theme_bw()+theme(legend.position = "bottom")
+```
+
+Видно, что среди ответивших нет людей с дефицитом веса и немалая часть имеет нормальный вес, немалая -- "избыток" (предположительно за счёт мышечной массы), но так называемое "ожирение1" (с большой вероятностью связанное с жировыми отложениями) у эндоморфов встречается чаще, чем в других телосложениях. Это подтверждает тест пропорций:
+```{r,echo=T}
+tb=data.unique%>% 
+  mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет")) %>%
+  select(Obees,BodyType) %>% table()
+
+tb %>% t() %>% prop.test()#для всех
+
+data.unique%>% 
+  mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет"),
+         Bd=ifelse(BodyType=='Эндоморф',1,0)) %>%
+  select(Obees,Bd) %>% 
+  table() %>% t() %>% 
+  prop.test() # eсли разделить на эндоморфов и всех остальных
+```
+
+Иллюстрация некоторых парных взаимодействий:
+```{r,cache=T,out.width='90%'}
+GGally::ggpairs(data%>% select(RM,MRM,Action,BodyType),
+                title="Диаграммы взаимодействий между переменными в выборке",
+                lower = list(combo = "box")) #%>% ggplotly()
+```
+
 
 
 ## Исправление опечаток
@@ -250,9 +327,6 @@ summary(data %>% select(-Mail))
 1. удалить из выборки.
 
 После опроса обладателей выбросов я сделал две копии данных: одну без выбросов, другую --- с удалением непонятных аномалий и интуитивным исправлением оставшихся.
-
-## О прошедших опрос
-
 
 ## Удалённые данные
 

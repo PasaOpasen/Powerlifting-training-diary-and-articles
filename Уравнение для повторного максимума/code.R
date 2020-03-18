@@ -73,12 +73,69 @@ psych::describe(data)
 summary(data %>% select(-Mail))
 
 
+getPIE(data.unique$Sex,main = "Пол испытуемых")
+
+getPIE(data.unique$BodyType,main="Тип телосложения испытуемых")
+chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(BodyType) %>% table())
+
+getPIE(data$Action, main="Движение")
+
+par(mfrow=c(1,1),mai=rep(0.1,4))
+getPIE(data$CountGroup,main = "Диапазон повторений")
+getPIE(data$Experience,main = "Опыт тренировок")
+getPIE(data$AgeGroup,main = "Возрастная группа")
+par(mfrow=c(1,1))
+
+(ggplot(data,aes(x=CountGroup,fill=Action))+geom_bar()+theme_classic()+labs(title="Количество наблюдений в каждом диапазоне повторений",x="Диапазон повторений",y="Количество")) %>% ggplotly()
+ggplot(data,aes(x=Experience))+geom_bar()+theme_classic()+labs(title="Распределение по опыту тренировок",x="Опыт тренировок",y="Количество")
+ggplot(data,aes(x=AgeGroup))+geom_bar()+theme_classic()+labs(title="Распределение по возрасту",x="Возрастная группа",y="Количество")
+
+
+
+#среди эндоморфов избыток веса встречается почаще
+data.unique %$%  table(BodyType,IndexGroup)
+
+ggplot(data.unique,aes(x=BodyType,fill=IndexGroup))+geom_bar(position=position_dodge2())+
+  labs(x="Тип телосложения",y="Количество ответивших",fill="Индекс массы тела")+
+  coord_flip()+theme_bw()+theme(legend.position = "bottom")
+
+#ggplot(data,aes(x=Age,y=Index))+geom_point()
+data %$%cor(Age,Index) 
+#chisq.test(data.unique%>% filter(IndexGroup=="ожирение1") %>%select(BodyType) %>% table())
+
+tb=data.unique%>% mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет")) %>%select(Obees,BodyType) %>% table()
+#tb %>% chisq.test()
+tb %>% t() %>% prop.test()#для всех
+data.unique%>% 
+  mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет"),Bd=ifelse(BodyType=='Эндоморф',1,0)) %>%
+  select(Obees,Bd) %>% table() %>% t() %>% 
+  prop.test() %$% conf.int
+
+
+#tb %>% chisq.test(p=c(1,1,20),rescale.p = T)
+if(F){
+ par(mfrow=c(2,2),mai=rep(0.1,4))
+
+getPIE(data.unique$Sex,main = "Пол испытуемых")
+getPIE(data.unique$BodyType,main = "Телосложение испытуемых")
+getPIE(data.unique %>% filter(Sex=="Мужчина") %$% BodyType,main = "Телосложение: мужчины")
+getPIE(data.unique%>% filter(Sex=="Женщина") %$% BodyType,main = "Телосложение: женщины") 
+
+
+
+par(mfrow=c(1,1),mai=rep(0.1,4))
+
+
+getFan(cut(data$Age,breaks=c(0,20,30,40,100)))
+
 
 
 
 
 data %<>%select(-Age)
 pairs(data %>% select(-Count))
+}
+
 
 
 GGally::ggpairs(data%>% select(-Count,-Mail,-Age,-Sex),
@@ -86,14 +143,19 @@ GGally::ggpairs(data%>% select(-Count,-Mail,-Age,-Sex),
                 lower = list(combo = "box")) #%>% ggplotly()
 
 
-
 GGally::ggpairs(data%>% select(RM,MRM,Action,BodyType),
                 title="Диаграммы взаимодействий между переменными в выборке",
                 lower = list(combo = "box")) #%>% ggplotly()
 
+GGally::ggpairs(data%>% select(RM,Action,IndexGroup),
+                title="Диаграммы взаимодействий между переменными в выборке",
+                lower = list(combo = "box")) #%>% ggplotly()
+
+
 ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_wrap(vars(Action))
 ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_grid(Action~BodyType)
 ggplot(data,aes(x=Index,y=RM))+geom_point()+facet_wrap(~Action)
+
 
 GGally::ggpairs(data%>% select(-Count,-Mail,-Age,-Sex,-Index,-Height,-CountGroup,-AgeGroup,-Weight),
                 title="Диаграммы взаимодействий между переменными в выборке",
@@ -150,55 +212,6 @@ m=lm(RM~MRM:I((Count-1)^2)-1,data %>% filter(Count<7))
 sigma=nls(v~1+b/(1+exp(-k*n)),
           data=data.frame(v=coefficients(m)[1:7],n=1:7),
           start = list(b=0.3,k=1))
-
-
-
-getPIE(data.unique$BodyType)
-
-#среди эндоморфов избыток веса встречается почаще
-data.unique %$%  table(BodyType,IndexGroup)
-
-ggplot(data.unique,aes(x=BodyType,fill=IndexGroup))+geom_bar(position=position_dodge2())+
-  labs(x="Тип телосложения",y="Количество ответивших",fill="Индекс массы тела")+
-  coord_flip()+theme_bw()+theme(legend.position = "bottom")
-
-chisq.test(data.unique%>% filter(IndexGroup=="ожирение1") %>%select(BodyType) %>% table())
-
-tb=data.unique%>% mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет")) %>%select(Obees,BodyType) %>% table()
-tb %>% chisq.test()
-tb %>% t() %>% prop.test()#для всех
-data.unique%>% 
-  mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет"),Bd=ifelse(BodyType=='Эндоморф',1,0)) %>%
-  select(Obees,Bd) %>% table() %>% t() %>% 
-  prop.test(correct = F) %$% conf.int
-
-#tb %>% chisq.test(p=c(1,1,20),rescale.p = T)
-
-par(mfrow=c(2,2),mai=rep(0.1,4))
-
-getPIE(data.unique$Sex,main = "Пол испытуемых")
-getPIE(data.unique$BodyType,main = "Телосложение испытуемых")
-getPIE(data.unique %>% filter(Sex=="Мужчина") %$% BodyType,main = "Телосложение: мужчины")
-getPIE(data.unique%>% filter(Sex=="Женщина") %$% BodyType,main = "Телосложение: женщины")
-
-chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(BodyType) %>% table())
-
-
-par(mfrow=c(3,1),mai=rep(0.1,4))
-getPIE(data$CountGroup,main = "Диапазон повторений")
-ggplot(data,aes(x=CountGroup))+geom_bar()+theme_classic()+labs(title="Количество человек в каждом диапазоне повторений",x="Диапазон повторений",y="Количество")
-getPIE(data$Experience,main = "Опыт тренировок")
-ggplot(data,aes(x=Experience))+geom_bar()+theme_classic()+labs(title="Распределение по опыту тренировок",x="Опыт тренировок",y="Количество")
-ggplot(data,aes(x=AgeGroup))+geom_bar()+theme_classic()+labs(title="Распределение по возрасту",x="Возрастная группа",y="Количество")
-
-getPIE(data$Action,main = "Движение")
-
-
-par(mfrow=c(1,1),mai=rep(0.1,4))
-
-
-getFan(cut(data$Age,breaks=c(0,20,30,40,100)))
-
 
 
 GGally::ggcorr(data,label=T,label_round = 2)

@@ -387,15 +387,19 @@ sapply(data[sapply(data,is.numeric)], function(x)shapiro.test(x)$p.value)
 
 
 #Функция ошибок####
+
+data %<>%filter(Count<=20) 
+data %>% summary()
+
 Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
 
 Show=function(vals,df=data){
   #vals=predict(model,df)
   err=df$RM-vals
-  cbind(value=vals,Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
+  cbind(Fact=vals,Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
         ERROR=abs(df$RM-vals),
         ErrorPercent=abs(err)/df$RM*100,
-        df[,c(3:15)]) %>% tbl_df() %>% select(-Count, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)#;print(err);print(rg)
@@ -410,19 +414,20 @@ Show=function(vals,df=data){
   cat("Модель ошиблась более чем на",maxerror,"кг в",s,"случаях из",len,"(",s/len*100,"%)\n")
   cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$RM),"\n")
 }
+
 ShowErrors=function(model,power.coef=1,sum.coef=0){
   Show(predict(model,data)*power.coef+sum.coef)
+  
   cat("Оценка кросс-валидации для всего набора данных",
-      boot::cv.glm(data,glm(formula = md$call$formula,data=data),K=10)$delta[1],"\n")
+      boot::cv.glm(data,glm(formula = model$call$formula,data=data),K=10)$delta[1],"\n")
   cat("Оценка кросс-валидации для не более чем 10 повторений",
-      boot::cv.glm(data %>% filter(Count<11),glm(formula = md$call$formula,data=data %>% filter(Count<11)),K=10)$delta[1],"\n") 
+      boot::cv.glm(data %>% filter(Count<11),glm(formula = model$call$formula,data=data %>% filter(Count<11)),K=10)$delta[1],"\n") 
   cat("Оценка кросс-валидации для не более чем 6 повторений",
-      boot::cv.glm(data %>% filter(Count<7),glm(formula = md$call$formula,data=data %>% filter(Count<7)),K=10)$delta[1],"\n") 
+      boot::cv.glm(data %>% filter(Count<7),glm(formula = model$call$formula,data=data %>% filter(Count<7)),K=10)$delta[1],"\n") 
 }
 
 
 ResAn=function(res){
-  shapiro.test(res) %>% print()
   
   p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
     geom_boxplot()+labs(x="Группа повторений",y="Остатки (цель - предсказание)",title="Распределения остатков в зависимости от группы повторений")+theme_bw()
@@ -438,24 +443,63 @@ ResAn(data$RM-data$MRM*(1+0.0333*data$Count))
 
 ResVal=function(vals)ResAn(data$RM-vals)
 
+#ResGraf=function(model)ResVal(predict(model,data))
+
+mysummary=function(mdl){
+ 
+  cat("-----> ОБЩАЯ ИНФОРМАЦИЯ О МОДЕЛИ:\n");cat("\n")
+ gvlma::gvlma(mdl) %>% summary();cat("\n")
+ 
+ 
+ cat("-----> БАЗОВЫЕ ГРАФИКИ:\n");cat("\n")
+ par(mfrow=c(2,2))
+ plot(mdl)
+ par(mfrow=c(1,1)) ;cat("\n")
+ 
+ 
+ cat("-----> ТЕСТ НА НОРМАЛЬНОСТЬ РАСПРЕДЕЛЕНИЯ ОСТАТКОВ\n");cat("\n")
+ shapiro.test(mdl$residuals) %>% print();cat("\n")
+ 
+ qqPlot(mdl,main="Q-Q plot")  
+ 
+ 
+ cat("-----> ФАКТОР ИНФЛЯЦИИ ДИСПЕРСИЙ:\n");cat("\n")
+ vif(mdl)%>% print();cat("\n")
+ 
+  cat("-----> ТЕСТ НА АВТОКОРРЕЛЯЦИЮ:\n");cat("\n")
+  durbinWatsonTest(mdl) %>% print();cat("\n")   #тест на автокорреляцию
+  
+  cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
+  ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
+
+  cat("-----> ТЕСТ НА ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
+  
+  outs=outlierTest(mdl)
+  outs%>% print()
+  
+  
+  influ=influencePlot(mdl,main="Диаграмма влияния",sub="Размеры кругов пропорциональны расстояниям Кука")
+  influ %>% print()
+  
+  cat("-----> ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
+  data[c(outs$p %>% names(),influ %>% rownames()) %>% as.numeric(),] %>% unique() %>% 
+  select(-Mail) %>% arrange(-RM,-Count) %>% print();cat("\n")
+  
+}
+
+md %>% mysummary()
 
 
-qqPlot(md,main="Q-Q plot")
+m1=lm(RM~MRM+MRM:Count,data)
 
-durbinWatsonTest(md)#тест на автокорреляцию
+m1 %>% ShowErrors()
 
-ncvTest(md)#однородность дисперсии
+m1 %>% predict(data) %>% ResVal()
 
-gvlma::gvlma(md) %>% summary()
+m1 %>% mysummary()
 
-vif(md)
-par(mfrow=c(2,2))
-plot(md)
-par(mfrow=c(1,1))
 
-outlierTest(md)
 
-influencePlot(md,main="Диаграмма влияния",sub="Размеры кругов пропорциональны расстояниям Кука")
 
 #Модели####
 

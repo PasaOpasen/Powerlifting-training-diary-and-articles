@@ -576,9 +576,140 @@ plt+geom_point(aes(x=Weight,y=Height,col=AgeGroup,shape=Sex),size=2.5)+
 ***
 # Построение моделей
 
+```{r}
+Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
+
+Show=function(vals,df=data){
+  #vals=predict(model,df)
+  err=df$RM-vals
+  cbind(Fact=vals,Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
+        ERROR=abs(df$RM-vals),
+        ErrorPercent=abs(err)/df$RM*100,
+        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail, IndexGroup)%>%         arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        filter(ERROR>1)%>% print()
+  cat("\n")
+  rg=range(err)#;print(err);print(rg)
+  
+  if(rg[1]<0)cat("------------> Наибольшая ошибка в большую сторону:",-rg[1],"\n")
+  if(rg[2]>0)cat("------------> Наибольшая ошибка в меньшую сторону:",rg[2],"\n")
+  
+  s=sum(abs(err)/df$RM*100>maxerror)
+  len=length(err)
+  cat("Модель ошиблась более чем на",maxerror,"% в",s,"случаях из",len,"(",s/len*100,"%)\n")
+  s=sum(abs(err)>maxerror)
+  cat("Модель ошиблась более чем на",maxerror,"кг в",s,"случаях из",len,"(",s/len*100,"%)\n")
+  cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$RM),"\n")
+}
+
+ShowErrors=function(model,power.coef=1,sum.coef=0){
+  Show(predict(model,data)*power.coef+sum.coef)
+  
+  cat("Оценка кросс-валидации для всего набора данных",
+      boot::cv.glm(data,glm(formula = model$call$formula,data=data),K=10)$delta[1],"\n")
+  cat("Оценка кросс-валидации для не более чем 10 повторений",
+      boot::cv.glm(data %>% filter(Count<11),glm(formula = model$call$formula,data=data %>% filter(Count<11)),K=10)$delta[1],"\n") 
+  cat("Оценка кросс-валидации для не более чем 6 повторений",
+      boot::cv.glm(data %>% filter(Count<7),glm(formula = model$call$formula,data=data %>% filter(Count<7)),K=10)$delta[1],"\n") 
+}
+
+
+ResAn=function(res){
+  
+  p=ggplot(data %>% mutate(res=res),aes(x=CountGroup,y=res))+
+    geom_boxplot()+labs(x="Группа повторений",y="Остатки (цель - предсказание)",title="Распределения остатков в зависимости от группы повторений")+theme_bw()
+  print(p)
+  
+  (p+facet_grid(vars(Action))) %>% print()
+  
+  p+facet_grid(vars(BodyType),vars(Action))
+}
+
+#из этого графика можно сделать вывод, что модель неплохо работает на диапазоне 2-3, но на диапазоне 13-20 ошибка какая-то сильно отличающаяся от тенденции уменьшения ошибок, так что этот диапазон надо бы и вообще убрать, так как там уже играют роль свойства красных волокон, не говорящие о силе
+#ResAn(data$RM-data$MRM*(1+0.0333*data$Count))
+
+ResVal=function(vals)ResAn(data$RM-vals)
+
+mysummary=function(mdl){
+ 
+  cat("-----> ОБЩАЯ ИНФОРМАЦИЯ О МОДЕЛИ:\n");cat("\n")
+ gvlma::gvlma(mdl) %>% summary();cat("\n")
+ 
+ 
+ cat("-----> БАЗОВЫЕ ГРАФИКИ:\n");cat("\n")
+ par(mfrow=c(2,2))
+ plot(mdl)
+ par(mfrow=c(1,1)) ;cat("\n")
+ 
+ 
+ cat("-----> ТЕСТ НА НОРМАЛЬНОСТЬ РАСПРЕДЕЛЕНИЯ ОСТАТКОВ\n");cat("\n")
+ shapiro.test(mdl$residuals) %>% print();cat("\n")
+ 
+ qqPlot(mdl,main="Q-Q plot")  
+ 
+ 
+ cat("-----> ФАКТОР ИНФЛЯЦИИ ДИСПЕРСИЙ:\n");cat("\n")
+ vif(mdl)%>% print();cat("\n")
+ 
+  cat("-----> ТЕСТ НА АВТОКОРРЕЛЯЦИЮ:\n");cat("\n")
+  durbinWatsonTest(mdl) %>% print();cat("\n")   #тест на автокорреляцию
+  
+  cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
+  ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
+
+  cat("-----> ТЕСТ НА ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
+  
+  outs=outlierTest(mdl)
+  outs%>% print()
+  
+  
+  influ=influencePlot(mdl,main="Диаграмма влияния",sub="Размеры кругов пропорциональны расстояниям Кука")
+  influ %>% print()
+  
+  cat("-----> ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
+  data[c(outs$p %>% names(),influ %>% rownames()) %>% as.numeric(),] %>% unique() %>% 
+  select(-Mail) %>% arrange(-RM,-Count) %>% print();cat("\n")
+  
+}
+```
+
+Вычислительные возможности позволяют создать огромное количество моделей. Цель исследователя -- предложить несколько вариантов и выбрать среди них лучший. Кроме этого, нужно посмотреть, как работает модель на разных группах данных, чтобы обнаружить выбросы или обнаружить, что на такой-то группе модель вообще не может работать, из-за чего такую группу придётся исключить.
+
+Итак, в модели представляют интерес следующие показатели:
+
+* ошибки в разных группах данных;
+
+* выбросы и влиятельные наблюдения;
+
+* статистическая значимость модели;
+
+* оценки кросс-валидации.
+
 ## Недостатки исходного решения
 
-## Уточнение коэффициента при числе повторений
+Применив формулу $RM=MRM \cdot(1+0.0333 \cdot Count)$ ко всем наблюдениям, получим оценки $RM$ (Fact), которые будут отличаться от истинного $RM$ (Target). Разница между этими величинами -- остатки. Для модели Лилли остаки будут следующие:
+```{r, cache=T}
+ResVal(data$RM-data$MRM*(1+0.0333*data$Count))
+```
+
+Здесь такая логика: чем лучше модель, тем "ящики" тоньще и тем их середины ближе к 0.
+
+В данном случае видно, что модель Лилли хорошо работает почти на всех данных из диапазона 2-3 и на немалой части данных из диапазона 4-6. Для большего числа повторений модель даёт завышенные оценки.
+
+## Уточнение коэффициентов
+
+Теперь возьмём модель вида  $RM=MRM \cdot(a+b \cdot Count)$ и подберём коэффициенты $a,b$ лучшим образом. В итоге:
+```{r,out.width='90%'}
+m1=lm(RM~MRM+MRM:Count,data)
+
+m1 %>% ShowErrors()
+
+m1 %>% predict(data) %>% ResVal()
+
+m1 %>% mysummary()
+```
+
+
+
 
 ## Уточнение коэффициента: зависимость от диапазона
 

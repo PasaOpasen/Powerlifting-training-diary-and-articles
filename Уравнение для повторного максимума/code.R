@@ -329,15 +329,60 @@ obj+geom_point(aes(x=Weight,y=Height,col=BodyType,shape=Experience),size=5)+face
 obj+geom_boxplot(aes(x=Action,y=RM))
 
 
-bx=obj+geom_boxplot(aes(x=CountGroup,y=RM/MRM))+
+bx=ggplot(data)+geom_boxplot(aes(x=CountGroup,y=RM/MRM))+
   labs(title = "Отношение повторного максимума к многоповторному в зависимости от числа повторений",
        x="Диапазон повторений",y="Отношение повторного максимума к многоповторному",
        caption = "Каждый диапазон повторений действует по своим законам \n и нуждается в собственной версии модели")+
   theme_tq()
+bx
 
-bx+facet_grid(~BodyType)+theme_bw()+labs(caption="caption")
+bx+facet_grid(~BodyType)+theme_bw()+labs(caption="Для числа повторений до 10 тип телосложения не имеет значения. На высоком числе повторений эндоморфы менее выносливы")
 #bx+facet_grid(~Sex)+theme_bw()+labs(caption="caption")
-bx+facet_grid(~Action)+theme_bw()+labs(caption="caption")
+bx+facet_grid(~Action)+theme_bw()+labs(caption="Присед имеет хорошую выносливость на большом числе повдторений, жим -- на маленьком",
+                                       subtitle = "Чем отношение ниже, тем более 'выносливы' мышцы в том или ином диапазоне")
+
+
+
+
+
+
+
+
+
+
+
+
+
+data %<>%filter(Count<=20) 
+
+data %>% summary()
+
+plt=ggplot(data)+theme_bw()
+
+plt+geom_density(aes(x=RM),fill="green")+geom_density(aes(x=MRM,fill="red",alpha=0.5))+
+  labs(x="RM (зелёное), MRM (красное)",y="ядерная плотность",title = 'Плотность распределения повторного максимума и многоповторного максимума')+
+  theme(legend.position = 'none')
+
+plt+geom_bar(aes(x=factor(Count)))
+
+plt+geom_bar(aes(x=CountGroup,fill=BodyType),position=position_dodge2())+theme(legend.position = c(.85,.9))+
+  labs(x="Диапазон повторений",y="Количество", title = "Количество наблюдений в каждом диапазоне повторений",fill="Телосложение")
+
+plt+geom_bar(aes(x=IndexGroup,fill=BodyType),position=position_dodge2())+theme(legend.position = c(.85,.9))+
+  labs(x="Категория по индексу массы тела",y="Количество", title = "Количество наблюдений в каждой категории по индексу массы тела",fill="Телосложение")
+
+plt+geom_bar(aes(x=AgeGroup,fill=BodyType),position=position_dodge2())+theme(legend.position = c(.85,.9))+
+  labs(x="Категория по возрасту",y="Количество", title = "Количество наблюдений в каждой категории по возрасту",fill="Телосложение")
+
+plt+geom_bar(aes(x=Action,fill=BodyType),position=position_dodge2())+theme(legend.position = c(.85,.9))+
+  labs(x="Движение",y="Количество", title = "Количество наблюдений в каждом движении",fill="Телосложение")
+
+plt+geom_point(aes(x=Weight,y=Height,col=AgeGroup,shape=Sex),size=2.5)+
+  facet_grid(vars(Action),vars(BodyType))+
+  labs(x="Вес",y="Рост",shape="Пол",col="Возраст",title = "Зависимость между ростом и весом")
+
+
+sapply(data[sapply(data,is.numeric)], function(x)shapiro.test(x)$p.value)
 
 
 

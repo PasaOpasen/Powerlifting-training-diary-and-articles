@@ -259,26 +259,75 @@ sigma=nls(v~1+b/(1+exp(-k*n)),
           start = list(b=0.3,k=1))
 
 
+
+
+
 GGally::ggcorr(data,label=T,label_round = 2)
 data %$% cor(RM,MRM*Count)
 
-data %>% ggplot(aes(x=MRM,y=RM))+geom_RMooth()+geom_point(aes(col=CountGroup),size=3)+theme_bw()
+plt=data %>% ggplot(aes(x=MRM,y=RM))+geom_smooth()+
+  geom_point(aes(col=CountGroup),size=3)+theme_bw()+
+  #facet_grid(vars(CountGroup))+
+  labs(x="Многоповторный максимум",y="Повторный максимум",
+       col="Диапазон повторений",
+       title = "Зависимость повторного максимума от многоповторного")
+plt+theme(legend.position = c(0.9,0.2))
 
-byCountGroup=ggplot(data,aes(y=RM/MRM,col=Sex))+facet_wrap(~CountGroup)+theme_bw()
+plt+facet_grid(vars(CountGroup))
+
+
+byCountGroup=ggplot(data,aes(y=(RM/MRM-1)/Count,col=BodyType))+facet_grid(vars(CountGroup))+theme_bw()
 byCountGroup+geom_point(aes(x=Age))
 byCountGroup+geom_point(aes(x=Weight))
 
-ggplot(data,aes(x=Experience,y=RM/MRM))+geom_boxplot()+facet_wrap(~CountGroup)+theme_bw()
+
+ggplot(data,aes(x=AgeGroup,y=RM/MRM))+geom_boxplot()+
+  facet_grid(vars(CountGroup))+theme_bw()+
+  labs(x="Опыт тренировок")
+
 #есть ли значимые различия в разных возрастных группах для фиксированного диапазона
-aov(RM/MRM~Experience,data %>% filter(CountGroup=="2-3")) %>% summary()
+cat('p-значения в зависимости от опыта: \n')
+(sapply(levels(data$CountGroup),function(x) aov(RM/MRM~Experience,data %>% filter(CountGroup==x))%>% summary()%$% .[[1]][["Pr(>F)"]][1]))
+
+cat('p-значения в зависимости от возрастной группы: \n')
+(sapply(levels(data$CountGroup),function(x) aov(RM/MRM~AgeGroup,data %>% filter(CountGroup==x))%>% summary()%$% .[[1]][["Pr(>F)"]][1]))
 
 
+cat('p-значения в зависимости от индекса массы тела: \n')
+(sapply(levels(data$CountGroup),function(x) aov(RM/MRM~IndexGroup,data %>% filter(CountGroup==x))%>% summary()%$% .[[1]][["Pr(>F)"]][1]))
+
+cat('p-значения в зависимости от типа телосложения: \n')
+(sapply(levels(data$CountGroup),function(x) aov(RM/MRM~BodyType,data %>% filter(CountGroup==x))%>% summary()%$% .[[1]][["Pr(>F)"]][1]))
+
+
+ggplot(data,aes(x=AgeGroup,y=RM/MRM))+geom_boxplot()+
+  facet_grid(vars(CountGroup))+theme_bw()+
+  labs(x="Возраст")
+
+ggplot(data,aes(x=IndexGroup,y=RM/MRM))+geom_boxplot()+
+  facet_grid(vars(CountGroup))+theme_bw()+
+  labs(x="Возраст")
+
+
+cat('p-значения в зависимости от типа телосложения: \n')
+(sapply(levels(data$CountGroup),function(x) aov(RM/MRM~Action,data %>% filter(CountGroup==x))%>% summary()%$% .[[1]][["Pr(>F)"]][1]))
+
+ggplot(data %>% filter(Count<=20),aes(x=Action,y=RM/MRM))+geom_boxplot()+
+  facet_grid(vars(CountGroup))+theme_bw()+
+  labs(x="Движение")
+
+
+
+aov(cor(RM,MRM)~Experience,data %>% filter(CountGroup=="2-3")) %>% summary()%$% .[[1]][["Pr(>F)"]][1]
+
+###
 
 obj=ggplot(data %>% select(-Count))+theme_bw()
 obj+geom_bar(aes(x=CountGroup))
 obj+geom_bar(aes(x=BodyType))
-obj+geom_point(aes(x=Weight,y=Height,col=BodyType,shape=Experience),size=5)
+obj+geom_point(aes(x=Weight,y=Height,col=BodyType,shape=Experience),size=5)+facet_grid(vars(Action),vars(BodyType))
 obj+geom_boxplot(aes(x=Action,y=RM))
+
 
 bx=obj+geom_boxplot(aes(x=CountGroup,y=RM/MRM))+
   labs(title = "Отношение повторного максимума к многоповторному в зависимости от числа повторений",
@@ -287,7 +336,7 @@ bx=obj+geom_boxplot(aes(x=CountGroup,y=RM/MRM))+
   theme_tq()
 
 bx+facet_grid(~BodyType)+theme_bw()+labs(caption="caption")
-bx+facet_grid(~Sex)+theme_bw()+labs(caption="caption")
+#bx+facet_grid(~Sex)+theme_bw()+labs(caption="caption")
 bx+facet_grid(~Action)+theme_bw()+labs(caption="caption")
 
 

@@ -515,7 +515,7 @@ m1 %>% predict(data) %>% ResVal()
 m1 %>% mysummary()
 
 
-
+b1=lm(RM~MRM+MRM:Count-1,data)
 
 #lm(RM~MRM:Count+MRM:CountGroup-1,data) %>% ShowErrors()
 
@@ -537,13 +537,21 @@ lm(RM~MRM:Count:CountGroup+MRM:Action+I(MRM/Weight*Index)-1,data) %>% ShowErrors
 lm(RM~MRM:Count:CountGroup+MRM:Action+I(MRM/Weight*Index)+sqrt(Count):CountGroup:MRM-1,data) %>% ShowErrors()
 
 
-
+lm(RM~MRM:Count:CountGroup+MRM:CountGroup-1,data) %>% all()
 lm(RM~MRM:Count:CountGroup+MRM:Action-1,data) %>% all()
+
 
 lm(RM~MRM:Count:CountGroup+MRM:Action+MRM:Body2-1,data) %>% all()
 
 lm(RM~MRM:Count:CountGroup+MRM:Action+I(Count^2):MRM-1,data) %>% all()
 
+
+#надо удалить диапазон выше 10
+data$CountGroup %>% table()
+data %<>%filter(Count<11)
+
+b2=lm(RM~MRM:Count:CountGroup+MRM:CountGroup-1,data); b2%>% all()
+b3=lm(RM~MRM:Count:CountGroup+MRM:Action-1,data) #%>% all()
 
 best=lm(RM~MRM:Count:CountGroup+MRM:Action+I(Count^2):MRM-1,data)
 
@@ -597,29 +605,20 @@ stp=lm(RM~MRM:Count:CountGroup+
 
 stp %>% all()
 
-best=lm(RM ~ MRM:Action + MRM:I(Count^2) + Action2:I(MRM/Weight) + MRM:Count:CountGroup - 1,data)
-
-best %>% all()
-
-#надо удалить диапазон выше 10
-data$CountGroup %>% table()
 
 
-data %<>%filter(Count<11)
+b4=lm(RM ~ MRM:Action + MRM:I(Count^2) + Action2:I(MRM/Weight) + MRM:Count:CountGroup - 1,data)
+b4 %>% all()
+
+#b5=lm(RM ~ I(MRM/Index) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
+#b5 %>% all()
 
 
-b1=lm(RM ~ MRM:Action + MRM:I(Count^2) + Action2:I(MRM/Weight) + MRM:Count:CountGroup - 1,data)
-b1 %>% all()
-
-b2=lm(RM ~ I(MRM/Index) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
-b2 %>% all()
+b5=lm(RM ~ I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
+b5 %>% all()
 
 
-b3=lm(RM ~ I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
-b3 %>% all()
-
-
-stp=b2 %>% step(
+stp=b6 %>% step(
   direction = "both",
   scope = (~.+
              I(Count^2):CountGroup:MRM+
@@ -674,6 +673,57 @@ stp %>% all()
 #b2=lm(RM/MRM ~ I(1/Index) + CountGroup + Action + CountGroup:Count - 1,data)
 #b2 %>% ShowErrors(power.coef = data$MRM)
 
+
+
+#nb=rep(1:5,2)
+gr=rep(c('2-10','2-7'),5) %>% sort(decreasing = T)
+
+m=matrix(nrow=10,ncol=5)
+
+lst=list(b1,b2,b3,b4,b5)
+
+ct=c(8,11)
+
+kn=c(5,6,8,10,12)
+
+for(i in 1:5){
+  
+  model=lst[[i]]
+  
+  for(j in 1:length(ct)){
+    dt=data %>% filter(Count<ct[j])
+    gl=glm(formula = model$call$formula,data= dt)
+    
+    getval=function(k){
+      boot::cv.glm(dt, gl,K=k)$delta[1] %>% return()
+    }
+    
+    beg=(j-1)*length(kn)
+    
+    for(s in 1:length(kn)){
+      m[beg+s,i]= getval(kn[s])
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m)=paste0('b',1:5)
+kp=rep(kn,2)
+
+vals=data.frame(kp=rep(kp,5),
+                b=as.numeric(m),
+                gr=factor(rep(gr,5)),
+                n=factor(rep(colnames(m),10) %>% sort())) %>% 
+  tbl_df()
+
+
+
+ggplot(vals,aes(x=kp,y=b,col=n))+theme_bw()+facet_grid(vars(gr))+
+  geom_point(size=4)+geom_line(size=1.)
+
+
+save(vals,file="CVvals.rdata")
 
 
 

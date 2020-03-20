@@ -37,7 +37,7 @@ levels(ex)=c("До двух лет","2-3 года","4-5 лет","6-10 лет","�
 data %<>%mutate(Experience=factor(ex,ordered = T)) 
 
 allrows=1:nrow(data)
-maxerror=2
+maxerror=5
 
 #уникальные записи (где один от каждого человека берётся только одна запись)
 #объяснить, по каким признакам людей считать одинаковыми
@@ -396,11 +396,11 @@ Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
 Show=function(vals,df=data){
   #vals=predict(model,df)
   err=df$RM-vals
-  cbind(Fact=vals,Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
+  cbind(Fact=round(vals),Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
         ERROR=abs(df$RM-vals),
         ErrorPercent=abs(err)/df$RM*100,
-        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
-        filter(ERROR>1)%>% print()
+        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail,-Experience, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        filter(ERROR>1)%>% View()
   cat("\n")
   rg=range(err)#;print(err);print(rg)
   
@@ -412,7 +412,10 @@ Show=function(vals,df=data){
   cat("Модель ошиблась более чем на",maxerror,"% в",s,"случаях из",len,"(",s/len*100,"%)\n")
   s=sum(abs(err)>maxerror)
   cat("Модель ошиблась более чем на",maxerror,"кг в",s,"случаях из",len,"(",s/len*100,"%)\n")
-  cat("-------------------> Среднеквадратичная ошибка:",Error(vals,df$RM),"\n")
+  
+  cat("----------------> Статистика по ошибкам в процентах:\n")
+  (abs(df$RM-vals)/df$RM*100) %>% summary() %>% print()
+  cat("-------------------> Среднеквадратичная ошибка:", Error(vals,df$RM),"\n")
 }
 
 ShowErrors=function(model,power.coef=1,sum.coef=0){
@@ -435,7 +438,8 @@ ResAn=function(res){
   
   (p+facet_grid(vars(Action))) %>% print()
   
-  p+facet_grid(vars(BodyType),vars(Action))
+  (p+facet_grid(vars(BodyType),vars(Action)))%>% print()
+  return(0)
 }
 
 #из этого графика можно сделать вывод, что модель неплохо работает на диапазоне 2-3, но на диапазоне 13-20 ошибка какая-то сильно отличающаяся от тенденции уменьшения ошибок, так что этот диапазон надо бы и вообще убрать, так как там уже играют роль свойства красных волокон, не говорящие о силе
@@ -469,8 +473,8 @@ mysummary=function(mdl){
   cat("-----> ТЕСТ НА АВТОКОРРЕЛЯЦИЮ:\n");cat("\n")
   durbinWatsonTest(mdl) %>% print();cat("\n")   #тест на автокорреляцию
   
-  cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
-  ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
+ # cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
+  # ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
 
   cat("-----> ТЕСТ НА ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
   
@@ -487,10 +491,22 @@ mysummary=function(mdl){
   
 }
 
+all=function(modelka){
+  modelka %>% ShowErrors()
+  
+  modelka %>% predict(data) %>% ResVal()
+  
+  modelka %>% mysummary()
+}
+
+data %<>% mutate(Body2=ifelse(BodyType=="Эндоморф","Endo","NonEndo") %>% factor(),
+                Action2=ifelse(Action=="Жим","Up","Down") %>% factor())
+
+
+
 md %>% mysummary()
 
-
-m1=lm(RM~MRM+MRM:Count,data)
+m1=lm(RM~MRM+MRM:Count-1,data)
 
 m1 %>% ShowErrors()
 
@@ -501,10 +517,204 @@ m1 %>% mysummary()
 
 
 
+#lm(RM~MRM:Count+MRM:CountGroup-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM:I(Count^2)+MRM-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action-1,data) %>% ShowErrors()
+
+#lm(RM~MRM:Count:CountGroup+MRM:Action2-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+MRM:Index:Experience-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+Index-1,data) %>% ShowErrors()
+
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+I(MRM/Weight*Index)-1,data) %>% ShowErrors()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+I(MRM/Weight*Index)+sqrt(Count):CountGroup:MRM-1,data) %>% ShowErrors()
+
+
+
+lm(RM~MRM:Count:CountGroup+MRM:Action-1,data) %>% all()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+MRM:Body2-1,data) %>% all()
+
+lm(RM~MRM:Count:CountGroup+MRM:Action+I(Count^2):MRM-1,data) %>% all()
+
+
+best=lm(RM~MRM:Count:CountGroup+MRM:Action+I(Count^2):MRM-1,data)
+
+
+stp=lm(RM~MRM:Count:CountGroup+
+         MRM:CountGroup+
+        # MRM:CountGroup:Action+
+         #MRM:CountGroup:Action2+
+        # MRM:CountGroup:BodyType+
+        # MRM:CountGroup:Body2+
+         MRM:Action+
+         MRM:Action2+
+         I(Count^2):MRM-1+
+         #I(MRM/Weight):Action+
+         MRM:BodyType:Count+
+         MRM:Body2:Count+
+         I(MRM/Weight):Action2+
+         MRM:Body2:Count+
+         I(MRM^2)+
+         sqrt(MRM)+
+         I(Index/MRM)+
+         AgeGroup:Experience+
+         I(MRM/Weight):AgeGroup:Experience+
+         I(MRM/Index)+
+         I((MRM/Index)^2)+
+         I((MRM/Index)^3)+
+         sqrt(MRM/Index)+
+         log(MRM/Index)+
+         #poly(MRM/Index,3)+
+         poly(Index/MRM,3)
+         ,data #%>% filter(Count<11)
+       ) %>% step(
+         direction = "both",
+         scope = (~.+
+                    I(Count^2):CountGroup:MRM+
+                    MRM:BodyType+
+                    MRM:Count:BodyType+
+                    MRM:Experience+
+                    MRM:AgeGroup:Experience+
+                    MRM:Count:Experience+
+                    MRM:Count:CountGroup:BodyType+
+                    MRM:CountGroup:BodyType+
+                   I(MRM*Count/Weight):CountGroup+
+                   I(MRM*Weight/(Height-100))+
+                    I((MRM-100)/MRM)+
+                    poly(MRM/Weight,2)+
+                  MRM+MRM:Count+
+                    MRM:Weight:BodyType
+         ),steps=5000)
+
+
+stp %>% all()
+
+best=lm(RM ~ MRM:Action + MRM:I(Count^2) + Action2:I(MRM/Weight) + MRM:Count:CountGroup - 1,data)
+
+best %>% all()
+
+#надо удалить диапазон выше 10
+data$CountGroup %>% table()
+
+
+data %<>%filter(Count<11)
+
+
+b1=lm(RM ~ MRM:Action + MRM:I(Count^2) + Action2:I(MRM/Weight) + MRM:Count:CountGroup - 1,data)
+b1 %>% all()
+
+b2=lm(RM ~ I(MRM/Index) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
+b2 %>% all()
+
+
+b3=lm(RM ~ I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,data)
+b3 %>% all()
+
+
+stp=b2 %>% step(
+  direction = "both",
+  scope = (~.+
+             I(Count^2):CountGroup:MRM+
+             MRM:BodyType+
+             MRM:Body2+ 
+             MRM:I(Count^2)+
+             MRM:Count:BodyType+
+             MRM:Experience+
+             MRM:AgeGroup:Experience+
+             MRM:Count:Experience+
+             MRM:Count:CountGroup:BodyType+
+             MRM:CountGroup:BodyType+
+             MRM:Count:CountGroup:Body2+
+             MRM:CountGroup:Body2+
+             I(MRM*Count/Weight):CountGroup+
+             I(MRM*Weight/(Height-100))+
+             I((MRM-100)/MRM)+
+             poly(MRM/Weight,2)+
+             MRM+
+             MRM:Count+
+             MRM:Body2+
+             MRM:Action2+
+             MRM:Weight:BodyType+
+             I((MRM/Index)^2)+
+             I((MRM/Index)^3)+
+             I((MRM/Index)^4)+
+             I((MRM/Index)^5)+
+             I((MRM/Index)^6)+
+             I((MRM/Index)^7)+
+             I((MRM/Index)^8)+
+             I((MRM/Index)^9)+
+             I((MRM/Index)^0.5)+
+             log(MRM/Index)+
+             I(log(MRM/Index)^2)+
+             I((MRM/Index)^2):Body2+
+             I((MRM/Index)^2):Action2+
+             I((MRM/Weight*((Height-100)/100)^2))
+  ),steps=5000)
+
+stp %>% all()
+
+#data%$%plot(MRM/Index,RM)
+#data%$%plot(MRM/Index,log(RM))
+#data%$%plot(MRM*Index,RM)
+#data%$%plot(Index/RM,RM)
+#data%$%plot(Index/RM,log(RM))
+
+#lm(RM~I(MRM/Index/Count)-1,data) %>% all()
+
+
+
+#b2=lm(RM/MRM ~ I(1/Index) + CountGroup + Action + CountGroup:Count - 1,data)
+#b2 %>% ShowErrors(power.coef = data$MRM)
+
+
+
+
+library(caret)
+
+
+tr=trainControl(method = "repeatedcv", 
+                number = 10, #p = 0.75,
+                repeats = 30,
+                verboseIter = T,
+                returnResamp = "all", savePredictions = T, 
+                summaryFunction = defaultSummary)
+
+# random forest for future
+ft=train(RM~I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,
+         data=data %>% select(-Mail,-Sex,-Age,-Height,-Weight), 
+         method = "rf", 
+         metric =  "RMSE", 
+         maximize = FALSE, 
+         trControl = tr)
+
+
+ft=train(RM~I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,
+         
+         data=data %>% select(-Mail,-Sex,-Age,-Height,-Weight), 
+      method = "lmStepAIC", 
+      scope=list(
+        upper=~.^3,
+        lower=~1),
+      direction="both",
+      
+      metric =  "RMSE", 
+      maximize = FALSE, 
+      trControl = tr)
+
+ft %>% summary()
+ft %>% predict(data) %>% Show()
+
+
 #Модели####
 
-shapiro.test(data$RM)
-hist(data$RM)
 
 #начальная
 Show(data$MRM*(1+0.0333*data$Count))

@@ -577,15 +577,18 @@ plt+geom_point(aes(x=Weight,y=Height,col=AgeGroup,shape=Sex),size=2.5)+
 # Построение моделей
 
 ```{r}
+data %<>%filter(Count<=20) 
+#data %>% summary()
+
 Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
 
 Show=function(vals,df=data){
   #vals=predict(model,df)
   err=df$RM-vals
-  cbind(Fact=vals,Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
+  cbind(Fact=round(vals),Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
         ERROR=abs(df$RM-vals),
         ErrorPercent=abs(err)/df$RM*100,
-        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail, IndexGroup)%>%         arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail,-Experience, IndexGroup)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)#;print(err);print(rg)
@@ -621,13 +624,16 @@ ResAn=function(res){
   
   (p+facet_grid(vars(Action))) %>% print()
   
-  p+facet_grid(vars(BodyType),vars(Action))
+  (p+facet_grid(vars(BodyType),vars(Action)))%>% print()
+  return(0)
 }
 
 #из этого графика можно сделать вывод, что модель неплохо работает на диапазоне 2-3, но на диапазоне 13-20 ошибка какая-то сильно отличающаяся от тенденции уменьшения ошибок, так что этот диапазон надо бы и вообще убрать, так как там уже играют роль свойства красных волокон, не говорящие о силе
-#ResAn(data$RM-data$MRM*(1+0.0333*data$Count))
+ResAn(data$RM-data$MRM*(1+0.0333*data$Count))
 
 ResVal=function(vals)ResAn(data$RM-vals)
+
+#ResGraf=function(model)ResVal(predict(model,data))
 
 mysummary=function(mdl){
  
@@ -653,8 +659,8 @@ mysummary=function(mdl){
   cat("-----> ТЕСТ НА АВТОКОРРЕЛЯЦИЮ:\n");cat("\n")
   durbinWatsonTest(mdl) %>% print();cat("\n")   #тест на автокорреляцию
   
-  cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
-  ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
+ # cat("-----> ТЕСТ НА ОДНОРОДНОСТЬ ДИСПЕРСИИ:\n");cat("\n")
+  # ncvTest(mdl)%>% print();cat("\n")    #однородность дисперсии
 
   cat("-----> ТЕСТ НА ВЫБРОСЫ И ВЛИЯТЕЛЬНЫЕ НАБЛЮДЕНИЯ:\n");cat("\n")
   
@@ -669,6 +675,14 @@ mysummary=function(mdl){
   data[c(outs$p %>% names(),influ %>% rownames()) %>% as.numeric(),] %>% unique() %>% 
   select(-Mail) %>% arrange(-RM,-Count) %>% print();cat("\n")
   
+}
+
+all=function(modelka){
+  modelka %>% ShowErrors()
+  
+  modelka %>% predict(data) %>% ResVal()
+  
+  modelka %>% mysummary()
 }
 ```
 
@@ -699,17 +713,8 @@ ResVal(data$RM-data$MRM*(1+0.0333*data$Count))
 
 Теперь возьмём модель вида  $RM=MRM \cdot(a+b \cdot Count)$ и подберём коэффициенты $a,b$ лучшим образом. В итоге:
 ```{r,out.width='90%'}
-m1=lm(RM~MRM+MRM:Count,data)
-
-m1 %>% ShowErrors()
-
-m1 %>% predict(data) %>% ResVal()
-
-m1 %>% mysummary()
+lm(RM~MRM+MRM:Count-1,data) %>% all()
 ```
-
-
-
 
 ## Уточнение коэффициента: зависимость от диапазона
 

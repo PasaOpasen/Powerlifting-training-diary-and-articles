@@ -1,7 +1,7 @@
 ---
 title: "Регрессионная модель для определения повторного максимума"
 author: "Дмитрий Пасько"
-date: "11 02 2020"
+date: "21 03 2020"
 output:
   html_document:
     df_print: paged
@@ -84,10 +84,6 @@ getFan=function(vec,main=""){
 
 
 
-
-
-
-
 data.backup=data
 
 
@@ -116,7 +112,7 @@ data.backup=data
 
 Русскоязычный опрос распространялся через соц. сеть ВКонтакте преимущественно в следующих группах: [Пауэрлифтинг | Тяжелая атлетика](https://vk.com/powerliftingnews), [Я ♥ ПАУЭРЛИФТИНГ](https://vk.com/ilovepowerlifting), [ПАУЭРЛИФТИНГ И ЖИМ ЛЁЖА 18+](https://vk.com/powerliftingworld), [Твой Тренер](https://vk.com/tvoytrenercom); аналогично англоязычный опрос распространялся на Facebook преимущественно здесь: [Powerlifting Motivation](https://www.facebook.com/PowerliftingMotivation/), [International Powerlifting League (IPL)](https://www.facebook.com/groups/IPLPowerlifting/), [Powerlifting Motivation Chat](https://www.facebook.com/groups/powerliftingmotivation/), [Powerlifting Memes](https://www.facebook.com/groups/powerliftingmemes/). Кроме того, несколько наблюдений я собрал лично.
 
-Спустя два месяца от создания опросов данные были выгружены и началась их обработка. Теперь эти данные и всё, связанное с ними (в том числе последняя версия этого документа), хранятся [в моём репозитории](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Уравнение%20для%20повторного%20максимума).
+Спустя два месяца от создания опросов данные были выгружены и началась их обработка. Теперь эти данные и всё, связанное с ними (в том числе последняя версия этого документа), хранятся [в моём репозитории](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Estimating%20RM).
 
 Для обработки данных и создания отчёта использовалась среда [RStudio](https://rstudio.com) и **язык R версии `r getRversion()`**. 
 
@@ -202,7 +198,7 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{own})+\varepsilon$$
 # Описание выборки и разведочный анализ данных
 
 ## О прошедших опрос
-С помощью опроса было получено **всего `r nrow(data)` наблюдений** (исключая явные аномалии), принадлежащие **`r nrow(data.unique)`** людям[^10]; они содержатся в файле [data(rus).tsv](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Уравнение%20для%20повторного%20максимума/data(rus).tsv). После некоторых преобразований над переменными каждое наблюдение наблюдение содержит следующую информацию:
+С помощью опроса было получено **всего `r nrow(data)` наблюдений** (исключая явные аномалии), принадлежащие **`r nrow(data.unique)`** людям[^10]; они содержатся в файле [data(rus).tsv](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Estimating%20RM/data(rus).tsv). После некоторых преобразований над переменными каждое наблюдение наблюдение содержит следующую информацию:
 
 [^10]: дело в том, что одни и те же люди могли вносить более одного ответа. В итоге два наблюдения считаются принадлежащими одному человеку, если они совпадают по переменным AgeGroup, Height, BodyType, Experience, Sex, IndexGroup (которые вряд ли изменятся за время между фиксацией разных наблюдений)
 
@@ -243,7 +239,7 @@ summary(data %>% select(-Mail))
 
 Сама таблица **data**:
 ```{r,echo=F}
-data
+data %>% select(-Mail)
 ```
 
 
@@ -330,7 +326,7 @@ GGally::ggcorr(data,label=T,label_round = 2)
 ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_wrap(vars(Action))+coord_flip()+
   labs(x="Группа по индексу массы",y="Повторный максимум",
        title="Зависимость повторного максимума от индекса массы тела",
-       subtitle = "Из графика видно, что жим лёжа имеет тенденцию увеличиваться с ростом индекса массы тела. \nОднако для приседа и тяги это верно лишь до некоторого порога")+
+       subtitle = "Из графика видно, что жим лёжа имеет тенденцию увеличиваться\n с ростом индекса массы тела. \nОднако для приседа и тяги это верно лишь до некоторого порога")+
   theme_bw()
   
 #ggplot(data,aes(x=IndexGroup,y=RM))+geom_boxplot()+facet_grid(Action~BodyType)
@@ -403,7 +399,7 @@ df
   <img src="NSCA2.jpg">
 </p>
 
-Хотя есть и отличия: вес на 2 повторения скорее равень 94% от максимума, а не 95%, а вес на 12 повторений -- это скорее 70% от максимума, а не 67%.
+Хотя есть и отличия: вес на 2 повторения скорее равен 94% от максимума, а не 95%, а вес на 12 повторений -- это скорее 70% от максимума, а не 67%.
 
 
 Теперь посмотрим на зависимость повторного максимума от многоповторного:
@@ -417,7 +413,7 @@ plt=data %>% ggplot(aes(x=MRM,y=RM))+geom_smooth()+
 plt+theme(legend.position = c(0.85,0.2))
 ```
 
-Очевидно, что здесь будет близка к линейной зависимость (учитывая высокую корреляцию).
+Очевидно, что здесь будет близкая к линейной зависимость (учитывая высокую корреляцию).
 Оказывается, если предварительно разбить наблюдения на группы по повторениями, линейность станет намного более выраженной для числа повторений не больше 10 (для большего числа повторений не прослеживается явной линейности либо из-за недостатка данных, либо по физиологическим причинам, озвученным ранее; для диапазона 11-20 возможна квадратичная зависимость):
 ```{r,out.width='90%'}
 plt+facet_grid(vars(CountGroup))
@@ -491,7 +487,7 @@ bx+facet_grid(~Action)+theme_bw()+labs(caption="Присед имеет хоро
 1. исправить их, опираясь на логику либо переспросить того, кому это наблюдение принадлежит;
 1. удалить из выборки.
 
-В итоге многие данные были исправлены на более вероятный вариант, а явные непонятные аномалии были удалены из выборки. [В файле с исходными данными](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Уравнение%20для%20повторного%20максимума/data.tsv) содержатся комментарии, где и что я исправил и почему.
+В итоге многие данные были исправлены на более вероятный вариант, а явные непонятные аномалии были удалены из выборки. [В файле с исходными данными](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Estimating%20RM/data.tsv) содержатся комментарии, где и что я исправил и почему.
 
 ## Удалённые данные
 
@@ -923,6 +919,65 @@ $$\frac{MRM}{Index}=\frac{MRM \cdot (0.01 \cdot Height)^2}{Weight}=\frac{MRM \cd
 
 ## Выражение многоповторного максимума через многоповторный
 
+Здесь всё интуитивно понятно. Для человека, например, моей комплекции (рост 170, вес 70) для приседа можно составить такую таблицу:
+
+```{r, cache=T}
+f=function(MRM,Count,Action='Присед',Weight=70,Height=170){
+  
+  if(Count<2){
+    Count=2
+  } else if(Count>10){
+    Count=10
+  }
+  
+  act=factor(Action,levels = levels(data$Action))
+  
+  up=c(4,8,11)
+  lv=levels(data$CountGroup)
+  
+  cg=lv[Count<up] %>% first() %>% factor(levels=lv)
+  
+  df=data.frame(MRM,
+                Count,
+                Action=act,
+                CountGroup=cg,
+                Index=Weight/(0.01*Height)^2)
+  
+  predict(b5,df,se.fit = T,interval = "confidence",level=0.95)[[1]] %>% return()
+  
+}
+
+
+mrm=function(RM, count){
+  
+  s=function(MRM) abs(RM-f(MRM=MRM,Count=count, Action = 'Присед')[1]) %>% return()
+  
+  optim(par=c(0.8*RM),
+        fn=s,
+        lower=0.6*RM,
+        upper = RM,
+        method="Brent")$par %>% return()
+}
+
+#mrm(150,3)
+
+
+vec=seq(100,300,length.out = 81)
+
+m=matrix(nrow=length(vec),ncol=10)
+m[,1]=vec
+for(i in 2:10){
+  for(j in 1:length(vec))
+    m[j,i]=mrm(m[j,1],i)
+}
+
+colnames(m)=paste(1:10, 'reps') %>% as.character()
+
+m %>% round(2) %>% tbl_df()
+```
+
+
+
 ## Постановка эквивалентной цели
 Если вы ходите поднять свой $RM$ на 15 кг, не обязательно ставить цель "в конце цикла поднять $RM+15$ кг на раз". Зная $RM+15$, можно рассчитать свой целевой 2ПМ, 3ПМ или 4ПМ и стремиться к концу цикла достичь именно тех величин. 
 
@@ -939,6 +994,127 @@ $$\frac{MRM}{Index}=\frac{MRM \cdot (0.01 \cdot Height)^2}{Weight}=\frac{MRM \cd
 
 ## Простейший цикл
 
+```{r}
+library(tidyverse)
+library(magrittr)
+library(ggformula)
+library(ggalt)
+
+
+mx=function(vals,count, withcomp=T){
+  
+  t=1:length(vals) %>% map_dbl(function(i) f(MRM=vals[i],Count=count[i],Action='Жим')[1])
+  
+  #t=vals*(1+0.0333*count)
+  t[count==1]=vals[count==1]
+  if(withcomp){
+      s=t[length(t)]*(1+runif(1,0.,0.005))
+  return(c(t,s))
+  }
+  return(t)
+}
+
+
+x=c(100,120,115,105,130,120,125)
+y=c(10,4,6,10,3,6,5)
+
+vc=c(mx(x,y),mx(x+4,y),mx(x+9,y))
+lb=paste0(c(x,vc[8],x+4,vc[16],x+9,vc[24]) %>% round(),"x",c(y,1,y,1,y,1))
+```
+
+
+Возьмём очень простой цикл из тех, которые можно иногда применять в межсезонье. Он состоит их `r length(x)` тренировок, на который самый тяжёлый подход состаляет (при конкретных цифрах) `r paste0(x,'x',y)` соответственно.
+
+Если прогнать такой цикл через модель (в случае с приседом), получим такую динамику:
+
+```{r,out.width='95%'}
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%(length(x)+1)==0,"проходка","тренировка")))
+
+(ggplot(tb,aes(x=d,y=val))+
+  geom_hline(yintercept = 141,size=1.,linetype="dashed",alpha=0.8)+
+  geom_hline(yintercept = vc[length(vc)],size=1.,linetype="dashed",alpha=0.8)+
+  geom_xspline(size=1,spline_shape = -0.3,linetype="dotdash",col="green",alpha=0.9)+
+  geom_point(aes(col=day),size=4)+
+  annotate("text", x = 22, y = 139.7, label = "Начальные результаты") +
+  annotate("text", x = 17, y = 153.2, label = "Итоговые результаты") +
+  annotate("text", x = tb$d+0.4, y = tb$val-ifelse(seq(tb$d)%%8!=0,0.8,0.3), label = lb) +
+  labs(title='Динамика простого цикла (три прохода)',
+       subtitle="Использование модели помогает отследить прогрессию нагрузок\nЗелёную кривую можно рассматривать как аппроксимацию уровня тренированности",
+       x="Номер тренировки",
+       y="Требуемое усилие",
+       caption="Не используйте такой цикл больше 2-3 проходов подряд, он может привести к перетренированности") +
+  guides(color=guide_legend(title="Тип дня"))+
+  theme_bw()+theme(legend.position = c(0.85,0.15))) %>% ggplotly()#+ guides(color=FALSE)
+  
+
+```
+
+Аналогично для ещё нескольких циклов.
+
+## Пиковый цикл Верхошанского
+
+[Ссылка на цикл](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Материалы%20по%20пауэрлифтингу%20и%20не%20только/циклы/Пиковый%20цикл%20Верхошанского.xls)
+
+```{r,out.width='95%'}
+#155 верхошанский
+x=c(100,125,107.5,132.5,120,140,127.5,147.5,117.5,132.5,125,162.5)
+y=c(6,5,5,4,3,3,3,2,5,2,2,1)
+vc=c(mx(x,y,F),mx(x+8,y,F),mx(x+15,y,F))
+lb=paste0(c(x,x+8,x+15) %>% round(),"x",c(y,y,y))
+
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%length(x)==0,"проходка","тренировка")))
+
+(ggplot(tb,aes(x=d,y=val))+
+  geom_hline(yintercept = 155,size=1.,linetype="dashed",alpha=0.7)+
+  geom_hline(yintercept = vc[length(vc)],size=1.,linetype="dashed",alpha=0.7)+
+  geom_xspline(size=1,spline_shape = -0.7,linetype="dotdash",col="green",alpha=0.9)+
+  geom_point(aes(col=day),size=4)+
+  annotate("text", x = 5.5, y = 159, label = "Начальные результаты") +
+  annotate("text", x = 4.5, y = 176, label = "Итоговые результаты") +
+  annotate("text", x = tb$d+0.4, y = tb$val-ifelse(seq(tb$d)%%length(x)!=0,0.8,0.3), label = lb) +
+  labs(title='Пиковый цикл Верхошанского (три прохода)',
+       subtitle="Медленный подъём чуть выше бывшего максимума, затем отдых (разгон) и проходка",
+       x="Номер тренировки",
+       y="Требуемое усилие",
+       caption="Файл с циклом прилагается") +
+  guides(color=guide_legend(title="Тип дня"))+
+  theme_bw()+theme(legend.position = c(0.85,0.2)))%>% ggplotly()#+ guides(color=FALSE) 
 
 
 
+```
+
+
+## Цикл тома МакКаллоу
+
+[Ссылка на цикл](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/Материалы%20по%20пауэрлифтингу%20и%20не%20только/циклы/Tyagovy-tsikl-Toma-Makkelou.xls)
+
+```{r,out.width='95%'}
+x=c(110,112,117,122,126,131,136,141,145,150,155,160,166,177,120,122.5,128,133,138,143,149,154,159,165,170,175,182,195,134,136,142,148,154,160,165,171,177,183,190,195,203,216)
+y=rep(c(10,10,8,8,5,5,5,5,3,3,2,2,1,1),3)
+vc=c(mx(x,y,F))
+ct=length(y)/3
+
+#plot(vc,type = "b")
+
+lb=paste0(x ,"x", y)
+
+tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%ct==0,"проходка","тренировка")))
+
+(ggplot(tb,aes(x=d,y=val))+
+  geom_hline(yintercept = 160,size=1.,linetype="dashed",alpha=0.7)+
+  geom_hline(yintercept = vc[length(vc)],size=1.,linetype="dashed",alpha=0.7)+
+  geom_xspline(size=1,spline_shape = -0.7,linetype="dotdash",col="green",alpha=0.9)+
+  geom_point(aes(col=day),size=4)+
+  annotate("text", x = 35, y = 162, label = "Начальные результаты") +
+  annotate("text", x = 35, y = 214, label = "Итоговые результаты") +
+  annotate("text", x = tb$d+0.4, y = tb$val-ifelse(seq(tb$d)%%ct!=0,0.8,0.3), label = lb) +
+  labs(title='Тягловый цикл Тома Маккелоу (три прохода)',
+       subtitle="Колебание, подъём, колебание, проходка",
+       x="Номер тренировки",
+       y="Требуемое усилие",
+       caption="Файл с циклом прилагается. Первый день цикла сдвинут вниз для удобства визуализации") +
+  guides(color=guide_legend(title="Тип дня"))+
+  theme_bw()+theme(legend.position = c(0.85,0.1))) %>% ggplotly()#+ guides(color=FALSE)
+
+```

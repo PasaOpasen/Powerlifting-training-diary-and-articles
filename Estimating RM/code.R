@@ -964,3 +964,37 @@ ob+geom_point(aes(x=allrows,shape=BodyType,col=factor(ifelse(abs(res)>2,"red","g
 
 
 
+
+
+
+
+
+#Многоповторный через многоповторный####
+
+mrm=function(RM, count){
+  
+  s=function(MRM) abs(RM-f(MRM=MRM,Count=count)[1]) %>% return()
+  
+  optim(par=c(0.8*RM),
+        fn=s,
+        lower=0.6*RM,
+        upper = RM,
+        method="Brent")$par %>% return()
+}
+
+#mrm(150,3)
+
+
+vec=seq(100,250,length.out = 20)
+
+m=matrix(nrow=length(vec),ncol=10)
+m[,1]=vec
+for(i in 2:10){
+  for(j in 1:length(vec))
+    m[j,i]=mrm(m[j,1],i)
+}
+
+colnames(m)=paste(1:10, 'reps') %>% as.character()
+
+m %>% tbl_df()
+

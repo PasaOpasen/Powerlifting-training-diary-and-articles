@@ -65,6 +65,10 @@ getFan=function(vec,main=""){
 }
 
 
+data.backup=data
+
+
+
 
 #Разведочный анализ и описание выборки####
 
@@ -676,15 +680,17 @@ stp %>% all()
 
 
 #nb=rep(1:5,2)
-gr=rep(c('2-10','2-7'),5) %>% sort(decreasing = T)
 
-m=matrix(nrow=10,ncol=5)
-
-lst=list(b1,b2,b3,b4,b5)
+kn=c(5,6,7,8,9,10,11,12)
 
 ct=c(8,11)
 
-kn=c(5,6,8,10,12)
+gr=rep(c('2-10','2-7'),length(kn)) %>% sort(decreasing = T)
+
+m=matrix(nrow=length(kn)*length(ct),ncol=5)
+
+lst=list(b1,b2,b3,b4,b5)
+
 
 for(i in 1:5){
   
@@ -698,10 +704,14 @@ for(i in 1:5){
       boot::cv.glm(dt, gl,K=k)$delta[1] %>% return()
     }
     
+    getval.mean=function(k,count){
+      map_dbl(1:count,function(x)getval(k)) %>% mean() %>% return()
+    }
+    
     beg=(j-1)*length(kn)
     
     for(s in 1:length(kn)){
-      m[beg+s,i]= getval(kn[s])
+      m[beg+s,i]= getval.mean(kn[s],30)
     }
     #print(m)
   }
@@ -709,22 +719,31 @@ for(i in 1:5){
 }
 
 colnames(m)=paste0('b',1:5)
-kp=rep(kn,2)
+kp=rep(kn,length(ct))
 
 vals=data.frame(kp=rep(kp,5),
                 b=as.numeric(m),
                 gr=factor(rep(gr,5)),
-                n=factor(rep(colnames(m),10) %>% sort())) %>% 
+                n=factor(rep(colnames(m),length(kn)*length(ct)) %>% sort())) %>% 
   tbl_df()
 
 
 
 ggplot(vals,aes(x=kp,y=b,col=n))+theme_bw()+facet_grid(vars(gr))+
-  geom_point(size=4)+geom_line(size=1.)
+  geom_point(size=4)+geom_line(size=1.)+
+  labs(x="Количество блоков при перекрёстной проверке",
+       y="Усреднённые значения ошибок после 30 повторных проверок",
+       col="Модель",
+       title="Оценки качества моделей при перекрёстной проверке",
+       subtitle = "Оценка производилась на разных подмножествах данных",
+       caption = "Очевидно, что пятая модель превосходит остальные по точности")+
+  scale_x_continuous(breaks = kn)+
+  theme(legend.position = "bottom")
+
 
 
 save(vals,file="CVvals.rdata")
-
+save(vals,file="CVvals(more_points).rdata")
 
 
 library(caret)

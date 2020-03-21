@@ -1,0 +1,9 @@
+Hello! I`m master's student and I`m  going to write a dissertation about regression model for estimation 1RM by multiple-repeated maximum.
+
+In the book "The Cube Method by Brandon Lilly" I saw the formula: RM = Weight * (1 + 0.0333 * REPS). Is it true that you use it at your servive (with correction for the range of repetitions)?
+
+Also I created a survey to collection the data to develop the regression model. Link: https://forms.gle/68QDYr3szHtaYnwZ8
+
+Can you give me please any datasets or articles about this theme? 
+
+Thank you very much!

@@ -1,0 +1,6 @@
+Hello, I`m master's student and I`m  going to write a dissertation about regression model to estimate RM by multiple-repeated maximum.
+
+In the book "The Cube Method by Brandon Lilly" I saw the formula: RM = Weight * (1 + 0.0333 * REPS). And I want to know more about it. 
+Can you tell me about this formula please? Where did it come from? What is it based on?
+
+Also I created a survey to collection the data to develop the regression model.  Could you distribute this survey to your huge audience? Link: https://forms.gle/68QDYr3szHtaYnwZ8

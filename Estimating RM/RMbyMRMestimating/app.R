@@ -60,9 +60,41 @@ ui <- fluidPage(
 
 
 
-  e = new.env()
-  name <- load("entire_data.rdata", envir = e)
-
+ e = new.env()
+ name <- load("entire_data.rdata", envir = e)
+ 
+ f=function(MRM,Count,Action='Жим',Weight=70,Height=170){
+   
+   act=factor(Action,levels =e$action.levels)
+   
+   up=c(4,8,11)
+   
+   lv=e$count.levels
+   
+   cg=lv[Count<up] %>% first() %>% factor(levels=lv)
+   
+   #print(environment()$action.levels)
+   
+   #print(MRM)
+   #print(Count)
+   #print(act)
+   #print(cg)
+   #print(Weight/(0.01*Height)^2)
+   
+   df=data.frame(MRM=MRM,
+                 Count=Count,
+                 Action=act,
+                 CountGroup=cg,
+                 Index=Weight/(0.01*Height)^2)
+   #df %>% print()
+   
+   predict(e$b5,
+           df,
+           se.fit = T,
+           interval = "confidence",
+           level=0.999)[[1]] %>% return()
+   
+ }
   
   
 # Define server logic required to draw a histogram
@@ -73,7 +105,7 @@ server <- function(input, output) {
 
     output$vals <- renderTable({
 
-        v=e$f(input$MRM,
+        v=f(input$MRM,
           input$Count %>% as.numeric(),
           Action=switch (input$Action,
             "Bench press" = "Жим",

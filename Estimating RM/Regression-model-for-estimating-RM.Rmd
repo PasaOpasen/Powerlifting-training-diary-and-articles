@@ -904,9 +904,8 @@ $$\frac{MRM}{Index}=\frac{MRM \cdot (0.01 \cdot Height)^2}{Weight}=\frac{MRM \cd
 
 Было продемонстрировано, что для числа повторений выше 10 нельзя построить достаточно точную модель (по крайней мере, при текущем наборе данных, ошибки в котором очень сложно распознать), но для диапазона 2-10 -- ещё как можно.
 
+Посчитать собственные результаты при помощи найденной модели можно [здесь](https://dmitrypasko.shinyapps.io/RMbyMRMestimating/).
 
-
-***
 ***
 # Возможности для применения
 
@@ -976,6 +975,8 @@ colnames(m)=paste(1:10, 'reps') %>% as.character()
 m %>% round(2) %>% tbl_df()
 ```
 
+
+В этой таблице **каждая строка обозначает одно и то же усилие, выраженное разным числом повторений**. Если для человека верна какая-то ячейка (вес на число повторений), должна быть верна и вся строка.
 
 
 ## Постановка эквивалентной цели
@@ -1118,3 +1119,19 @@ tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%ct==0,"прох
   theme_bw()+theme(legend.position = c(0.85,0.1))) %>% ggplotly()#+ guides(color=FALSE)
 
 ```
+
+
+
+
+
+# Полезные ссылки
+
+[Сайт, где можно опробовать модель на себе](https://dmitrypasko.shinyapps.io/RMbyMRMestimating/)
+
+[Русскоязычный опрос](https://forms.gle/e428M7osMCA98ANV9), [англоязычный опрос](https://forms.gle/kbwqQtq8vWpKdJbH8). Если данных станет значительно больше, исследование повторится.
+
+[Мой гитхаб](https://github.com/PasaOpasen)
+
+[Раздел этой статьи на гитхабе, исходные датасеты, коды](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Estimating%20RM)
+
+[Книги и материалы по пауэрлифтингу](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Материалы%20по%20пауэрлифтингу%20и%20не%20только)

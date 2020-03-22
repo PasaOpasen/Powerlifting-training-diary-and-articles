@@ -21,22 +21,34 @@ f=function(MRM,Count,Action='Жим',Weight=70,Height=170){
     Count=10
   }
   
-  count.levels=levels(data$CountGroup)
-  
-  
-  act=factor(Action,levels = action.levels)
+  act=factor(Action,levels =globalenv()$action.levels)
   
   up=c(4,8,11)
   
-  cg=count.levels[Count<up] %>% first() %>% factor(levels=count.levels)
+  lv=globalenv()$count.levels
   
-  df=data.frame(MRM,
-                Count,
+  cg=lv[Count<up] %>% first() %>% factor(levels=lv)
+  
+  #print(environment()$action.levels)
+  
+  #print(MRM)
+  #print(Count)
+  #print(act)
+  #print(cg)
+  #print(Weight/(0.01*Height)^2)
+  
+  df=data.frame(MRM=MRM,
+                Count=Count,
                 Action=act,
                 CountGroup=cg,
                 Index=Weight/(0.01*Height)^2)
+  #df %>% print()
   
-  predict(b5,df,se.fit = T,interval = "confidence",level=0.999)[[1]] %>% return()
+  predict(globalenv()$b5,
+          df,
+          se.fit = T,
+          interval = "confidence",
+          level=0.999)[[1]] %>% return()
   
 }
 

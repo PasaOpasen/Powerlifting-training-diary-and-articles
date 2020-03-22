@@ -10,6 +10,8 @@ library(ggalt)
 
 #Функция модели####
 
+action.levels=levels(data$Action)
+count.levels=levels(data$CountGroup)
 
 f=function(MRM,Count,Action='Жим',Weight=70,Height=170){
   
@@ -19,12 +21,14 @@ f=function(MRM,Count,Action='Жим',Weight=70,Height=170){
     Count=10
   }
   
-  act=factor(Action,levels = levels(data$Action))
+  count.levels=levels(data$CountGroup)
+  
+  
+  act=factor(Action,levels = action.levels)
   
   up=c(4,8,11)
-  lv=levels(data$CountGroup)
   
-  cg=lv[Count<up] %>% first() %>% factor(levels=lv)
+  cg=count.levels[Count<up] %>% first() %>% factor(levels=count.levels)
   
   df=data.frame(MRM,
                 Count,
@@ -32,7 +36,7 @@ f=function(MRM,Count,Action='Жим',Weight=70,Height=170){
                 CountGroup=cg,
                 Index=Weight/(0.01*Height)^2)
   
-  predict(b5,df,se.fit = T,interval = "confidence",level=0.95)[[1]] %>% return()
+  predict(b5,df,se.fit = T,interval = "confidence",level=0.999)[[1]] %>% return()
   
 }
 

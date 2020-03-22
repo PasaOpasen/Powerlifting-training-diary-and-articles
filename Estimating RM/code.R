@@ -67,7 +67,7 @@ getFan=function(vec,main=""){
 
 data.backup=data
 
-
+save(data,file="data.rdata")
 
 
 #Разведочный анализ и описание выборки####
@@ -997,4 +997,14 @@ for(i in 2:10){
 colnames(m)=paste(1:10, 'reps') %>% as.character()
 
 m %>% tbl_df()
+
+
+
+
+
+
+
+save(f,count.levels,action.levels,mrm,file="Functions.rdata")
+
+save(f,count.levels,action.levels,mrm,b5,file="entire_data.rdata")
 

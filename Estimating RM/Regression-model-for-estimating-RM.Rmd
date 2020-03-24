@@ -1,7 +1,7 @@
 ---
 title: "Регрессионная модель для определения повторного максимума"
 author: "Дмитрий Пасько"
-date: "21 03 2020"
+date: "25 03 2020"
 output:
   html_document:
     df_print: paged
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = F,include = TRUE,tidy = TRUE,cache = FALSE,eval = T
 
 ```{r,echo=FALSE}
 library(knitr)
-setwd("C:\\Users\\крендель\\Desktop\\LittleHelps\\Estimating RM")
+#setwd("C:\\Users\\qtckp\\OneDrive\\Desktop\\Powerlift\\Estimating RM")
 
 #Загрузка данных####
 library(tidyverse)
@@ -876,7 +876,16 @@ $$RM=MRM \cdot (CountGroup_{coef_2} +Action_{coef}+CountGroup_{coef_1} \cdot Cou
 Здесь $coef$ при последнем слагаемом равен `r sprintf("%.7f", cf[1])`, $Index$ -- индекс массы тела. Дробь внутри последнего слагаемого можно упростить:
 
 $$\frac{MRM}{Index}=\frac{MRM \cdot (0.01 \cdot Height)^2}{Weight}=\frac{MRM \cdot Height^2}{10000\cdot Weight}$$
-Вообще существование этого слагаемого (с шестой степенью) кажется чем-то очень сомнительным, но математика показывает, что это имеет смысл. 
+Вообще *существование этого слагаемого (с шестой степенью) кажется чем-то очень сомнительным, но математика показывает, что это имеет смысл*. Результаты дисперсионного анализа говорят о том, что
+включение указанного коэффициента создаёт значимое отличие между моделями с ним и без него:
+
+```{r,echo=T}
+anova(lm(RM ~  MRM:CountGroup + MRM:Action + 
+    MRM:CountGroup:Count - 1, data = data),
+      lm( RM ~ I((MRM/Index)^6) + MRM:CountGroup + MRM:Action + 
+    MRM:CountGroup:Count - 1, data = data))
+```
+
 
 Очень интересно, что в этих двух моделях нет зависимости от возраста, типа телосложения, опыта и пола[^11]. 
 Конечно, нельзя рассмотреть всевозможные вариации таких моделей, но среди сотни рассмотренных (в том числе с помощью пакета **caret**) не было обнаружено доказательств значимости включения этих факторов в модель. 
@@ -958,6 +967,21 @@ mrm=function(RM, count){
         method="Brent")$par %>% return()
 }
 
+cf=coefficients(b5)
+mrm3=function(RM,count,Action='Присед',Weight=70,Height=170){
+  
+  ctg=3
+  if(count<7){ctg=2}
+  if(count<4){ctg=1}
+  
+  act=0
+  if(Action=="Тяга"){
+    act=cf[5]}else if(Action=="Присед"){act=cf[6]}
+  
+  
+  polyroot(c(-RM,cf[1+ctg]+count*cf[6+ctg]+act,0,0,0,0,cf[1]*((0.01*Height)^2/Weight)^6))[1] %>% Re()
+  
+}
 #mrm(150,3)
 
 
@@ -967,10 +991,10 @@ m=matrix(nrow=length(vec),ncol=10)
 m[,1]=vec
 for(i in 2:10){
   for(j in 1:length(vec))
-    m[j,i]=mrm(m[j,1],i)
+    m[j,i]=mrm3(m[j,1],i)
 }
 
-colnames(m)=paste(1:10, 'reps') %>% as.character()
+colnames(m)=c('1 rep',paste(2:10, 'reps') %>% as.character())
 
 m %>% round(2) %>% tbl_df()
 ```
@@ -1135,3 +1159,5 @@ tb=tibble(d=1:length(vc),val=vc) %>% mutate(day=factor(ifelse(d%%ct==0,"прох
 [Раздел этой статьи на гитхабе, исходные датасеты, коды](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Estimating%20RM)
 
 [Книги и материалы по пауэрлифтингу](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/tree/master/Материалы%20по%20пауэрлифтингу%20и%20не%20только)
+
+**Моя электронная почта**: qtckpuhdsa@gmail.com

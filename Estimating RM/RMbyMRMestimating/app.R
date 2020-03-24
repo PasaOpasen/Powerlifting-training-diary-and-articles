@@ -52,7 +52,9 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
           # plotOutput("distPlot")
-            tableOutput("vals")
+            tableOutput("vals"),
+            
+            tableOutput("vals2")
             #verbatimTextOutput("vals"),
         )
     )
@@ -95,23 +97,36 @@ ui <- fluidPage(
            level=0.999)[[1]] %>% return()
    
  }
-  
+ mrm3=function(RM,count,Action='Присед',Weight=70,Height=170){
+   
+   cf=e$cf
+   
+   ctg=3
+   if(count<7){ctg=2}
+   if(count<4){ctg=1}
+   
+   act=0
+   if(Action=="Тяга"){
+     act=cf[5]}else if(Action=="Присед"){act=cf[6]}
+   
+   
+   polyroot(c(-RM,cf[1+ctg]+count*cf[6+ctg]+act,0,0,0,0,cf[1]*((0.01*Height)^2/Weight)^6))[1] %>% Re()
+   
+ } 
   
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
 
-  
-
     output$vals <- renderTable({
 
         v=f(input$MRM,
-          input$Count %>% as.numeric(),
+            input$Count %>% as.numeric(),
           Action=switch (input$Action,
-            "Bench press" = "Жим",
-            "Squat" = "Присед",
-            "Deadlift" = "Тяга",
-        ),
+                         "Bench press" = "Жим",
+                         "Squat" = "Присед",
+                         "Deadlift" = "Тяга",
+          ),
         Height=input$Height,
         Weight=input$Weight) %>% round(1)
         
@@ -120,6 +135,33 @@ server <- function(input, output) {
         data.frame(v)
     })
     
+    output$vals2 <- renderTable({
+      
+      MRM=input$MRM
+      Count=input$Count %>% as.numeric()
+      Action=switch (input$Action,
+                     "Bench press" = "Жим",
+                     "Squat" = "Присед",
+                     "Deadlift" = "Тяга",
+      )
+      Height=input$Height
+      Weight=input$Weight      
+      
+      
+      v=f(MRM,
+          Count,
+          Action=Action,
+          Height=Height,
+          Weight=Weight)[1] %>% round(1)
+      
+      v2=sapply(2:10, function(xx) mrm3(v,xx,Action = Action,Weight = Weight,Height = Height))
+      
+      
+      df=data.frame(1:10,c(v,v2 %>% round(1)))
+      names(df)=c("Count of repeats","Predicted weight")
+      
+      df
+    })
     
 }
 

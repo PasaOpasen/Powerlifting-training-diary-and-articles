@@ -67,6 +67,9 @@ getFan=function(vec,main=""){
 
 data.backup=data
 
+
+
+
 save(data,file="data.rdata")
 
 
@@ -747,6 +750,81 @@ save(vals,file="CVvals(more_points).rdata")
 save(b5,file="b5_fit.rdata")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+kn=c(5,6,7,8,9,10,11,12)
+
+ct=c(21,50)
+
+gr=rep(c('11-20','>20'),length(kn)) %>% sort(decreasing = T)
+
+m=matrix(nrow=length(kn)*length(ct),ncol=5)
+
+lst=list(b1,b2,b3,b4,b5)
+
+
+for(i in 1:5){
+  
+  model=lst[[i]]
+  
+  for(j in 1:length(ct)){
+    dt=data.backup %>% filter(Count<ct[j])
+    gl=glm(formula = model$call$formula,data= dt)
+    
+    getval=function(k){
+      boot::cv.glm(dt, gl,K=k)$delta[1] %>% return()
+    }
+    
+    getval.mean=function(k,count){
+      map_dbl(1:count,function(x)getval(k)) %>% mean() %>% return()
+    }
+    
+    beg=(j-1)*length(kn)
+    
+    for(s in 1:length(kn)){
+      m[beg+s,i]= getval.mean(kn[s],30)
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m)=paste0('b',1:5)
+kp=rep(kn,length(ct))
+
+vals=data.frame(kp=rep(kp,5),
+                b=as.numeric(m),
+                gr=factor(rep(gr,5)),
+                n=factor(rep(colnames(m),length(kn)*length(ct)) %>% sort())) %>% 
+  tbl_df()
+
+
+
+ggplot(vals,aes(x=kp,y=b,col=n))+theme_bw()+facet_grid(vars(gr))+
+  geom_point(size=4)+geom_line(size=1.)+
+  labs(x="Количество блоков при перекрёстной проверке",
+       y="Усреднённые значения ошибок после 30 повторных проверок",
+       col="Модель",
+       title="Оценки качества моделей при перекрёстной проверке",
+       subtitle = "Оценка производилась на разных подмножествах данных",
+       caption = "Очевидно, что пятая модель превосходит остальные по точности")+
+  scale_x_continuous(breaks = kn)+
+  theme(legend.position = "bottom")
+
+
+
+
+
 #caret####
 
 library(caret)
@@ -973,38 +1051,84 @@ ob+geom_point(aes(x=allrows,shape=BodyType,col=factor(ifelse(abs(res)>2,"red","g
 
 mrm=function(RM, count){
   
-  s=function(MRM) abs(RM-f(MRM=MRM,Count=count)[1]) %>% return()
+  s=function(MRM) abs(RM-f(MRM=MRM,Count=count, Action = 'Присед')[1]) %>% return()
   
   optim(par=c(0.8*RM),
         fn=s,
-        lower=0.6*RM,
+        lower=0.7*RM,
         upper = RM,
         method="Brent")$par %>% return()
 }
 
-#mrm(150,3)
 
 
-vec=seq(100,250,length.out = 20)
+Rprof(tmp <- tempfile())
+mrm(150,3)
+Rprof(NULL)
+summaryRprof(tmp)
+
+
+
+mrm2=function(RM,count,Action='Присед',Weight=70,Height=170){
+  s=function(MRM) RM-f(MRM=MRM,Count=count, Action = Action)[1] %>% return()
+  uniroot(s,c(0.5,0.99)*RM)$root %>% return()
+}
+Rprof(tmp <- tempfile())
+mrm2(150,3)
+Rprof(NULL)
+summaryRprof(tmp)
+
+
+
+mrm3=function(RM,count,Action='Присед',Weight=70,Height=170){
+  
+  ctg=3
+  if(count<7){ctg=2}
+  if(count<4){ctg=1}
+  
+  act=0
+  if(Action=="Тяга"){
+    act=cf[5]}else if(Action=="Присед"){act=cf[6]}
+  
+  
+  polyroot(c(-RM,cf[1+ctg]+count*cf[6+ctg]+act,0,0,0,0,cf[1]*((0.01*Height)^2/Weight)^6))[1] %>% Re()
+  
+}
+Rprof(tmp <- tempfile())
+mrm3(150,3)
+Rprof(NULL)
+summaryRprof(tmp)
+
+
+t=Sys.time()
+
+vec=seq(100,300,length.out = 81)
 
 m=matrix(nrow=length(vec),ncol=10)
 m[,1]=vec
 for(i in 2:10){
   for(j in 1:length(vec))
-    m[j,i]=mrm(m[j,1],i)
+    m[j,i]=mrm3(m[j,1],i)
 }
 
 colnames(m)=paste(1:10, 'reps') %>% as.character()
 
-m %>% tbl_df()
+m %>% round(2) %>% tbl_df()
+
+
+Sys.time()-t
 
 
 
 
+save(f,count.levels,action.levels,cf,mrm3,file="Functions.rdata")
+
+save(f,count.levels,action.levels,cf,mrm3,b5,file="entire_data.rdata")
+
+
+v=sapply(2:10, function(x) mrm3(100,x))
+v
 
 
 
-save(f,count.levels,action.levels,mrm,file="Functions.rdata")
-
-save(f,count.levels,action.levels,mrm,b5,file="entire_data.rdata")
 

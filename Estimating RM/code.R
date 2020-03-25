@@ -1132,3 +1132,58 @@ v
 
 
 
+
+
+
+#Модель Мориса вообще не подходит####
+
+# https://power-fitness.ru/metod-morisa-i-rajdina-ili-kak-uznat-svoj-maksimum-v-zhime-lezha.html
+
+lm(log(RM/MRM)~Action2+Count:Action2,data)%>% summary()
+
+
+rlt=data$MRM*(
+  0.969611*exp(0.030583*data$Count)*ifelse(data$Action=="Жим",1,0)+
+    0.985993*exp(0.015050*data$Count)*ifelse(data$Action!="Жим",1,0)
+)
+
+Show(rlt)
+
+
+
+
+
+
+sq=c(1,1.0475,1.13,1.1575,1.2,1.242,1.284,1.326,1.368,1.41)
+pr=c(1,1.035,1.08,1.115,1.15,1.18,1.22,1.255,1.29,1.325)
+lf=c(1,1.065,1.13,1.147,1.164,1.181,1.198,1.232,1.236,1.24)
+
+
+ddt=data %>% filter(Count<11)
+
+rlt=ddt$MRM*(
+  sq[ddt$Count]*ifelse(ddt$Action=="Жим",1,0)+
+    pr[ddt$Count]*ifelse(ddt$Action=="Присед",1,0)+
+    lf[ddt$Count]*ifelse(ddt$Action=="Тяга",1,0)
+)
+
+Show(rlt,ddt)
+
+data %<>% filter(Count<11)
+b3=lm(RM~MRM:Count:CountGroup+MRM:Action-1,data)
+b3 %>% all()
+
+
+cf=coefficients(b3)
+
+#надо бы исследовать эти числа
+count.vec=2:10*c(rep(cf[4],2),rep(cf[5],3),rep(cf[6],4))
+
+
+tibble('Присед'=c(1,cf[3]+count.vec),
+          'Жим'=  c(1,cf[1]+count.vec),
+          'Тяга'=  c(1,cf[2]+count.vec))
+
+
+
+

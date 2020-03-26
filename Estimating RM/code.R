@@ -1470,23 +1470,22 @@ Show(rlt)
 
 
 
+data %<>% filter(Count < 11)
 
 sq = c(1, 1.0475, 1.13, 1.1575, 1.2, 1.242, 1.284, 1.326, 1.368, 1.41)
 pr = c(1, 1.035, 1.08, 1.115, 1.15, 1.18, 1.22, 1.255, 1.29, 1.325)
 lf = c(1, 1.065, 1.13, 1.147, 1.164, 1.181, 1.198, 1.232, 1.236, 1.24)
 
 
-ddt = data %>% filter(Count < 11)
-
-rlt = ddt$MRM * (
-  sq[ddt$Count] * ifelse(ddt$Action == "Жим", 1, 0) +
-    pr[ddt$Count] * ifelse(ddt$Action == "Присед", 1, 0) +
-    lf[ddt$Count] * ifelse(ddt$Action == "Тяга", 1, 0)
+rlt = data$MRM * (
+  sq[data$Count] * ifelse(ddt$Action == "Жим", 1, 0) +
+    pr[data$Count] * ifelse(ddt$Action == "Присед", 1, 0) +
+    lf[data$Count] * ifelse(ddt$Action == "Тяга", 1, 0)
 )
 
-Show(rlt, ddt)
+Show(rlt)
 
-data %<>% filter(Count < 11)
+
 b3 = lm(RM ~ MRM:Count:CountGroup + MRM:Action - 1, data)
 b3 %>% all()
 
@@ -1525,7 +1524,7 @@ tibble(
 
 
 
-
+# just cv for nls
 cv.my = function(df = data,
                  fit,
                  start,
@@ -1554,6 +1553,7 @@ cv.my = function(df = data,
   return(sm / repets)
 }
 
+#cv for nls including errors sample
 cv.my2 = function(df = data,
                   fit,
                   start,
@@ -1601,6 +1601,74 @@ cv.my2 = function(df = data,
 }
 
 
+#cv for lm or nls including errors
+cv.my3 = function(df = data,
+                  fit,
+                  start=NULL,
+                  k = 10,
+                  repets = 1) {
+  sm = 0
+  r = 0
+  RM = df$RM
+  
+  repeat {
+    b = T
+    while (b) {
+      val = tryCatch({
+        b = F
+        
+        blocks = sample.int(k, nrow(df), replace = T)
+        
+        if(is.null(start)){
+          
+          future.apply::future_sapply(seq(k), function(i) {
+            ft = lm(
+              formula = fit$call$formula,
+              data = df[blocks != i,]
+            )
+            sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+          }) %>% sum()
+          
+        }else{
+          
+          future.apply::future_sapply(seq(k), function(i) {
+          ft = nls(
+            formula = fit$call$formula,
+            data = df[blocks != i,],
+            start = start
+          )
+          sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+        }) %>% sum()        
+        }
+
+        
+      },
+      error = function(cond) {
+        b = T
+      })
+    }
+    
+    
+    
+    sm = sm + val / k
+    r = r + 1
+    
+    if (r == repets) {
+      break
+    }
+    
+  }
+  
+  return(sm / repets)
+}
+
+
+
+cv.my2(data, md, start, 10, 30)
+
+cv.my3(data, lm(RM~MRM+MRM:Count,data), k= 10, repets=30)
+
+
 start = list(s = 1,
              coef = 0.0333,
              t = 1,
@@ -1610,11 +1678,6 @@ md = nls(RM ~ MRM * (s + coef * Count) ^ t + k * Weight / MRM,
          start = start)
 
 system.time(cv.my2(data, md, start, 10, 30))
-
-
-cv.my2(data, md, start, 10, 30)
-
-
 
 
 

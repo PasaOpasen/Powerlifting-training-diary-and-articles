@@ -1522,7 +1522,7 @@ tibble(
 
 
 
-
+#Нелинейные модели####
 
 # just cv for nls
 cv.my = function(df = data,
@@ -1678,6 +1678,26 @@ md = nls(RM ~ MRM * (s + coef * Count) ^ t + k * Weight / MRM,
          start = start)
 
 system.time(cv.my2(data, md, start, 10, 30))
+
+
+
+Show2=function(model,df=data){
+  fact=predict(model,df)
+  Show(fact,df)
+  
+  #(
+    ggplot(df %>% mutate(fact=fact,rnd=1:nrow(df)),
+           aes(col=CountGroup,x=rnd))+
+        geom_xspline(aes(y=fact),size=1,
+                 spline_shape = -0.3,
+                 linetype="dotdash",col="green",alpha=0.9)+
+    geom_point(aes(y=RM,shape=BodyType),size=3)+
+    geom_point(aes(y=fact,shape=BodyType),col="black",size=2)+
+    facet_wrap(~CountGroup)+
+    theme_bw()+theme(legend.position = "bottom")#) %>% ggplotly()
+}
+
+Show2(md)
 
 
 

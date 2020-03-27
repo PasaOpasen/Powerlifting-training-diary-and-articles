@@ -1524,6 +1524,37 @@ tibble(
 
 #Нелинейные модели####
 
+vc=sapply(c(4,8,11,21,50), 
+          function(p) nls(RM~MRM*(1+Count*coef),data=data.backup %>% 
+                            filter(Count<p),start = list(coef=1/30)) %>% coef())
+
+names(vc)=c(paste(rep("not more",4),levels(data$CountGroup)[1:4]) ,"all")
+
+
+
+ShowSummary=function(model){
+  model %>% summary() %>% print()
+  
+  Show(model %>% predict(data))
+}
+n1=nls(RM~MRM*(1+Count*coef),data=data.backup %>% filter(Count<4),start = list(coef=1/30))
+
+ShowSummary(n1)
+
+
+n2=nls(RM~MRM*a/(b-Count),data,start = list(a=36,b=37))
+ShowSummary(n2)
+
+
+n3=nls(RM~100*MRM/(a+b*exp(-c*Count)),data,start = list(a=52,b=42,c=0.055))
+ShowSummary(n3)
+
+
+n4=nls(RM~MRM*Count^a,data,start = list(a=0.1))
+ShowSummary(n4)
+
+
+
 # just cv for nls
 cv.my = function(df = data,
                  fit,

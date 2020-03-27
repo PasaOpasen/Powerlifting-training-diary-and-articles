@@ -1077,22 +1077,120 @@ tr = trainControl(
   method = "repeatedcv",
   number = 10,
   #p = 0.75,
-  repeats = 30,
+  repeats = 1,
   verboseIter = T,
   returnResamp = "all",
   savePredictions = T,
   summaryFunction = defaultSummary
 )
 
-# random forest for future
+
+d2=data %>% select(MRM,Count,Weight,Height,Index,Action,CountGroup,IndexGroup,BodyType,Experience) %>% 
+  mutate_all(as.numeric) %>% 
+  mutate(pow=MRM*Count,add=(MRM/Index)^6)
+
+# 5.16
 ft = train(
-  RM ~ I((MRM / Index) ^ 6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,
-  data = data %>% select(-Mail,-Sex,-Age,-Height,-Weight),
-  method = "rf",
+  y=data$RM,
+  x = d2,
+  method = "penalized",
   metric =  "RMSE",
   maximize = FALSE,
   trControl = tr
 )
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+#5.24
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "rqlasso",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+
+
+#5.15
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "ridge",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+
+#5.29
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "lasso",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+
+
+#5.22
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "blassoAveraged",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+#5.15
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "enet",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+
+###neural
+
+#5.09
+ft = train(
+  y=data$RM,
+  x = d2,
+  method = "monmlp",
+  metric =  "RMSE",
+  maximize = FALSE,
+  trControl = tr
+)
+ft %>% summary()
+ft %>% predict(d2) %>% Show()
+
+
+
+
+
 
 
 ft = train(
@@ -1552,6 +1650,82 @@ ShowSummary(n3)
 
 n4=nls(RM~MRM*Count^a,data,start = list(a=0.1))
 ShowSummary(n4)
+
+
+
+n5 = nls(
+  RM ~ (MRM^d)*(coef1)/(coef2-Count+c*Count^2),
+  data = data,
+  start = list(
+    coef1 = 50,
+    coef2=40,d=1,
+    c=0
+  )
+)
+ShowSummary(n5)
+
+
+n6 = nls(
+  RM ~ (MRM^d)*(coef1[Action])/(coef2[CountGroup]-Count+c*Count^2),
+  data = data,
+  start = list(
+    coef1 = rep(50,3),
+    coef2=rep(40,3),
+    d=1,
+    c=0
+  )
+)
+ShowSummary(n6)
+
+
+
+n7 = nls(
+  RM ~ MRM ^ vk * (s + coef * Count^kk) ,
+  data = data,
+  start = list(coef = 0.0333, vk = 1., kk = 1.,s=1)
+)
+ShowSummary(n7)
+
+
+n8 = nls(
+  RM ~ MRM ^ vk[CountGroup] * (s[Action] + coef * sqrt(Count)) ,
+  data = data,
+  start = list(coef = 0.0333, vk = rep(1,3),s=rep(1,3))
+)
+ShowSummary(n8)
+
+
+
+
+n22=nls(RM~MRM*(
+  a[BodyType]/(b[Action]-Count)),data,
+  start = list(a=rep(36,3),b=rep(37,3)))
+ShowSummary(n2)
+
+n22=nls(RM~MRM*(
+  a[BodyType]/(b[Action]-Count))+d*(MRM/Index)^6,data,
+  start = list(a=rep(36,3),b=rep(37,3),d=0))
+ShowSummary(n2)
+
+
+n22=nls(RM~MRM*(
+  a[Action]/(b[CountGroup]-Count)),data,
+  start = list(a=rep(36,3),b=rep(37,3)))
+ShowSummary(n22)
+
+n22=nls(RM~MRM*(
+  a[Action]/(b[CountGroup]-Count))+d*(MRM/Index)^6,data,
+  start = list(a=rep(36,3),b=rep(37,3),d=0))
+ShowSummary(n22)
+
+
+n44=nls(RM~MRM*(Count^a[CountGroup])+b[Action]*MRM*Count^2,data,start = list(a=rep(0.1,3),b=rep(0.1,3)))
+ShowSummary(n44)
+
+
+n33=nls(RM~100*MRM/(a[Action]+b*exp(-c[CountGroup]*Count))+d*(MRM/Index)^6,data,start = list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0))
+ShowSummary(n33)
+
 
 
 

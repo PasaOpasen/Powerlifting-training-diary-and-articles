@@ -602,10 +602,10 @@ Error=function(target,weight) (target-weight)^2 %>% mean() %>% sqrt()
 Show=function(vals,df=data){
   #vals=predict(model,df)
   err=df$RM-vals
-  cbind(Fact=round(vals),Target=df$RM,Set=paste0(df$MRM,"*",df$Count),
+  cbind(Fact=round(vals),Target=df$RM,
         ERROR=abs(df$RM-vals),
         ErrorPercent=abs(err)/df$RM*100,
-        df[,c(3:15)]) %>% tbl_df() %>% select(-Count,-Mail,-Experience,-AgeGroup,-IndexGroup,-BodyType,-Height)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
+        df[,c(2:15)]) %>% tbl_df() %>% select(-Age,-Mail,-Experience,-AgeGroup,-IndexGroup,-BodyType,-Height)%>% arrange(-ERROR,-ErrorPercent,Weight) %>% 
         filter(ERROR>1)%>% print()
   cat("\n")
   rg=range(err)#;print(err);print(rg)
@@ -1067,15 +1067,358 @@ ShowSummary(n4)
 ### Новые предложения
 
 Кроме этого, я попробую модель $n_5$:
-
+$$RM=MRM^a \cdot \frac{b}{c-Count+d \cdot Count^2}$$
 ```{r}
+n5 = nls(
+  RM ~ (MRM^d)*(coef1)/(coef2-Count+c*Count^2),
+  data = data,
+  start = list(
+    coef1 = 50,
+    coef2=40,d=1,
+    c=0
+  )
+)
+ShowSummary(n5)
+```
+
+и $n_6$:
+$$RM=MRM^a \cdot \left(b+c \cdot Count^d \right),$$
+```{r}
+n6 = nls(
+  RM ~ MRM ^ vk * (s + coef * Count^kk) ,
+  data = data,
+  start = list(coef = 0.0333, vk = 1., kk = 1.,s=1)
+)
+ShowSummary(n6)
+```
+
+
+а также версии предыдущих шести моделей с поправкой коэффициентов на разные факторные переменные и с включением/отсутствием слагаемого $\left( \frac{MRM}{Index} \right)^6$ (для линейных моделей оно играло роль).
+
+```{r,echo=T}
+n7 = nls(
+  RM ~ (MRM^d)*(coef1[Action])/(coef2[CountGroup]-Count+c*Count^2),
+  data = data,
+  start = list(
+    coef1 = rep(50,3),
+    coef2=rep(40,3),
+    d=1,
+    c=0
+  )
+)
+
+
+n8 = nls(
+  RM ~ MRM ^ vk[CountGroup] * (s[Action] + coef * sqrt(Count)) ,
+  data = data,
+  start = list(coef = 0.0333, vk = rep(1,3),s=rep(1,3))
+)
+
+
+n9=nls(RM~MRM*(
+  a[BodyType]/(b[Action]-Count)),data,
+  start = list(a=rep(36,3),b=rep(37,3)))
+
+n10=nls(RM~MRM*(
+  a[BodyType]/(b[Action]-Count))+d*(MRM/Index)^6,data,
+  start = list(a=rep(36,3),b=rep(37,3),d=0))
+
+
+n11=nls(RM~MRM*(
+  a[Action]/(b[CountGroup]-Count)),data,
+  start = list(a=rep(36,3),b=rep(37,3)))
+
+n12=nls(RM~MRM*(
+  a[Action]/(b[CountGroup]-Count))+d*(MRM/Index)^6,data,
+  start = list(a=rep(36,3),b=rep(37,3),d=0))
+
+
+n13=nls(RM~MRM*(Count^a[CountGroup])+b[Action]*MRM*Count^2,data,start = list(a=rep(0.1,3),b=rep(0.1,3)))
+
+n14=nls(RM~100*MRM/(a[Action]+b*exp(-c[CountGroup]*Count))+d*(MRM/Index)^6,data,start = list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0))
 
 ```
 
 
-
-
 ### Сравнение нелинейных моделей
+
+```{r,cache=T}
+
+#cv for nls including errors sample
+cv.my2 = function(df = data,
+                  fit,
+                  start,
+                  k = 10,
+                  repets = 1) {
+  sm = 0
+  r = 0
+  RM = df$RM
+  
+  repeat {
+    b = T
+    while (b) {
+      val = tryCatch({
+        b = F
+        
+        blocks = sample.int(k, nrow(df), replace = T)
+        
+        future.apply::future_sapply(seq(k), function(i) {
+          ft = nls(
+            formula = fit$call$formula,
+            data = df[blocks != i,],
+            start = start
+          )
+          sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+        }) %>% sum()
+        
+      },
+      error = function(cond) {
+       # print(cond)
+        b = T
+      })
+    }
+    
+    
+    
+    sm = sm + val / k
+    r = r + 1
+    
+    if (r == repets) {
+      break
+    }
+    
+  }
+  
+  return(sm / repets)
+}
+
+kn = c(5, 6, 7, 8, 9, 10, 11, 12,13,14,15,16,17,18,19,20)
+
+ct = c(8, 11)
+
+gr = rep(c('2-10', '2-7'), length(kn)) %>% sort(decreasing = T)
+
+m = matrix(nrow = length(kn) * length(ct), ncol = 14)
+
+lst = list(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14)
+sts=list(
+  list(coef=1/30),
+  list(a=36,b=37),
+  list(a=52,b=42,c=0.055),
+  list(a=0.1),
+  list(
+    coef1 = 50,
+    coef2=40,d=1,
+    c=0
+  ),
+  list(coef = 0.0333, vk = 1., kk = 1.,s=1),
+  list(
+    coef1 = rep(50,3),
+    coef2=rep(40,3),
+    d=1,
+    c=0
+  ),
+  list(coef = 0.0333, vk = rep(1,3),s=rep(1,3)),
+  list(a=rep(36,3),b=rep(37,3)),
+  list(a=rep(36,3),b=rep(37,3),d=0),
+  list(a=rep(36,3),b=rep(37,3)),
+  list(a=rep(36,3),b=rep(37,3),d=0),
+  list(a=rep(0.1,3),b=rep(0.1,3)),
+  list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0)
+)
+
+for (i in 1:length(lst)) {
+  model = lst[[i]]
+  
+  for (j in 1:length(ct)) {
+    dt = data %>% filter(Count < ct[j])
+    
+    getval.mean = function(k, count) {
+      cv.my2(dt, model, sts[[i]], k,count)
+    }
+    
+    beg = (j - 1) * length(kn)
+    
+    for (s in 1:length(kn)) {
+      m[beg + s, i] = getval.mean(kn[s], 30)
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m) = paste0('n', 1:length(lst))
+kp = rep(kn, length(ct))
+
+m[m<100]=NA
+
+vals = data.frame(
+  kp = rep(kp, length(lst)),
+  b = as.numeric(m),
+  gr = factor(rep(gr, length(lst))),
+  n = factor(paste0('n',rep(1:14, length(kn) * length(ct)) %>% sort()))
+) %>%
+  tbl_df()
+```
+
+Сравним названные модели, сделав перекрёстную проверку на диапазоне повторений 2-10:
+
+```{r}
+(ggplot(vals %>% filter(gr=="2-10"), aes(x = kp, y = b, col = n)) + theme_bw() +
+  geom_point(size = 4) + geom_line(size = 1.) +
+  labs(
+    x = "Количество блоков при перекрёстной проверке",
+    y = "Усреднённые значения ошибок после 30 повторных проверок",
+    col = "Модель",
+    title = "Оценки качества моделей при перекрёстной проверке"
+  ) +
+  scale_x_continuous(breaks = kn) +
+  theme(legend.position = "right")) %>% ggplotly()
+
+```
+
+Как видно, самой лучшей моделью оказалась $n_{14}$ (основанная на моделях Мэйхью и Ватана), на втором месте идёт $n_8$ (моё предложение):
+
+```{r, echo=T}
+n14 %>% ShowSummary()
+
+n8 %>% ShowSummary()
+```
+
+Обе модели имеют одинаковую среднюю ошибку в менее чем 2.9%. По точности они схожи с линейными моделями $b_3,b_5$.
+
+
+```{r,cache=T}
+cv.my3 = function(df = data,
+                  fit,
+                  start=NULL,
+                  k = 10,
+                  repets = 1) {
+  sm = 0
+  r = 0
+  RM = df$RM
+  
+  repeat {
+    b = T
+    while (b) {
+      val = tryCatch({
+        b = F
+        
+        blocks = sample.int(k, nrow(df), replace = T)
+        
+        if(is.null(start)){
+          
+          future.apply::future_sapply(seq(k), function(i) {
+            ft = lm(
+              formula = fit$call$formula,
+              data = df[blocks != i,]
+            )
+            sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+          }) %>% sum()
+          
+        }else{
+          
+          future.apply::future_sapply(seq(k), function(i) {
+          ft = nls(
+            formula = fit$call$formula,
+            data = df[blocks != i,],
+            start = start
+          )
+          sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+        }) %>% sum()        
+        }
+
+        
+      },
+      error = function(cond) {
+        b = T
+      })
+    }
+    
+    
+    
+    sm = sm + val / k
+    r = r + 1
+    
+    if (r == repets) {
+      break
+    }
+    
+  }
+  
+  return(sm / repets)
+}
+
+kn = c(5, 6, 7, 8, 9, 10, 11, 12,13,14,15,16,17,18,19,20)
+
+ct = c(8, 11)
+
+gr = rep(c('2-10', '2-7'), length(kn)) %>% sort(decreasing = T)
+
+m = matrix(nrow = length(kn) * length(ct), ncol = 4)
+
+lst = list(n8,n14,b3,b5)
+sts=list(
+  list(coef = 0.0333, vk = rep(1,3),s=rep(1,3)),
+  list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0),
+  NULL,
+  NULL
+)
+
+for (i in 1:length(lst)) {
+  model = lst[[i]]
+  
+  for (j in 1:length(ct)) {
+    dt = data %>% filter(Count < ct[j])
+    
+    getval.mean = function(k, count) {
+      cv.my3(dt, model, sts[[i]], k,count)
+    }
+    
+    beg = (j - 1) * length(kn)
+    
+    for (s in 1:length(kn)) {
+      m[beg + s, i] = getval.mean(kn[s], 30)
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m) = c("n8","n14","b3","b5")
+kp = rep(kn, length(ct))
+
+#m[m<100]=NA
+
+vals = data.frame(
+  kp = rep(kp, length(lst)),
+  b = as.numeric(m),
+  gr = factor(rep(gr, length(lst))),
+  n = factor(
+    c("n8" %>% rep(length(ct)*length(kn)),
+      "n14"%>% rep(length(ct)*length(kn)),
+      "b3"%>% rep(length(ct)*length(kn)),
+      "b5"%>% rep(length(ct)*length(kn)))
+    )
+) %>%
+  tbl_df()
+```
+
+Если сравнить лучшие найденные линейные и нелинейные модели, окажется, что модели $n_8$ и $b_3$ в целом неотличимы, а модель $n_{14}$ немного превосходит $b_5$:
+
+```{r}
+(ggplot(vals %>% filter(gr=="2-10"), aes(x = kp, y = b, col = n)) + theme_bw() +
+    geom_point(size = 4) + geom_line(size = 1.) +
+    labs(
+      x = "Количество блоков при перекрёстной проверке",
+      y = "Усреднённые значения ошибок после 30 повторных проверок",
+      col = "Модель",
+      title = "Оценки качества моделей при перекрёстной проверке"
+    ) +
+    scale_x_continuous(breaks = kn) +
+    theme(legend.position = "right")) %>% ggplotly()
+```
+
 
 # Выводы
 

@@ -1295,7 +1295,7 @@ md = lm(RM ~ MRM:Count + MRM:CountGroup - 1, data)
 
 Show(predict(md, data)[data$Count < 11], data %>% filter(Count < 11))
 ############################################################################################################
-#MRM+MRM*Count с поправкой на группу
+#MRM+MRM*Count с поправкой на группу####
 md = lm(RM ~ MRM:Count:CountGroup + MRM:CountGroup - 1, data)
 summary(md)
 Show(predict(md, data))
@@ -1664,8 +1664,16 @@ n5 = nls(
 )
 ShowSummary(n5)
 
-
 n6 = nls(
+  RM ~ MRM ^ vk * (s + coef * Count^kk) ,
+  data = data,
+  start = list(coef = 0.0333, vk = 1., kk = 1.,s=1)
+)
+ShowSummary(n6)
+
+
+
+n7 = nls(
   RM ~ (MRM^d)*(coef1[Action])/(coef2[CountGroup]-Count+c*Count^2),
   data = data,
   start = list(
@@ -1675,16 +1683,6 @@ n6 = nls(
     c=0
   )
 )
-ShowSummary(n6)
-
-
-
-n7 = nls(
-  RM ~ MRM ^ vk * (s + coef * Count^kk) ,
-  data = data,
-  start = list(coef = 0.0333, vk = 1., kk = 1.,s=1)
-)
-ShowSummary(n7)
 
 
 n8 = nls(
@@ -1692,39 +1690,29 @@ n8 = nls(
   data = data,
   start = list(coef = 0.0333, vk = rep(1,3),s=rep(1,3))
 )
-ShowSummary(n8)
 
 
-
-
-n22=nls(RM~MRM*(
+n9=nls(RM~MRM*(
   a[BodyType]/(b[Action]-Count)),data,
   start = list(a=rep(36,3),b=rep(37,3)))
-ShowSummary(n2)
 
-n22=nls(RM~MRM*(
+n10=nls(RM~MRM*(
   a[BodyType]/(b[Action]-Count))+d*(MRM/Index)^6,data,
   start = list(a=rep(36,3),b=rep(37,3),d=0))
-ShowSummary(n2)
 
 
-n22=nls(RM~MRM*(
+n11=nls(RM~MRM*(
   a[Action]/(b[CountGroup]-Count)),data,
   start = list(a=rep(36,3),b=rep(37,3)))
-ShowSummary(n22)
 
-n22=nls(RM~MRM*(
+n12=nls(RM~MRM*(
   a[Action]/(b[CountGroup]-Count))+d*(MRM/Index)^6,data,
   start = list(a=rep(36,3),b=rep(37,3),d=0))
-ShowSummary(n22)
 
 
-n44=nls(RM~MRM*(Count^a[CountGroup])+b[Action]*MRM*Count^2,data,start = list(a=rep(0.1,3),b=rep(0.1,3)))
-ShowSummary(n44)
+n13=nls(RM~MRM*(Count^a[CountGroup])+b[Action]*MRM*Count^2,data,start = list(a=rep(0.1,3),b=rep(0.1,3)))
 
-
-n33=nls(RM~100*MRM/(a[Action]+b*exp(-c[CountGroup]*Count))+d*(MRM/Index)^6,data,start = list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0))
-ShowSummary(n33)
+n14=nls(RM~100*MRM/(a[Action]+b*exp(-c[CountGroup]*Count))+d*(MRM/Index)^6,data,start = list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0))
 
 
 
@@ -1787,6 +1775,7 @@ cv.my2 = function(df = data,
         
       },
       error = function(cond) {
+       # print(cond)
         b = T
       })
     }
@@ -1874,6 +1863,9 @@ cv.my2(data, md, start, 10, 30)
 cv.my3(data, lm(RM~MRM+MRM:Count,data), k= 10, repets=30)
 
 
+
+
+
 start = list(s = 1,
              coef = 0.0333,
              t = 1,
@@ -1884,7 +1876,7 @@ md = nls(RM ~ MRM * (s + coef * Count) ^ t + k * Weight / MRM,
 
 system.time(cv.my2(data, md, start, 10, 30))
 
-
+cv.my2(data %>% filter(Count<8), n14, list(a=rep(2,3),b=2,c=rep(-0.5,3),d=0), 10, 30)
 
 Show2=function(model,df=data){
   fact=predict(model,df)
@@ -1905,7 +1897,290 @@ Show2=function(model,df=data){
 Show2(md)
 
 
+#nonlinear####
 
+kn = c(5, 6, 7, 8, 9, 10, 11, 12,13,14,15,16,17,18,19,20)
+
+ct = c(8, 11)
+
+gr = rep(c('2-10', '2-7'), length(kn)) %>% sort(decreasing = T)
+
+m = matrix(nrow = length(kn) * length(ct), ncol = 14)
+
+lst = list(n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14)
+sts=list(
+  list(coef=1/30),
+  list(a=36,b=37),
+  list(a=52,b=42,c=0.055),
+  list(a=0.1),
+  list(
+    coef1 = 50,
+    coef2=40,d=1,
+    c=0
+  ),
+  list(coef = 0.0333, vk = 1., kk = 1.,s=1),
+  list(
+    coef1 = rep(50,3),
+    coef2=rep(40,3),
+    d=1,
+    c=0
+  ),
+  list(coef = 0.0333, vk = rep(1,3),s=rep(1,3)),
+  list(a=rep(36,3),b=rep(37,3)),
+  list(a=rep(36,3),b=rep(37,3),d=0),
+  list(a=rep(36,3),b=rep(37,3)),
+  list(a=rep(36,3),b=rep(37,3),d=0),
+  list(a=rep(0.1,3),b=rep(0.1,3)),
+  list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0)
+)
+
+for (i in 1:length(lst)) {
+  model = lst[[i]]
+  
+  for (j in 1:length(ct)) {
+    dt = data %>% filter(Count < ct[j])
+    
+    getval.mean = function(k, count) {
+      cv.my2(dt, model, sts[[i]], k,count)
+    }
+    
+    beg = (j - 1) * length(kn)
+    
+    for (s in 1:length(kn)) {
+      m[beg + s, i] = getval.mean(kn[s], 30)
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m) = paste0('n', 1:length(lst))
+kp = rep(kn, length(ct))
+
+m[m<100]=NA
+
+vals = data.frame(
+  kp = rep(kp, length(lst)),
+  b = as.numeric(m),
+  gr = factor(rep(gr, length(lst))),
+  n = factor(paste0('n',rep(1:14, length(kn) * length(ct)) %>% sort()))
+) %>%
+  tbl_df()
+
+
+
+(ggplot(vals %>% filter(gr=="2-10"), aes(x = kp, y = b, col = n)) + theme_bw() +
+  geom_point(size = 4) + geom_line(size = 1.) +
+  labs(
+    x = "Количество блоков при перекрёстной проверке",
+    y = "Усреднённые значения ошибок после 30 повторных проверок",
+    col = "Модель",
+    title = "Оценки качества моделей при перекрёстной проверке"
+  ) +
+  scale_x_continuous(breaks = kn) +
+  theme(legend.position = "right")) %>% ggplotly()
+
+
+
+ggplot(vals, aes(x = kp, y = b, col = n)) + theme_bw() + facet_wrap(~gr) +
+  geom_point(size = 4) + geom_line(size = 1.) +
+  labs(
+    x = "Количество блоков при перекрёстной проверке",
+    y = "Усреднённые значения ошибок после 30 повторных проверок",
+    col = "Модель",
+    title = "Оценки качества моделей при перекрёстной проверке",
+    subtitle = "Оценка производилась на разных подмножествах данных",
+    caption = "Очевидно, что пятая модель превосходит остальные по точности"
+  ) +
+  scale_x_continuous(breaks = kn) +
+  theme(legend.position = "bottom")
+
+
+
+#linear + nonlinear####
+
+kn = c(5, 6, 7, 8, 9, 10, 11, 12,13,14,15,16,17,18,19,20)
+
+ct = c(8, 11)
+
+gr = rep(c('2-10', '2-7'), length(kn)) %>% sort(decreasing = T)
+
+m = matrix(nrow = length(kn) * length(ct), ncol = 4)
+
+lst = list(n8,n14,b3,b5)
+sts=list(
+  list(coef = 0.0333, vk = rep(1,3),s=rep(1,3)),
+  list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0),
+  NULL,
+  NULL
+)
+
+for (i in 1:length(lst)) {
+  model = lst[[i]]
+  
+  for (j in 1:length(ct)) {
+    dt = data %>% filter(Count < ct[j])
+    
+    getval.mean = function(k, count) {
+      cv.my3(dt, model, sts[[i]], k,count)
+    }
+    
+    beg = (j - 1) * length(kn)
+    
+    for (s in 1:length(kn)) {
+      m[beg + s, i] = getval.mean(kn[s], 30)
+    }
+    #print(m)
+  }
+  
+}
+
+colnames(m) = c("n8","n14","b3","b5")
+kp = rep(kn, length(ct))
+
+#m[m<100]=NA
+
+vals = data.frame(
+  kp = rep(kp, length(lst)),
+  b = as.numeric(m),
+  gr = factor(rep(gr, length(lst))),
+  n = factor(
+    c("n8" %>% rep(length(ct)*length(kn)),
+      "n14"%>% rep(length(ct)*length(kn)),
+      "b3"%>% rep(length(ct)*length(kn)),
+      "b5"%>% rep(length(ct)*length(kn)))
+    )
+) %>%
+  tbl_df()
+
+
+
+(ggplot(vals %>% filter(gr=="2-10"), aes(x = kp, y = b, col = n)) + theme_bw() +
+    geom_point(size = 4) + geom_line(size = 1.) +
+    labs(
+      x = "Количество блоков при перекрёстной проверке",
+      y = "Усреднённые значения ошибок после 30 повторных проверок",
+      col = "Модель",
+      title = "Оценки качества моделей при перекрёстной проверке"
+    ) +
+    scale_x_continuous(breaks = kn) +
+    theme(legend.position = "right")) %>% ggplotly()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#комитет####
+
+ans.predict=function(data,models,coefs){
+  #coefs=coefs/sum(abs(coefs))
+  r=coefs[1]*predict(models[[1]],data)
+  for(i in 2:length(coefs)){
+    r=r+coefs[i]*predict(models[[i]],data)
+  }
+  return(r)
+}
+
+ans.predict(data,list(n14,b5),c(0.3,0.7)) %>% Show()
+
+
+
+
+cv.my.ans = function(df = data,
+                  fits,
+                  coefs,
+                  starts,
+                  k = 10,
+                  repets = 1) {
+  sm = 0
+  r = 0
+  RM = df$RM
+  ft=list()
+  
+  repeat {
+    b = T
+    while (b) {
+      val = tryCatch({
+        b = F
+        
+        blocks = sample.int(k, nrow(df), replace = T)
+          
+          future.apply::future_sapply(seq(k), function(i) {
+            
+            for(m in seq(coefs)){
+              if(is.null(starts[[m]])){
+              ft[[m]]=lm(
+                formula = fits[[m]]$call$formula,
+                data = df[blocks != i,]
+              )
+              }else{
+                ft[[m]] = nls(
+                  formula = fits[[m]]$call$formula,
+                  data = df[blocks != i,],
+                  start = starts[[m]]
+                )
+              }
+            }
+            
+            sum((RM[blocks == i] - ans.predict( df[blocks == i,],ft,coefs)) ^ 2) %>% return()
+          }) %>% sum()
+        
+      },
+      error = function(cond) {
+        b = T
+      })
+    }
+    
+    
+    
+    sm = sm + val / k
+    r = r + 1
+    
+    if (r == repets) {
+      break
+    }
+    
+  }
+  
+  return(sm / repets)
+}
+
+
+cv.my.ans(data,list(b3,b5),c(0.2,0.8),list(NULL,NULL),10,30)
+
+
+
+mds=list(b3,b5)
+
+
+opt=function(cfs){
+  return(cv.my.ans(data,mds,cfs,list(NULL,NULL),10,30))
+}
+
+
+optim(par=c(0.5,0.5), fn=opt, gr = NULL,
+      method = c("Nelder-Mead"))
+
+
+
+
+
+optimize(f=function(q)opt(c(q,1-q)),interval=c(0,1))
+
+
+optim(par=c(0.5,0.5), fn=function(v){Error(data$RM,ans.predict(data,mds,v))}, gr = NULL,
+      method = c("Nelder-Mead"))
 
 
 

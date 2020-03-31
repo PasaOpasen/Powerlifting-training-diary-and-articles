@@ -1078,121 +1078,225 @@ tr = trainControl(
   number = 10,
   #p = 0.75,
   repeats = 1,
-  verboseIter = T,
+  verboseIter = F,
   returnResamp = "all",
   savePredictions = T,
   summaryFunction = defaultSummary
 )
 
 
-d2=data %>% select(MRM,Count,Weight,Height,Index,Action,CountGroup,IndexGroup,BodyType,Experience) %>% 
+d2=data %>% select(MRM,Count,Weight,Height,Index,Action,CountGroup,IndexGroup) %>% 
   mutate_all(as.numeric) %>% 
   mutate(pow=MRM*Count,add=(MRM/Index)^6)
 
-# 5.16
-ft = train(
+d3=d2 %>% mutate(b5=predict(b5,data),n14=predict(n14,data))
+
+
+mths=c("ridge","lasso","blassoAveraged","enet","monmlp")
+
+tbm=c('bstTree','rpart','rpart1SE','rpart2','ctree','xgbDART','xgbTree','M5','nodeHarvest')
+
+mars=c('bagEarth','bagEarthGCV','earth','gcvEarth','brnn')
+
+rf=c('cforest','parRF','qrf','ranger','rf','extraTrees','RRF','RRFglobal')
+
+
+cvs.print=function(method.array,n=10,reps=10){
+  
+  tr = trainControl(
+    method = "repeatedcv",
+    number = n,
+    repeats = reps,
+    verboseIter = T,
+    returnResamp = "all",
+    savePredictions = T,
+    summaryFunction = defaultSummary
+  )
+  
+  cvs=sapply(method.array, function(ft){
+  
+  t=Sys.time()
+  tt= train(
+    y=data$RM,
+    x = d3,
+    method = ft,
+    metric =  "RMSE",
+    maximize = FALSE,
+    trControl = tr
+  )
+  
+  t=Sys.time()-t
+  
+  return(list(value=tt$control$seeds[[1+n*reps]],time=unclass(t)[[1]]))
+})
+  
+  rs=c(cvs[[1]],cvs[[2]])
+dm=dim(cvs)
+for(i in seq(3,dm[1]*dm[2],by=2)){
+  rs=rbind(rs,c(cvs[[i]],cvs[[i+1]]))
+}
+dm=dimnames(cvs)
+colnames(rs)=dm[[1]]
+rownames(rs)=dm[[2]]
+
+rs %<>% as.data.frame()
+rs[order(rs$value,rs$time),] %>% print()
+
+}
+
+cvs.print(rf,10,1)
+
+cvs.print2=function(method.array,n=10,reps=10){
+  
+  tr = trainControl(
+    method = "repeatedcv",
+    number = n,
+    repeats = reps,
+    verboseIter = F,
+    returnResamp = "final",
+    savePredictions = T,
+    summaryFunction = defaultSummary
+  )
+  aa=list()
+  
+  cvs=for(ft in method.array){
+    
+   aa[[ft]]= train(
+      y=data$RM,
+      x = d3,
+      method = ft,
+      metric =  "RMSE",
+      maximize = FALSE,
+      trControl = tr
+    )
+  }
+  
+  results=resamples(aa)
+  
+  # summarize the distributions
+  summary(results) %>% print()
+  # boxplots of results
+  bwplot(results)%>% print()
+  # dot plots of results
+  dotplot(results)%>% print()
+  
+}
+
+cvs.print2(rf,10,1)
+
+trtr=trainControl(
+    method = "repeatedcv",
+    number = 10,
+    #p = 0.75,
+    repeats = 2,
+    verboseIter = F,
+    returnResamp = "final",
+    savePredictions = T,
+    summaryFunction = defaultSummary
+  )
+
+ft1 = train(
   y=data$RM,
-  x = d2,
-  method = "penalized",
+  x = d3,
+  method = "M5",
   metric =  "RMSE",
   maximize = FALSE,
-  trControl = tr
+  trControl = trtr,
+  tuneLength = 20
 )
-ft %>% summary()
-ft %>% predict(d2) %>% Show()
 
 
-#5.24
-ft = train(
+save(ft,file="xgb.rdata")
+
+modelLookup("bagEarthGCV")
+
+# 4.90
+ft2 = train(
   y=data$RM,
-  x = d2,
-  method = "rqlasso",
-  metric =  "RMSE",
-  maximize = FALSE,
-  trControl = tr
-)
-ft %>% summary()
-ft %>% predict(d2) %>% Show()
-
-
-
-
-#5.15
-ft = train(
-  y=data$RM,
-  x = d2,
+  x = d3,
   method = "ridge",
   metric =  "RMSE",
   maximize = FALSE,
-  trControl = tr
+  trControl = trtr
 )
 ft %>% summary()
-ft %>% predict(d2) %>% Show()
+ft$control$seeds[[1+10*2]]
+ft %>% predict(d3) %>% Show()
 
 
 
-#5.29
-ft = train(
+#4.89
+ft3 = train(
   y=data$RM,
-  x = d2,
+  x = d3,
   method = "lasso",
   metric =  "RMSE",
   maximize = FALSE,
-  trControl = tr
+  trControl = trtr
 )
 ft %>% summary()
-ft %>% predict(d2) %>% Show()
+ft$control$seeds[[1+10*10]]
+ft1 %>% predict(d3) %>% Show()
+
+modelLookup("M5")
 
 
 
-
-#5.22
+#4.97
 ft = train(
   y=data$RM,
-  x = d2,
+  x = d3,
   method = "blassoAveraged",
   metric =  "RMSE",
   maximize = FALSE,
   trControl = tr
 )
 ft %>% summary()
-ft %>% predict(d2) %>% Show()
+ft %>% predict(d3) %>% Show()
 
 
-#5.15
+#4.90
 ft = train(
   y=data$RM,
-  x = d2,
+  x = d3,
   method = "enet",
   metric =  "RMSE",
   maximize = FALSE,
   trControl = tr
 )
 ft %>% summary()
-ft %>% predict(d2) %>% Show()
+ft %>% predict(d3) %>% Show()
 
+
+results <- resamples(list('LVQ'=ft1, 'GBM'=ft2, 'SVM'=ft3))
+# summarize the distributions
+summary(results)
+# boxplots of results
+bwplot(results)
+# dot plots of results
+dotplot(results)
 
 
 ###neural
 
-#5.09
+#4.87
 ft = train(
   y=data$RM,
-  x = d2,
+  x = d3,
   method = "monmlp",
   metric =  "RMSE",
   maximize = FALSE,
   trControl = tr
 )
 ft %>% summary()
-ft %>% predict(d2) %>% Show()
+ft %>% predict(d3) %>% Show()
 
 
 
 
 
 
-
+#4.75
 ft = train(
   RM ~ I((MRM / Index) ^ 6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1,
   
@@ -1218,6 +1322,64 @@ b6 = lm(
 b6 %>% all()
 
 b1 = b6
+
+
+
+
+cv.caret=function(df = d3,
+                           fit,
+                           k = 10,
+                           repets = 1) {
+  sm = 0
+  r = 0
+  RM = data$RM
+  
+  repeat {
+    b = T
+    while (b) {
+      val = tryCatch({
+        b = F
+        
+        blocks = sample.int(k, nrow(df), replace = T)
+        
+        future.apply::future_sapply(seq(k), function(i) {
+          ft = train(
+            y=data$RM,
+            x = d3,
+            method = fit,
+            metric =  "RMSE",
+            maximize = FALSE,
+            trControl = tr
+          )
+          sum((RM[blocks == i] - predict(ft, df[blocks == i,])) ^ 2) %>% return()
+        }) %>% sum()
+        
+      },
+      error = function(cond) {
+        # print(cond)
+        b = T
+      })
+    }
+    
+    
+    
+    sm = sm + val / k
+    r = r + 1
+    
+    if (r == repets) {
+      break
+    }
+    
+  }
+  
+  return(sm / repets)
+}
+
+
+
+
+
+
 #Модели####
 
 
@@ -2081,6 +2243,19 @@ vals = data.frame(
 
 
 
+
+
+#бустинг####
+
+rs=b5$residuals
+
+GGally::ggcorr(data %>% mutate(rs=rs))
+
+ggplot(data,aes(x=MRM,y=rs))+geom_point()
+
+lm(rs~Index:I(Count)^2,data %>% mutate(rs=rs)) %>% summary()
+
+
 #комитет####
 
 ans.predict=function(data,models,coefs){
@@ -2157,15 +2332,15 @@ cv.my.ans = function(df = data,
 }
 
 
-cv.my.ans(data,list(b3,b5),c(0.2,0.8),list(NULL,NULL),10,30)
+cv.my.ans(data,list(n14,b5),c(0.2,0.8),list(list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0),NULL),10,30)
 
 
 
-mds=list(b3,b5)
+mds=list(n14,b5)
 
 
 opt=function(cfs){
-  return(cv.my.ans(data,mds,cfs,list(NULL,NULL),10,30))
+  return(cv.my.ans(data,mds,cfs,list(list(a=rep(52,3),b=42,c=rep(0.0555,3),d=0),NULL),10,30))
 }
 
 

@@ -24,7 +24,7 @@ ui <- fluidPage(
                      label = "Your repeated maximum(kg):",
                      value = 100,min=20,max=450,
                      step =2.5,
-                     width = "40%"),
+                     width = "30%"),
         
          selectInput(inputId = "Count",
                 label = "Repeats:",
@@ -34,7 +34,7 @@ ui <- fluidPage(
         selectInput(inputId = "Action",
                     label = "Choose an action:",
                     choices = c("Bench press", "Squat", "Deadlift"),
-                    width = "60%"),
+                    width = "40%"),
     
 
             sliderInput("Weight",
@@ -52,10 +52,13 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
           # plotOutput("distPlot")
+           h3(textOutput("cap1", container = span)),
             tableOutput("vals"),
-            
-            tableOutput("vals2")
+           h3(textOutput("cap2", container = span)),
+            tableOutput("vals2"),
             #verbatimTextOutput("vals"),
+           h3(textOutput("cap3", container = span)),
+           tableOutput("perc")
         )
     )
 )
@@ -117,7 +120,16 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-
+   output$cap1 <- renderText({
+      'Predictions by linear model:'
+   })
+   output$cap2 <- renderText({
+      'Predicted multi-reps:'
+   })
+   output$cap3 <- renderText({
+      'Percentiles:'
+   })
+   
     output$vals <- renderTable({
 
         v=f(input$MRM,
@@ -132,7 +144,7 @@ server <- function(input, output) {
         
         colnames(v)=c("RM Prediction","Lower prediction","Upper prediction")
         
-        data.frame(v)
+        tbl_df(v)
     })
     
     output$vals2 <- renderTable({
@@ -163,6 +175,22 @@ server <- function(input, output) {
       df
     })
     
+    output$perc <- renderTable({
+       
+       v=f(input$MRM,
+           input$Count %>% as.numeric(),
+           Action=switch (input$Action,
+                          "Bench press" = "Жим",
+                          "Squat" = "Присед",
+                          "Deadlift" = "Тяга",
+           ),
+           Height=input$Height,
+           Weight=input$Weight)[1]
+       
+       vc=seq(100,50,by=-5)
+       g=tibble('Percentage of RM'=paste0(vc,'%'),'Value'=round(v*vc/100,1))
+       g
+    })
 }
 
 

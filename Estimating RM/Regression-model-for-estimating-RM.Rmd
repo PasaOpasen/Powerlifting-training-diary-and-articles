@@ -1,7 +1,7 @@
 ---
 title: "Регрессионные модели для определения повторного максимума"
 author: "[Дмитрий Пасько](https://github.com/PasaOpasen)"
-date: \today
+date: "`r format(Sys.time(), '%d.%m.%Y')`"
 output:
   html_document:
     df_print: paged

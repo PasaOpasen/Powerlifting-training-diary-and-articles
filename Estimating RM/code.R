@@ -1077,7 +1077,7 @@ tr = trainControl(
   method = "repeatedcv",
   number = 10,
   #p = 0.75,
-  repeats = 1,
+  repeats = 10,
   verboseIter = F,
   returnResamp = "all",
   savePredictions = T,
@@ -1202,13 +1202,13 @@ ft1 = train(
   metric =  "RMSE",
   maximize = FALSE,
   trControl = trtr,
-  tuneLength = 20
+  tuneLength = 50
 )
 
 
 save(ft,file="xgb.rdata")
 
-modelLookup("bagEarthGCV")
+modelLookup("M5")
 
 # 4.90
 ft2 = train(
@@ -1219,8 +1219,8 @@ ft2 = train(
   maximize = FALSE,
   trControl = trtr
 )
-ft %>% summary()
-ft$control$seeds[[1+10*2]]
+
+
 ft %>% predict(d3) %>% Show()
 
 
@@ -1241,57 +1241,13 @@ ft1 %>% predict(d3) %>% Show()
 modelLookup("M5")
 
 
-
-#4.97
-ft = train(
-  y=data$RM,
-  x = d3,
-  method = "blassoAveraged",
-  metric =  "RMSE",
-  maximize = FALSE,
-  trControl = tr
-)
-ft %>% summary()
-ft %>% predict(d3) %>% Show()
-
-
-#4.90
-ft = train(
-  y=data$RM,
-  x = d3,
-  method = "enet",
-  metric =  "RMSE",
-  maximize = FALSE,
-  trControl = tr
-)
-ft %>% summary()
-ft %>% predict(d3) %>% Show()
-
-
-results <- resamples(list('LVQ'=ft1, 'GBM'=ft2, 'SVM'=ft3))
+results <- resamples(list('LVQ'=ft1, 'GBM'=ft2, 'SVM'=ft))
 # summarize the distributions
 summary(results)
 # boxplots of results
 bwplot(results)
 # dot plots of results
 dotplot(results)
-
-
-###neural
-
-#4.87
-ft = train(
-  y=data$RM,
-  x = d3,
-  method = "monmlp",
-  metric =  "RMSE",
-  maximize = FALSE,
-  trControl = tr
-)
-ft %>% summary()
-ft %>% predict(d3) %>% Show()
-
-
 
 
 
@@ -1308,22 +1264,8 @@ ft = train(
   
   metric =  "RMSE",
   maximize = FALSE,
-  trControl = tr
+  trControl = trtr
 )
-
-ft %>% summary()
-ft %>% predict(data) %>% Show()
-
-b6 = lm(
-  RM ~ I((MRM / Index) ^ 6) + MRM:CountGroup + MRM:Action + MRM:CountGroup:Count - 1 +
-    MRM:CountGroup:Count:Action,
-  data
-)
-b6 %>% all()
-
-b1 = b6
-
-
 
 
 cv.caret=function(df = d3,

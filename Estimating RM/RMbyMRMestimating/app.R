@@ -100,6 +100,27 @@ ui <- fluidPage(
            level=0.999)[[1]] %>% return()
    
  }
+ f2=function(MRM,Count,Action='Жим',Weight=70,Height=170){
+    
+    act=factor(Action,levels =e$action.levels)
+    
+    up=c(4,8,11)
+    
+    lv=e$count.levels
+    
+    cg=lv[Count<up] %>% first() %>% factor(levels=lv)
+
+    
+    df=data.frame(MRM=MRM,
+                  Count=Count,
+                  Action=act,
+                  CountGroup=cg,
+                  Index=Weight/(0.01*Height)^2)
+    #df %>% print()
+    
+    predict(e$n14, df) %>% return()
+    
+ }
  mrm3=function(RM,count,Action='Присед',Weight=70,Height=170){
    
    cf=e$cf
@@ -187,8 +208,18 @@ server <- function(input, output) {
            Height=input$Height,
            Weight=input$Weight)[1]
        
+       v2=f2(input$MRM,
+       input$Count %>% as.numeric(),
+       Action=switch (input$Action,
+                      "Bench press" = "Жим",
+                      "Squat" = "Присед",
+                      "Deadlift" = "Тяга",
+       ),
+       Height=input$Height,
+       Weight=input$Weight)
+       
        vc=seq(100,50,by=-5)
-       g=tibble('Percentage of RM'=paste0(vc,'%'),'Value'=round(v*vc/100,1))
+       g=tibble('Percentage of RM'=paste0(vc,'%'),'Linear model'=round(v*vc/100,1),'Nonlinear model'=round(v2*vc/100,1))
        g
     })
 }

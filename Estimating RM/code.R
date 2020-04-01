@@ -1641,7 +1641,7 @@ Sys.time() - t
 
 save(f, count.levels, action.levels, cf, mrm3, file = "Functions.rdata")
 
-save(f, count.levels, action.levels, cf, mrm3, b5, file = "entire_data.rdata")
+save(f, count.levels, action.levels, cf, mrm3, b5, n14,file = "./RMbyMRMestimating/entire_data.rdata")
 
 
 v = sapply(2:10, function(x)

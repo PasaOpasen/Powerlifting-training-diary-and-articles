@@ -14,6 +14,9 @@ knitr::opts_chunk$set(echo = F,include = TRUE,tidy = TRUE,cache = FALSE,eval = T
 
 ```{r,echo=FALSE}
 library(knitr)
+library(pander)
+library(xtable)
+library(stargazer)
 #setwd("C:\\Users\\qtckp\\OneDrive\\Desktop\\Powerlift\\Estimating RM")
 
 #Загрузка данных####
@@ -250,8 +253,12 @@ $$RM=WEIGHT \cdot (x+y\cdot REPS)+f(WEIGHT,HEIGHT,WEIGHT_{own})+\varepsilon$$
 * **IndexGroup** -- группа по индексу массы тела (`r data$IndexGroup %>% levels()`)
 
 Основные статистики по данным переменным:
+
 ```{r}
-summary(data %>% select(-Mail))
+summary(data %>% select(-Mail)) #%>% xtable(auto=T)
+#pander::pander(summary(data %>% select(-Mail)))
+#library(stargazer)
+#stargazer(data %>% select(-Mail))
 ```
 
 Сама **таблица data** (отсортированная по некоторым столбцам):
@@ -274,7 +281,7 @@ getPIE(data.unique$BodyType,main="Тип телосложения испытуе
 
 и тест хи-квадрат говорит, что это отличие статистически значимо, то есть среди пауэрлифтеров эндоморфы встречаются чаще эктоморфов или мезоморфов:
 ```{r}
-chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(BodyType) %>% table())
+chisq.test(data.unique%>% filter(Sex=="Мужчина") %>%select(BodyType) %>% table()) %>% pander::pander()
 ```
 
 Больше половины наблюдений относятся к жиму лёжа. Я думаю, это связано с тем, что большинство спортсменов предпочитают это упражнение двум другим, вдобавок на жиме лёжа относительно проще замерять МПМ и, скорее всего, многие из ответивших специализировались именно на жиме лёжа.
@@ -301,7 +308,7 @@ ggplot(data,aes(x=Experience,fill=AgeGroup))+geom_bar()+theme_classic()+labs(tit
 Распределение по индексу массы тела:
 ```{r,out.width='90%'}
 #среди эндоморфов избыток веса встречается почаще
-data.unique %$%  table(BodyType,IndexGroup)
+data.unique %$%  table(BodyType,IndexGroup) %>% kable()
 
 ggplot(data.unique,aes(x=BodyType,fill=IndexGroup))+geom_bar(position=position_dodge2())+
   labs(x="Тип телосложения",y="Количество ответивших",fill="Индекс массы тела")+
@@ -314,14 +321,14 @@ tb=data.unique%>%
   mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет")) %>%
   select(Obees,BodyType) %>% table()
 
-tb %>% t() %>% prop.test()#для всех
+tb %>% t() %>% prop.test() %>% pander()#для всех
 
 data.unique%>% 
   mutate(Obees=ifelse(IndexGroup=="ожирение1","да","нет"),
          Bd=ifelse(BodyType=='Эндоморф',1,0)) %>%
   select(Obees,Bd) %>% 
   table() %>% t() %>% 
-  prop.test() # eсли разделить на эндоморфов и всех остальных
+  prop.test()%>% pander() # eсли разделить на эндоморфов и всех остальных
 ```
 
 ## Взаимодествия переменных
@@ -357,6 +364,7 @@ ggplot(data,aes(x=Index,y=RM,col=BodyType))+geom_point()+
 ```
 
 Оценка коэффициента простой модели в зависимости от числа повторений:
+
 ```{r,out.width='90%'}
 data %>% ggplot(aes(x=factor(Count),y=(RM/MRM-1)/Count))+
   geom_boxplot()+theme_bw()+
@@ -367,6 +375,7 @@ data %>% ggplot(aes(x=factor(Count),y=(RM/MRM-1)/Count))+
 ```
 
 Из следующего графика может следовать, что начиная с 8-9 повторений зависимость между МПМ и ПМ ослабевает:
+
 ```{r}
 data.ct=data %>% filter(Count<=10|Count==12)
 
@@ -376,32 +385,39 @@ prc=data.ct %>% ggplot(aes(x=factor(Count),y=100*MRM/RM))+geom_boxplot()+coord_f
 prc #%>% ggplotly() %>% I()
 ```
 Либо здесь имеется проблема с данными, так как на 9-м повторении корреляция резко уменьшается:
+
 ```{r}
 cat("Корреляция MRM & RM для каждого повторения:\n")
 cors=sapply(2:10, function(x) data %>% filter(Count==x) %$% cor(RM,MRM))
 names(cors)= paste(2:10,"repeats")
-cors
+cors %>% pander(title='12345')
 ```
 
 **Есть ли разница в этих процентах для разных движений или телосложений? Дисперсионный анализ показывает, что нет** (все p-значения больше 0.05):
+
 ```{r}
 #есть ли разница в проценте в зависимости от чего-то
-cat("p-значения для телосложений:\n")
-pvalues=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~BodyType,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
-names(pvalues)=names(cors)
-pvalues
-cat("p-значения для типа движения:\n")
-pvalues=sapply(2:6, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~Action,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
-names(pvalues)=paste(2:6,"repeats")
-pvalues
-cat("p-значения для групп по индексу массы:\n")
-pvalues=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~IndexGroup,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
-names(pvalues)=paste(2:10,"repeats")
-pvalues
+#cat("p-значения для телосложений:\n")
+pvalues1=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~BodyType,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues1)=names(cors)
+#pvalues1
+
+#cat("p-значения для типа движения:\n")
+pvalues2=sapply(2:6, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~Action,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues2)=paste(2:6,"repeats")
+#pvalues2
+
+#cat("p-значения для групп по индексу массы:\n")
+pvalues3=sapply(2:10, function(x) data %>% filter(Count==x) %$% aov(MRM/RM~IndexGroup,.)%>% summary() %$% .[[1]][["Pr(>F)"]][1])
+names(pvalues3)=paste(2:10,"repeats")
+#pvalues3
+
+tibble('Число повторений'=2:10,'p-значения для телосложений'=pvalues1,'p-значения для типа движения'=c(pvalues2,rep('мало данных',4)),'p-значения для групп по индексу массы'=pvalues3)%>% kable(caption = "p-значения для разных факторных переменных на каждом числе повторений",align = 'cccc')
 
 ```
 
-Применим тест Стьюдента для определения предсказываемых процентов и доверительных интервалов для них:
+Применим **тест Стьюдента для определения предсказываемых процентов и доверительных интервалов для них**:
+
 ```{r,echo=T}
 df=data %>% mutate(perc=100*MRM/RM) %>% filter((Count<=12&Count%%2==0)|Count==15|Count==20) %>% 
   group_by(factor(Count)) %>% 
@@ -409,8 +425,10 @@ df=data %>% mutate(perc=100*MRM/RM) %>% filter((Count<=12&Count%%2==0)|Count==15
             down=t.test(perc,conf.level = 0.99)$conf.int[1],
             up=t.test(perc,conf.level = 0.99)$conf.int[2]) 
 names(df)=c("Число повторений","Ожидаемый %","Нижняя граница","Верхняя граница")
-df
+
+df %>% kable(caption="Какой % составляет МПМ от ПМ",align = 'ccc')
 ```
+
 В целом эти данные согласуются с тем, что используются [National Strength and Conditioning Association (NSCA)](https://www.nsca.com):
 
 <p align="center">
@@ -421,7 +439,8 @@ df
 
 
 Теперь посмотрим на зависимость повторного максимума от многоповторного:
-```{r}
+
+```{r,out.width='85%'}
 plt=data %>% ggplot(aes(x=MRM,y=RM))+geom_smooth()+
   geom_point(aes(col=CountGroup),size=3)+theme_bw()+
   #facet_grid(vars(CountGroup))+
@@ -433,8 +452,9 @@ plt+theme(legend.position = c(0.85,0.2))
 
 Очевидно, что здесь будет близкая к линейной зависимость (учитывая высокую корреляцию).
 Оказывается, если предварительно разбить наблюдения на группы по повторениями, линейность станет намного более выраженной для числа повторений не больше 10 (для большего числа повторений не прослеживается явной линейности либо из-за недостатка данных, либо по физиологическим причинам, озвученным ранее; для диапазона 11-20 возможна квадратичная зависимость):
+
 ```{r,out.width='90%'}
-plt+facet_grid(vars(CountGroup))
+plt+facet_grid(vars(CountGroup))+theme(legend.position ='bottom')
 ```
 
 Сказанное выше значит, что для каждого диапазона повторений нужен отдельный анализ.

@@ -56,6 +56,7 @@ ui <- fluidPage(
             tableOutput("vals"),
            h3(textOutput("cap2", container = span)),
             tableOutput("vals2"),
+           textOutput("sorry"),
             #verbatimTextOutput("vals"),
            h3(textOutput("cap3", container = span)),
            tableOutput("perc")
@@ -151,6 +152,11 @@ server <- function(input, output) {
       'Percentiles:'
    })
    
+   output$sorry<-renderText({
+     'The present model can give outliers if RM or Repeats are very large or the body mass index is too small. It`s because of features of the dataset, sorry'
+   })
+   
+   
     output$vals <- renderTable({
 
         v=f(input$MRM,
@@ -189,8 +195,23 @@ server <- function(input, output) {
       
       v2=sapply(2:10, function(xx) mrm3(v,xx,Action = Action,Weight = Weight,Height = Height))
       
+      v2=c(v,v2 %>% round(1))
+      nas=v2>v
+      v2[nas]=NA
       
-      df=data.frame(1:10,c(v,v2 %>% round(1)))
+      if(length(nas)>0){
+        for(i in 2:9){
+          if(is.na(v2[i])){
+            v2[i]=(v2[i-1]+v2[i+1])/2
+          }
+        }
+      }
+      
+      inds=nas&!is.na(v2)
+      
+      v2[inds]=paste('~',v2[inds])
+      
+      df=data.frame(1:10,v2)
       names(df)=c("Count of repeats","Predicted weight")
       
       df

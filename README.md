@@ -16,7 +16,7 @@ Just download the latest release, then unpack and run the "ProgressControl.exe"
 
 # Articles
 
-See ![Regression models for estimating RM by MRM](https://rpubs.com/DemetryPascal/RMbyMRMrus_1) and ![other at my **RPubs**](https://rpubs.com/DemetryPascal)
+See ![Regression models for estimating RM by MRM](https://rpubs.com/DemetryPascal/RMbyMRMrus_1) and ![other ones at my **RPubs**](https://rpubs.com/DemetryPascal)
 
 Use ![this app](https://dmitrypasko.shinyapps.io/RMbyMRMestimating/) to predict your RM!
 

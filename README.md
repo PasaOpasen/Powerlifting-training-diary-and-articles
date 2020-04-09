@@ -8,10 +8,13 @@ Just download the latest release, then unpack and run the "ProgressControl.exe"
 
 ## Screenshots
 
+### Estimate your repeated maximum
 ![Estimate your repeated maximum](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/estim.PNG)
 
+### Keep the training diary
 ![Add](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/addresults.PNG)
 
+### See your progress
 ![See your progress](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/displayprogress.PNG)
 
 # Articles

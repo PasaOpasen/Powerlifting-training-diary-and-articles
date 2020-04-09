@@ -10,3 +10,14 @@ Just download the latest release, then unpack and run the "ProgressControl.exe"
 
 ![Estimate your repeated maximum](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/estim.PNG)
 
+![Add](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/addresults.PNG)
+
+![See your progress](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/displayprogress.PNG)
+
+# Articles
+
+See ![Regression models for estimating RM by MRM](https://rpubs.com/DemetryPascal/RMbyMRMrus_1) and ![other at my **RPubs**](https://rpubs.com/DemetryPascal)
+
+Use ![this app](https://dmitrypasko.shinyapps.io/RMbyMRMestimating/) to predict your RM!
+
+![sm](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/site.PNG)

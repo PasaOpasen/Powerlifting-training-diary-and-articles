@@ -1,11 +1,10 @@
 # Simple application for my powerlifting training + articles
---------------
+
 ## About
 This is a simple winforms app that allows you to record your workouts, view statistics, and simply evaluate your progress and estimate your working weights. Contact me if you are really interested in it
 
 ![main](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/gifs/main.gif)
 
---------------
 ## How to install
 Just download the latest release, then unpack and run the "ProgressControl.exe"
 
@@ -19,6 +18,8 @@ Just download the latest release, then unpack and run the "ProgressControl.exe"
 
 ### See your progress
 ![See your progress](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/displayprogress.PNG)
+
+--------------
 
 # Articles
 

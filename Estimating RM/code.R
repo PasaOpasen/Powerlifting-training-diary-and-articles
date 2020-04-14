@@ -109,7 +109,7 @@ data.backup = data
 
 save(data, file = "data.rdata")
 
-dt.save=data %>% select(-Mail,-Experience,-IndexGroup)
+dt.save=data %>% select(-Mail,-Experience,-IndexGroup) %>% filter(Count<11) %>% mutate(Mult=MRM*Count)
 
 write_csv(dt.save,'./MLtests/data.csv')
 

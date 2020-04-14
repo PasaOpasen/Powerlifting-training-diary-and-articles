@@ -54,5 +54,9 @@ namespace Powerlifing_and_otherML.Model
         public float Index { get; set; }
 
 
+        [ColumnName("Mult"), LoadColumn(12)]
+        public float Mult { get; set; }
+
+
     }
 }

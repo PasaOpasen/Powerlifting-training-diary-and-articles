@@ -44,8 +44,8 @@ namespace Powerlifing_and_otherML.ConsoleApp
         public static IEstimator<ITransformer> BuildTrainingPipeline(MLContext mlContext)
         {
             // Data process configuration with pipeline data transformations 
-            var dataProcessPipeline = mlContext.Transforms.Categorical.OneHotEncoding(new[] { new InputOutputColumnPair("Action", "Action"), new InputOutputColumnPair("Sex", "Sex"), new InputOutputColumnPair("BodyType", "BodyType"), new InputOutputColumnPair("CountGroup", "CountGroup"), new InputOutputColumnPair("AgeGroup", "AgeGroup") })
-                                      .Append(mlContext.Transforms.Concatenate("Features", new[] { "Action", "Sex", "BodyType", "CountGroup", "AgeGroup", "MRM", "Count", "Age", "Weight", "Height", "Index" }))
+            var dataProcessPipeline = mlContext.Transforms.Categorical.OneHotEncoding(new[] { new InputOutputColumnPair("Action", "Action"), new InputOutputColumnPair("BodyType", "BodyType"), new InputOutputColumnPair("CountGroup", "CountGroup"), new InputOutputColumnPair("AgeGroup", "AgeGroup") })
+                                      .Append(mlContext.Transforms.Concatenate("Features", new[] { "Action", "BodyType", "CountGroup", "AgeGroup", "MRM", "Count", "Index", "Mult" }))
                                       .Append(mlContext.Transforms.NormalizeMinMax("Features", "Features"));
             // Set the training algorithm 
             var trainer = mlContext.Regression.Trainers.Ols(labelColumnName: "RM", featureColumnName: "Features");

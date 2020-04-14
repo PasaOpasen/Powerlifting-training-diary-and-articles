@@ -33,17 +33,13 @@ namespace Powerlifing_and_otherML.ConsoleApp
             Console.WriteLine($"CountGroup: {sampleData.CountGroup}");
             Console.WriteLine($"AgeGroup: {sampleData.AgeGroup}");
             Console.WriteLine($"Index: {sampleData.Index}");
+            Console.WriteLine($"Mult: {sampleData.Mult}");
             Console.WriteLine($"\n\nActual RM: {sampleData.RM} \nPredicted RM: {predictionResult.Score}\n\n");
             Console.WriteLine("=============== End of process, hit any key to finish ===============");
-
-
-            ShowErrors(DATA_FILEPATH);
-            
             Console.ReadKey();
         }
 
         // Change this code to create your own sample data
-
         #region CreateSingleDataSample
         // Method to load single row of dataset to try a single prediction
         private static ModelInput CreateSingleDataSample(string dataFilePath)
@@ -62,44 +58,9 @@ namespace Powerlifing_and_otherML.ConsoleApp
             // Use first line of dataset as model input
             // You can replace this with new test data (hardcoded or from end-user application)
             ModelInput sampleForPrediction = mlContext.Data.CreateEnumerable<ModelInput>(dataView, false)
-                                                                        .Last();
+                                                                        .First();
             return sampleForPrediction;
         }
         #endregion
-
-        // Method to load single row of dataset to try a single prediction
-        private static void ShowErrors(string dataFilePath)
-        {
-            // Create MLContext
-            MLContext mlContext = new MLContext();
-
-            // Load dataset
-            IDataView dataView = mlContext.Data.LoadFromTextFile<ModelInput>(
-                                            path: dataFilePath,
-                                            hasHeader: true,
-                                            separatorChar: ',',
-                                            allowQuoting: true,
-                                            allowSparse: false);
-
-            // Use first line of dataset as model input
-            // You can replace this with new test data (hardcoded or from end-user application)
-            var sampleForPrediction = mlContext.Data.CreateEnumerable<ModelInput>(dataView, false);
-
-            double s1 =0, s2 = 0;
-
-            foreach(var p in sampleForPrediction)
-            {
-                var r = ConsumeModel.Predict(p);
-                var val = (r.Score - p.RM);
-                s1 += Math.Abs( val);
-                s2 += val*val;
-            }
-            s1 /= sampleForPrediction.Count();
-            s2 /= sampleForPrediction.Count();
-
-            Console.WriteLine($"MAE = {s1}  MSE = {s2}");
-
-        }
-
     }
 }

@@ -12,7 +12,7 @@ library(leaps)
 library(plotly)
 
 data = read_tsv(
-  "data(rus).tsv",
+  "data(eng).tsv",#"data(rus).tsv",
   skip = 1,
   col_names = F,
   na = "",
@@ -109,6 +109,9 @@ data.backup = data
 
 save(data, file = "data.rdata")
 
+dt.save=data %>% select(-Mail,-Experience,-IndexGroup)
+
+write_csv(dt.save,'./MLtests/data.csv')
 
 #Разведочный анализ и описание выборки####
 

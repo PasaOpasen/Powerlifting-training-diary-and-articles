@@ -27,4 +27,4 @@ See [Regression models for estimating RM by MRM](https://rpubs.com/DemetryPascal
 
 Use [this app](https://dmitrypasko.shinyapps.io/RMbyMRMestimating/) to predict your RM!
 
-![sm](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/images/site.PNG)
+![sm](https://github.com/PasaOpasen/Powerlifting-training-diary-and-articles/blob/master/gifs/calc.gif)

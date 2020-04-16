@@ -12,7 +12,7 @@ library(leaps)
 library(plotly)
 
 data = read_tsv(
-  "data(eng).tsv",#"data(rus).tsv",
+  "data(rus).tsv",#"data(eng).tsv",
   skip = 1,
   col_names = F,
   na = "",
@@ -383,6 +383,8 @@ plt = data %>% ggplot(aes(x = MRM, y = RM)) + geom_smooth() +
 plt + theme(legend.position = c(0.9, 0.2))
 
 plt + facet_grid(vars(CountGroup))
+
+plt + facet_grid(vars(CountGroup),scales="free")+theme(legend.position = "bottom")
 
 
 byCountGroup = ggplot(data, aes(y = (RM / MRM - 1) / Count, col = BodyType)) +
@@ -971,16 +973,30 @@ vals = data.frame(
 
 
 
-ggplot(vals, aes(x = kp, y = b, col = n)) + theme_bw() + facet_grid(vars(gr)) +
+ggplot(vals, aes(x = kp, y = b, col = n)) + theme_bw() + facet_grid(vars(gr), scales="free_y") +
   geom_point(size = 4) + geom_line(size = 1.) +
   labs(
     x = "Количество блоков при перекрёстной проверке",
     y = "Усреднённые значения ошибок после 30 повторных проверок",
     col = "Модель",
     title = "Оценки качества моделей при перекрёстной проверке",
-    subtitle = "Оценка производилась на разных подмножествах данных",
+    subtitle = "Оценка производилась на разных подмножествах данных (диапазонах повторений)",
     caption = "Очевидно, что пятая модель превосходит остальные по точности"
   ) +
+  scale_x_continuous(breaks = kn) +
+  theme(legend.position = "bottom")
+
+
+ggplot(vals, aes(x = kp, y = b, col = n)) + theme_bw() + facet_grid(vars(gr), scales="free_y") +
+  geom_point(aes(shape=n),size = 5) + geom_line(aes(linetype=n),size = 1.) +
+  labs(
+    x = "Количество блоков при перекрёстной проверке",
+    y = "Усреднённые значения ошибок после 30 повторных проверок",
+    shape = "Модель",
+    title = "Оценки качества моделей при перекрёстной проверке",
+    subtitle = "Оценка производилась на разных подмножествах данных (диапазонах повторений)",
+    caption = "Очевидно, что пятая модель превосходит остальные по точности"
+  ) +guides(col=FALSE,linetype=F)+
   scale_x_continuous(breaks = kn) +
   theme(legend.position = "bottom")
 

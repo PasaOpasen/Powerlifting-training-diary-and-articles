@@ -2323,3 +2323,20 @@ optim(par=c(0.5,0.5), fn=function(v){Error(data$RM,ans.predict(data,mds,v))}, gr
 
 
 
+
+
+
+#кластеризация по остаткам####
+
+ggplot(data %>% mutate(errors=cut(b5$residuals,breaks = c(-15,-10,-5,5,10,15))),
+       aes(x=MRM/Index,y=Index,col=errors,shape=Action))+geom_point(size=3)+
+  facet_grid(vars(CountGroup))+
+  theme_bw()
+
+# try svm
+
+
+
+
+
+

@@ -67,7 +67,7 @@
 *.cs linguist-vendored=false
 *.r linguist-vendored=false
 *.py linguist-vendored=false
-
+*.rmd linguist-vendored=false
 
 
 
